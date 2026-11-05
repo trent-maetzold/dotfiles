@@ -1,0 +1,5 @@
+
+[settings.upgrade]
+
+[tools]
+chezmoi = "latest"
