@@ -10,7 +10,7 @@ The Hyprland monitor configuration is applied only on hostname `muninn`. Other h
 
 ## Desktop applications
 
-Magpie and Paseo are desktop apps, not mise registry tools. On Omarchy/Arch, their AUR desktop packages can be installed with `omarchy pkg aur add magpie-bin paseo-bin` after reviewing their PKGBUILDs. Their accounts and credentials are intentionally not managed here.
+Magpie and Paseo are declared as AUR packages in mise's `[bootstrap.packages]` (rather than as mise tools), so their desktop integration and dependencies are managed by pacman. On Omarchy/Arch, review the AUR PKGBUILDs first, then run `mise bootstrap packages apply --manager aur`. This requires `yay` or `paru` and sudo access. Unlike `mise install`, bootstrap packages are not installed automatically by `chezmoi apply`. Their accounts and credentials are intentionally not managed here.
 
 ## Maintenance
 

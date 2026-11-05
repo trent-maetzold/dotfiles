@@ -3,3 +3,7 @@
 
 [tools]
 chezmoi = "latest"
+
+[bootstrap.packages]
+"aur:magpie-bin" = "latest"
+"aur:paseo-bin" = "latest"
