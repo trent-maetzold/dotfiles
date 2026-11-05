@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+"""Merge portable Magpie preferences without managing credentials or runtime state."""
+import json
+import sys
+
+text = sys.stdin.read()
+settings = json.loads(text) if text.strip() else {}
+settings.update({
+    "theme": "system",
+    "lang": "system",
+    "tray": "panel",
+    "currency": "usd",
+    "updateEvery": 360,
+    "trayUsageEvery": 3,
+    "plainNames": True,
+    "textSize": 110,
+    "hiddenModels": {
+        "pi": [
+            "claude/claude-fable-5",
+            "claude/claude-haiku-4-5",
+            "claude/claude-opus-4-5",
+            "claude/claude-opus-4-5-20251101",
+            "claude/claude-opus-4-6",
+            "claude/claude-opus-4-7",
+            "claude/claude-opus-5",
+            "claude/claude-sonnet-4-5",
+            "claude/claude-sonnet-4-5-20250929",
+            "claude/claude-sonnet-5",
+            "mistral/codestral-2508",
+        ],
+    },
+})
+json.dump(settings, sys.stdout, indent=2, ensure_ascii=False)
+sys.stdout.write("\n")

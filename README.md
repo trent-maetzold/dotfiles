@@ -10,7 +10,9 @@ The Hyprland monitor configuration is applied only on hostname `muninn`. Other h
 
 ## Desktop applications
 
-Magpie and Paseo are declared as AUR packages in mise's `[bootstrap.packages]` (rather than as mise tools), so their desktop integration and dependencies are managed by pacman. On Omarchy/Arch, review the AUR PKGBUILDs first, then run `mise bootstrap packages apply --manager aur`. This requires `yay` or `paru` and sudo access. Unlike `mise install`, bootstrap packages are not installed automatically by `chezmoi apply`. Their accounts and credentials are intentionally not managed here.
+Magpie and Paseo are declared as AUR packages in mise's `[bootstrap.packages]` (rather than as mise tools), so their desktop integration and dependencies are managed by pacman. On Omarchy/Arch, review the AUR PKGBUILDs first, then run `mise bootstrap packages apply --manager aur`. This requires `yay` or `paru` and sudo access. Unlike `mise install`, bootstrap packages are not installed automatically by `chezmoi apply`.
+
+Magpie's selected preferences are merged into `settings.json` by `dot_config/private_magpie/modify_private_settings.json`. Edit that script to change managed preferences; do not run `chezmoi add` on the whole Magpie directory. Other settings and runtime state are preserved on each machine. Accounts, provider data, credentials, backups, caches, and usage history are not tracked.
 
 ## Maintenance
 
