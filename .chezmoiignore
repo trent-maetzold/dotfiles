@@ -1,1 +1,4 @@
 README.md
+{{ if ne .chezmoi.hostname "muninn" -}}
+.config/hypr/monitors.lua
+{{ end -}}

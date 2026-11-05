@@ -4,7 +4,13 @@ Personal configuration managed with [chezmoi](https://www.chezmoi.io/) and [mise
 
 ## New machine
 
-Install mise and chezmoi, then run `chezmoi init --apply <repository-url>` and `mise install`. Review `chezmoi diff` before applying later changes. Omarchy itself provides the desktop defaults and system-wide mise tools.
+Install mise and chezmoi, then run `chezmoi init --apply https://github.com/trent-maetzold/dotfiles.git` and `mise install`. Review `chezmoi diff` before applying later changes. Omarchy itself provides the desktop defaults and system-wide mise tools.
+
+The Hyprland monitor configuration is applied only on hostname `muninn`. Other hosts keep their own monitor configuration. To add another host, adjust `.chezmoiignore` and use a template or separate host-specific file.
+
+## Desktop applications
+
+Magpie and Paseo are desktop apps, not mise registry tools. On Omarchy/Arch, their AUR desktop packages can be installed with `omarchy pkg aur add magpie-bin paseo-bin` after reviewing their PKGBUILDs. Their accounts and credentials are intentionally not managed here.
 
 ## Maintenance
 
