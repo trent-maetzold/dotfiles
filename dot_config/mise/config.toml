@@ -3,7 +3,10 @@
 
 [tools]
 chezmoi = "latest"
+rtk = "latest"
 
 [bootstrap.packages]
 "aur:magpie-bin" = "latest"
 "aur:paseo-bin" = "latest"
+"aur:icaclient" = "latest"
+"aur:zoom-citrix-plugin" = "latest"
