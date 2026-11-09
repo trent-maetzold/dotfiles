@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "outlook": {
-      "command": "/mnt/c/Users/<user>/.local/bin/uvx.exe",
+      "command": "/mnt/c/Users/<user>/scoop/apps/uv/current/uvx.exe",
       "args": ["--from", "outlook-classic-mcp", "outlook-mcp"]
     }
   }
