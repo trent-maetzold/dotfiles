@@ -1,5 +1,7 @@
-# Ignore everything pi and magpie write (auth, models, magpie extension,
-# sessions, backups). Track only hand-maintained settings.
+# Ignore everything pi and magpie write (auth, models, sessions, backups).
+# Track hand-maintained settings and extensions.
 *
 !.gitignore
 !settings.json
+!extensions/
+!extensions/**
