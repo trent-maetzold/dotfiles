@@ -1,12 +1,11 @@
-# Ignore everything pi and magpie write (auth, models, sessions, backups).
-# Track hand-maintained settings and extensions.
-*
-!.gitignore
-!settings.json
-!extensions/
-!extensions/**
-# Addon configs that live in the agent dir.
-!btw.json
-!caveman.json
-!pi-pretty.json
-!plannotator.json
+# Managed by magpie / pi.
+auth.json
+models.json
+models-store.json
+# Runtime state.
+npm/
+sessions/
+pi-pretty/
+# Backups left by magpie and bili.
+*.before-magpie
+*.bili-*

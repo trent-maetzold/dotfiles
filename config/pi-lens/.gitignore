@@ -1,0 +1,5 @@
+*.log
+*.locks/
+instances.json
+orphan-backstop.json
+projects/
