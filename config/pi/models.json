@@ -1,0 +1,909 @@
+{
+  "providers": {
+    "magpie": {
+      "api": "openai-completions",
+      "apiKey": "magpie",
+      "baseUrl": "http://127.0.0.1:3425/v1",
+      "compat": {
+        "sendSessionAffinityHeaders": true
+      },
+      "models": [
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.2,
+            "cacheWrite": 5,
+            "input": 4,
+            "output": 20
+          },
+          "id": "group/intelligent",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "Intelligent",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 500000,
+          "cost": {
+            "cacheRead": 0.07,
+            "cacheWrite": 0,
+            "input": 0.7,
+            "output": 2.1
+          },
+          "id": "group/competent",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 262144,
+          "name": "Competent",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": null,
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.07,
+            "cacheWrite": 0,
+            "input": 0.7,
+            "output": 2.1
+          },
+          "id": "group/code",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 262144,
+          "name": "Code",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": null,
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.003,
+            "cacheWrite": 0,
+            "input": 0.15,
+            "output": 0.6
+          },
+          "id": "group/fast",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 393216,
+          "name": "Fast",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.003,
+            "cacheWrite": 0,
+            "input": 0.15,
+            "output": 0.6
+          },
+          "id": "group/cheap",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 512000,
+          "name": "Cheap",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.2,
+            "cacheWrite": 5,
+            "input": 4,
+            "output": 20
+          },
+          "id": "group/claude-opus-5.5",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "Claude Opus 5.5",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.1,
+            "cacheWrite": 2.5,
+            "input": 2,
+            "output": 10
+          },
+          "id": "group/claude-sonnet-5.5",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "Claude Sonnet 5.5",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.01,
+            "cacheWrite": 0.125,
+            "input": 0.1,
+            "output": 0.5
+          },
+          "id": "group/claude-haiku-5-5",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "Claude Haiku 5.5",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.022,
+            "cacheWrite": 0,
+            "input": 0.66,
+            "output": 1.98
+          },
+          "id": "group/deepseek-v4-pro",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 393216,
+          "name": "DeepSeek V4 Pro",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": null,
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.003,
+            "cacheWrite": 0,
+            "input": 0.15,
+            "output": 0.6
+          },
+          "id": "group/deepseek-v4.1-flash",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 393216,
+          "name": "DeepSeek V4.1 Flash",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.1,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 10
+          },
+          "id": "group/gemini-4-argon",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 65536,
+          "name": "Gemini 4 Argon",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": null,
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.14,
+            "cacheWrite": 0,
+            "input": 1.4,
+            "output": 4.4
+          },
+          "id": "group/glm-5.3",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "GLM 5.3",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.03,
+            "cacheWrite": 0,
+            "input": 0.15,
+            "output": 0.5
+          },
+          "id": "group/glm-5.3-flash",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "GLM 5.3 Flash",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 500000,
+          "cost": {
+            "cacheRead": 0.1,
+            "cacheWrite": 2.5,
+            "input": 2,
+            "output": 10
+          },
+          "id": "group/gpt-6.1-sol",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "GPT 6.1 Sol",
+          "promptCache": {
+            "short": 300
+          },
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 500000,
+          "cost": {
+            "cacheRead": 0.05,
+            "cacheWrite": 1.25,
+            "input": 1,
+            "output": 5
+          },
+          "id": "group/gpt-6.1-terra",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "GPT 6.1 Terra",
+          "promptCache": {
+            "short": 300
+          },
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 272000,
+          "cost": {
+            "cacheRead": 0.01,
+            "cacheWrite": 0.125,
+            "input": 0.1,
+            "output": 0.5
+          },
+          "id": "group/gpt-6-luna",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "GPT 6 Luna",
+          "promptCache": {
+            "short": 300
+          },
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 500000,
+          "cost": {
+            "cacheRead": 0.5,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6
+          },
+          "id": "group/grok-4.7",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 500000,
+          "name": "Grok 4.7",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": null,
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.2,
+            "cacheWrite": 2,
+            "input": 2,
+            "output": 10
+          },
+          "id": "group/kimi-k3.1-pro",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "Kimi K3.1 Pro",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.3,
+            "cacheWrite": 3,
+            "input": 3,
+            "output": 15
+          },
+          "id": "group/kimi-k3",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "Kimi K3",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": null,
+            "low": null,
+            "max": "max",
+            "medium": null,
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 262144,
+          "cost": {
+            "cacheRead": 0.19,
+            "cacheWrite": 0,
+            "input": 0.95,
+            "output": 4
+          },
+          "id": "group/kimi-k2.7-code",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 262144,
+          "name": "Kimi K2.7 Code",
+          "reasoning": true
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.003625,
+            "cacheWrite": 0,
+            "input": 0.435,
+            "output": 0.87
+          },
+          "id": "group/mimo-v2.6-pro",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "MiMo V2.6 Pro",
+          "reasoning": true
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.0028,
+            "cacheWrite": 0,
+            "input": 0.14,
+            "output": 0.28
+          },
+          "id": "group/mimo-v2.6-flash",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "MiMo V2.6 Flash",
+          "reasoning": true
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.06,
+            "cacheWrite": 0,
+            "input": 0.3,
+            "output": 1.2
+          },
+          "id": "group/minimax-m3",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "MiniMax-M3",
+          "reasoning": true
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.015,
+            "cacheWrite": 0,
+            "input": 0.15,
+            "output": 0.6
+          },
+          "id": "group/minimax-m3.1-flash",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 512000,
+          "name": "MiniMax M3.1 Flash",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1048576,
+          "cost": {
+            "cacheRead": 0.07,
+            "cacheWrite": 0,
+            "input": 0.7,
+            "output": 2.1
+          },
+          "id": "group/mistral-large-4",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 262144,
+          "name": "Mistral Large 4",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": null,
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.25,
+            "cacheWrite": 2.5,
+            "input": 2,
+            "output": 6
+          },
+          "id": "group/qwen3.8-max",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "Qwen3.8 Max",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": null,
+            "low": "low",
+            "max": null,
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.016,
+            "cacheWrite": 0.2,
+            "input": 0.15,
+            "output": 0.47
+          },
+          "id": "group/qwen3.8-flash",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 131072,
+          "name": "Qwen3.8 Flash",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": null,
+            "low": "low",
+            "max": null,
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.5,
+            "cacheWrite": 6.25,
+            "input": 5,
+            "output": 25
+          },
+          "id": "group/claude-opus-4-8",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "Claude Opus 4.8",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 1000000,
+          "cost": {
+            "cacheRead": 0.3,
+            "cacheWrite": 3.75,
+            "input": 3,
+            "output": 15
+          },
+          "id": "auto/claude-sonnet-4-6",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "Claude Sonnet 4.6",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": null
+          }
+        },
+        {
+          "contextWindow": 200000,
+          "cost": {
+            "cacheRead": 0.1,
+            "cacheWrite": 1.25,
+            "input": 1,
+            "output": 5
+          },
+          "id": "group/claude-haiku-4-5",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 64000,
+          "name": "Claude Haiku 4.5",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": null,
+            "max": null,
+            "medium": null,
+            "minimal": null,
+            "off": "none",
+            "xhigh": null
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 272000,
+          "cost": {
+            "cacheRead": 0.4,
+            "cacheWrite": 5,
+            "input": 4,
+            "output": 20
+          },
+          "id": "group/gpt-5.6-sol",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "GPT-5.6-Sol",
+          "promptCache": {
+            "short": 300
+          },
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 272000,
+          "cost": {
+            "cacheRead": 0.2,
+            "cacheWrite": 2.5,
+            "input": 2,
+            "output": 12
+          },
+          "id": "group/gpt-5.6-terra",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "GPT-5.6-Terra",
+          "promptCache": {
+            "short": 300
+          },
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "api": "openai-responses",
+          "compat": {
+            "supportsStrictMode": true
+          },
+          "contextWindow": 272000,
+          "cost": {
+            "cacheRead": 0.02,
+            "cacheWrite": 0.25,
+            "input": 0.2,
+            "output": 1.2
+          },
+          "id": "group/gpt-5.6-luna",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 128000,
+          "name": "GPT 5.6 Luna",
+          "promptCache": {
+            "short": 300
+          },
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": "low",
+            "max": "max",
+            "medium": "medium",
+            "minimal": null,
+            "off": null,
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "contextWindow": 262144,
+          "cost": {
+            "cacheRead": 0.015,
+            "cacheWrite": 0,
+            "input": 0.15,
+            "output": 0.6
+          },
+          "id": "mistral/mistral-small-2603",
+          "input": [
+            "text",
+            "image"
+          ],
+          "maxTokens": 256000,
+          "name": "Mistral Small 4",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "high": "high",
+            "low": null,
+            "max": null,
+            "medium": null,
+            "minimal": null,
+            "off": "none",
+            "xhigh": null
+          }
+        }
+      ],
+      "name": "magpie"
+    }
+  }
+}

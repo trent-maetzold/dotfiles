@@ -1,0 +1,24 @@
+{
+  "theme": "omarchy-system",
+  "lastChangelogVersion": "1.5.0",
+  "deviceId": "be2e2e4f-0f3c-4055-9899-44c61be6ab20",
+  "defaultProvider": "magpie",
+  "defaultModel": "group/competent",
+  "packages": [
+    "npm:@dietrichgebert/ponytail",
+    "npm:pi-lens",
+    "npm:pi-simplify",
+    "npm:pi-powerline-footer",
+    "npm:pi-btw",
+    "npm:@heyhuynhgiabuu/pi-pretty",
+    "npm:pi-background-tasks",
+    "npm:pi-context-view",
+    "npm:billion-context"
+  ],
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.10",
+    "{\"source\":\"npm:pi-powerline-footer\",\"scope\":\"user\"}": "0.22.0",
+    "{\"source\":\"npm:@heyhuynhgiabuu/pi-pretty\",\"scope\":\"user\"}": "0.9.0",
+    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.3"
+  }
+}

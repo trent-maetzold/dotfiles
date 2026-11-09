@@ -1,20 +1,32 @@
 {
+  config,
+  vars,
+  ...
+}: let
+  hm = config.flake.modules.homeManager;
+in {
   # Rarely changes: declarative.
-  flake.homeModules.git = {
+  flake.modules.homeManager.git = {
     config,
     lib,
     ...
   }: {
-    options.dotfiles.git.enable = lib.mkEnableOption "git config";
+    options.dotfiles.git = {
+      name = lib.mkOption {
+        type = lib.types.str;
+        default = vars.git.name;
+      };
+      email = lib.mkOption {
+        type = lib.types.str;
+        default = vars.git.email;
+      };
+    };
 
-    config = lib.mkIf config.dotfiles.git.enable {
+    config = {
       programs.git = {
         enable = true;
         settings = {
-          user = {
-            name = "Trent Maetzold";
-            email = "trent@maetzold.net";
-          };
+          user = {inherit (config.dotfiles.git) name email;};
           alias = {
             co = "checkout";
             br = "branch";
@@ -46,4 +58,6 @@
       };
     };
   };
+
+  flake.modules.homeManager.default.imports = [hm.git];
 }

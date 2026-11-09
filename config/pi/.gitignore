@@ -1,0 +1,8 @@
+# secrets and machine state; pi and magpie keep these here at runtime
+auth.json
+models-store.json
+trust.json
+sessions/
+npm/
+pi-pretty/
+settings.json.*
