@@ -8,6 +8,8 @@
     "npm:openwiki",
     "npm:pi-caveman",
     "npm:pi-lens",
-    "npm:@plannotator/pi-extension"
+    "npm:@plannotator/pi-extension",
+    "npm:pi-simplify",
+    "npm:pi-powerline-footer"
   ]
 }
