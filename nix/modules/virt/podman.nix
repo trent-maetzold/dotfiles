@@ -1,8 +1,9 @@
-{ pkgs, osConfig, ... }:
+{ config, lib, pkgs, osConfig, ... }:
 let
+  noProxy = config.home.sessionVariables.NO_PROXY or null;
   context = pkgs.writeTextDir "Containerfile" ''
     FROM docker.io/library/archlinux:latest
-    ENV UV_SYSTEM_CERTS=true NO_PROXY=.example.com no_proxy=.example.com
+    ENV UV_SYSTEM_CERTS=true${lib.optionalString (noProxy != null) " NO_PROXY=${noProxy} no_proxy=${noProxy}"}
     RUN install -m 644 /run/host-ca.pem /etc/ca-certificates/trust-source/anchors/nixos-host.pem \
         && update-ca-trust \
         && pacman -Syu --noconfirm --needed base-devel postgresql-libs krb5 git uv \

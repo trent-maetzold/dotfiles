@@ -1,6 +1,8 @@
 # NixOS-WSL dotfiles
 
-Host: `<host>`. Default WSL user: `<user>`.
+Host-, user-, and employer-specific settings (hostname, username, git email,
+proxy bypass, CLI server URLs) live in the private system flake at
+`~/.config/nixos`, not here. `<host>` and `<user>` below stand for them.
 
 Development tools are declared in `nix/modules/`; language toolchains live in
 `nix/modules/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
@@ -147,8 +149,8 @@ Commands run in your current directory with the shared home and return to your
 host shell when finished. With no arguments, `bx` opens a shell in the box.
 The custom image supplies `base-devel`, `postgresql-libs` (libpq headers/`pg_config`),
 `krb5` (Kerberos headers/`krb5-config`), `git` and `uv`. The image enables
-`UV_SYSTEM_CERTS` and bypasses the proxy for `.example.com`, so internal package
-and Git servers are accessed directly. No database/Kerberos services are configured. Arch bundles development files with its libraries; the packages
+`UV_SYSTEM_CERTS` and bypasses the proxy for the hosts in `NO_PROXY` (set in the system flake), so
+internal package and Git servers are accessed directly. No database/Kerberos services are configured. Arch bundles development files with its libraries; the packages
 include libraries too, but only inside the container.
 
 The host CA bundle is mounted read-only at Arch's
@@ -185,3 +187,12 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.
 Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli.nix`.
+
+## Work CLIs and secrets
+
+`nix/modules/tools/` has one module per CLI (`jira`, `bkt`, `gcx`,
+`confluence`, `ctx7`, `deepwiki`). Server URLs come from session variables set
+in the system flake. Tokens come from sops-nix: each module declares its own
+secret and wraps its CLI with `nix/pkgs/with-secrets.nix`, which reads the
+decrypted file when the CLI starts, so the token reaches only that process.
+The system flake sets `sops.defaultSopsFile` and the age key.

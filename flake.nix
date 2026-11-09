@@ -7,8 +7,10 @@
   inputs.llm-agents.url = "github:numtide/llm-agents.nix";
   inputs.bkt.url = "github:avivsinai/bitbucket-cli";
   inputs.bkt.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.sops-nix.url = "github:Mic92/sops-nix";
+  inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { nixpkgs, import-tree, llm-agents, bkt, ... }: {
+  outputs = { nixpkgs, import-tree, llm-agents, bkt, sops-nix, ... }: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
     packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
@@ -19,6 +21,7 @@
     homeModules.default = { pkgs, ... }: {
       imports = [
         (import-tree ./nix/modules)
+        sops-nix.homeManagerModules.sops
       ];
       _module.args.llmAgents = llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
       _module.args.bkt = bkt.packages.${pkgs.stdenv.hostPlatform.system}.bkt;

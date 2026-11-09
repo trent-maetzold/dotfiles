@@ -4,7 +4,6 @@
     enable = true;
     settings.user = {
       name = "Trent Maetzold";
-      email = "trent@maetzold.net";
     };
   };
 
