@@ -1,15 +1,15 @@
-{ pkgs, ... }:
+# billion-context is installed by pi ("npm:billion-context" in
+# config/pi/agent/settings.json); this module only owns its config file.
+{ ... }:
 let
-  billion-context = pkgs.callPackage ../../pkgs/billion-context { };
-
   # ~/.config/billion-context/billion-context.json
   # Keys: CONFIGURATION.md in the package. Env vars override these.
   # The file is read-only (Nix store), so the web UI cannot save changes.
   settings = {
     providers = { };
 
-    # The self-updater and advisory watcher `npm install -g` over the
-    # running copy; the store is read-only, so updates go through Nix.
+    # pi installs and updates the package (`pi update --extensions`).
+    # bili's own updater would `npm install -g` a second, separate copy.
     autoUpdate = false;
     advisoryCheck = false;
 
@@ -17,14 +17,8 @@ let
   };
 in
 {
-  home.packages = [ billion-context ];
-
   xdg.configFile."billion-context/billion-context.json" = {
     text = builtins.toJSON settings;
     force = true; # replace the default file bili created on first run
   };
-
-  # Stable path referenced from config/pi/agent/settings.json "packages".
-  xdg.dataFile."pi/packages/billion-context".source =
-    "${billion-context}/lib/node_modules/billion-context";
 }
