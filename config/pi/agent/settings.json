@@ -3,6 +3,11 @@
   "defaultProvider": "anthropic",
   "lastChangelogVersion": "1.5.0",
   "packages": [
-    "npm:billion-context"
+    "npm:billion-context",
+    "npm:@dietrichgebert/ponytail",
+    "npm:openwiki",
+    "npm:pi-caveman",
+    "npm:pi-lens",
+    "npm:@plannotator/pi-extension"
   ]
 }
