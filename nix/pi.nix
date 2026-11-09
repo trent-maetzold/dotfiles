@@ -1,9 +1,9 @@
 {config, ...}: let
   hm = config.flake.modules.homeManager;
 in {
-  # pi's config dir lives at ~/.config/pi, an out-of-store symlink to
-  # config/pi in this checkout (secrets and state are gitignored there).
-  # Containers mount the real path, not the symlink.
+  # pi stays at ~/.pi/agent (many addons hardcode it): an out-of-store symlink
+  # to config/pi in this checkout, where secrets and state are gitignored.
+  # Containers mount the real path.
   flake.modules.homeManager.pi = {
     config,
     lib,
@@ -16,11 +16,7 @@ in {
       description = "Real path of pi's config dir, for container bind mounts.";
     };
 
-    config = {
-      xdg.configFile.pi.source = config.lib.file.mkOutOfStoreSymlink config.dotfiles.pi.dir;
-      home.sessionVariables.PI_CODING_AGENT_DIR = "${config.xdg.configHome}/pi";
-      systemd.user.sessionVariables.PI_CODING_AGENT_DIR = "${config.xdg.configHome}/pi";
-    };
+    config.home.file.".pi/agent".source = config.lib.file.mkOutOfStoreSymlink config.dotfiles.pi.dir;
   };
 
   flake.modules.homeManager.default.imports = [hm.pi];

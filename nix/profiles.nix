@@ -2,15 +2,17 @@
   config,
   inputs,
   lib,
-  vars,
+  username,
+  workEmail,
   ...
 }: let
   hm = config.flake.modules.homeManager;
+  system = "x86_64-linux"; # standalone profiles only; NixOS brings its own pkgs
 
   # Every profile is the full `default` feature set plus overrides.
   profiles = {
     default = {};
-    work.dotfiles.git.email = vars.workEmail;
+    work.dotfiles.git.email = workEmail;
   };
 
   homeModule = override: {imports = [hm.default override];};
@@ -18,13 +20,13 @@ in {
   # Standalone: `home-manager switch --flake .#<profile>`.
   flake.homeConfigurations = lib.mapAttrs (_: override:
     inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = inputs.nixpkgs.legacyPackages.${vars.system};
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
       modules = [
         (homeModule override)
         {
           home = {
-            inherit (vars) username;
-            homeDirectory = "/home/${vars.username}";
+            inherit username;
+            homeDirectory = "/home/${username}";
           };
           programs.home-manager.enable = true;
         }
@@ -42,7 +44,7 @@ in {
 
       options.dotfiles.user = lib.mkOption {
         type = lib.types.str;
-        default = vars.username;
+        default = username;
         description = "User who gets the dotfiles home-manager setup.";
       };
 

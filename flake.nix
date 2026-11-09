@@ -26,23 +26,18 @@
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
   };
 
-  # Every file under ./nix is a flake-parts module (dendritic); `vars` is
-  # passed to all of them as a module argument.
-  outputs = inputs: let
-    vars = {
-      system = "x86_64-linux";
-      username = "trent";
-      stateVersion = "26.05";
-      git = {
-        name = "Trent Maetzold";
-        email = "trent@maetzold.net";
-      };
-      workEmail = "CHANGEME@work.example"; # TODO: real work address
-    };
-  in
+  # Every file under ./nix is a flake-parts module (dendritic). These are
+  # passed to all of them as module arguments.
+  outputs = inputs:
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
-      specialArgs = {inherit vars;};
+      specialArgs = {
+        username = "trent";
+        stateVersion = "26.05";
+        gitName = "Trent Maetzold";
+        gitEmail = "trent@maetzold.net";
+        workEmail = "CHANGEME@work.example"; # TODO: real work address
+      };
     } {
       imports = [
         inputs.flake-parts.flakeModules.modules # flake.modules.<class>.<feature>

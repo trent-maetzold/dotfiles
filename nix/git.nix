@@ -1,6 +1,7 @@
 {
   config,
-  vars,
+  gitEmail,
+  gitName,
   ...
 }: let
   hm = config.flake.modules.homeManager;
@@ -14,11 +15,11 @@ in {
     options.dotfiles.git = {
       name = lib.mkOption {
         type = lib.types.str;
-        default = vars.git.name;
+        default = gitName;
       };
       email = lib.mkOption {
         type = lib.types.str;
-        default = vars.git.email;
+        default = gitEmail;
       };
     };
 

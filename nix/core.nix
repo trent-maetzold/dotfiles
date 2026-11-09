@@ -1,6 +1,6 @@
 {
   config,
-  vars,
+  stateVersion,
   ...
 }: let
   hm = config.flake.modules.homeManager;
@@ -14,11 +14,11 @@ in {
     # take effect without a rebuild. Containers mount from it too.
     options.dotfiles.path = lib.mkOption {
       type = lib.types.str;
-      default = "${config.home.homeDirectory}/Work/configs/dotfiles";
+      default = "${config.xdg.configHome}/dotfiles";
       description = "Absolute path of the dotfiles checkout.";
     };
 
-    config.home.stateVersion = lib.mkDefault vars.stateVersion;
+    config.home.stateVersion = lib.mkDefault stateVersion;
   };
 
   flake.modules.homeManager.default.imports = [hm.core];
