@@ -6,7 +6,7 @@
   home.packages = [
     pkgs.jira-cli-go # jira; one-time `jira init` writes ~/.config/.jira/.config.yml
     bkt
-    pkgs.grafanactl
+    pkgs.gcx
     (pkgs.callPackage ../../pkgs/confluence-cli { }) # confluence
     (pkgs.callPackage ../../pkgs/ctx7 { })
     (pkgs.callPackage ../../pkgs/deepwiki { })
