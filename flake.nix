@@ -11,6 +11,7 @@
 
     packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
       export-windows-cas = nixpkgs.legacyPackages.${system}.callPackage ./nix/pkgs/export-windows-cas.nix { };
+      openwiki = nixpkgs.legacyPackages.${system}.callPackage ./nix/pkgs/openwiki { };
     });
 
     homeModules.default = { pkgs, ... }: {
