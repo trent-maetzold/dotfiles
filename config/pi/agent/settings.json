@@ -14,20 +14,6 @@
     "npm:pi-btw",
     "npm:@heyhuynhgiabuu/pi-pretty"
   ],
-  "powerline": {
-    "preset": "compact",
-    "customItems": [
-      {
-        "id": "caveman",
-        "position": "right",
-        "selfColorize": true
-      },
-      {
-        "id": "ponytail",
-        "position": "right",
-        "selfColorize": true
-      }
-    ]
-  },
+  "powerline": "compact",
   "workingVibe": "on"
 }
