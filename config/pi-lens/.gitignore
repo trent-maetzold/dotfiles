@@ -3,3 +3,6 @@
 instances.json
 orphan-backstop.json
 projects/
+bin/
+tools/
+probe-cache.json
