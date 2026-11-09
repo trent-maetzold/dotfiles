@@ -15,10 +15,15 @@
     "npm:@heyhuynhgiabuu/pi-pretty"
   ],
   "powerline": {
-    "preset": "compact",
+    "preset": "default",
     "hiddenExtensionStatusKeys": [
       "pi-lens",
       "pi-lens-lsp"
     ]
+  },
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.11",
+    "{\"source\":\"npm:pi-powerline-footer\",\"scope\":\"user\"}": "0.22.0",
+    "{\"source\":\"npm:@heyhuynhgiabuu/pi-pretty\",\"scope\":\"user\"}": "0.10.0"
   }
 }
