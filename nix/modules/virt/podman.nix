@@ -10,6 +10,9 @@ let
   '';
 in
 {
+  # Provider for `podman compose`, found on PATH.
+  home.packages = [ pkgs.podman-compose ];
+
   services.podman = {
     enable = true;
     autoUpdate.enable = false;
