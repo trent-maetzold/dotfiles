@@ -5,3 +5,8 @@
 !settings.json
 !extensions/
 !extensions/**
+# Addon configs that live in the agent dir.
+!btw.json
+!caveman.json
+!pi-pretty.json
+!plannotator.json

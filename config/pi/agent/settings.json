@@ -13,5 +13,7 @@
     "npm:pi-powerline-footer",
     "npm:pi-btw",
     "npm:@heyhuynhgiabuu/pi-pretty"
-  ]
+  ],
+  "powerline": "compact",
+  "workingVibe": "on"
 }
