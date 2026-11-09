@@ -1,1 +1,4 @@
-{}
+{
+  "widget": { "visible": false },
+  "ui": { "hideLspStatus": true }
+}
