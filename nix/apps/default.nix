@@ -2,7 +2,6 @@
 # flake can re-export them (apps = dotfiles.apps); the justfiles wrap each one.
 # One folder per app; its default.nix takes {pkgs, app} and returns `app ...`.
 pkgs: let
-  # program: an executable path, e.g. a uv script (#!/usr/bin/env -S uv run --script).
   app = description: program: {
     type = "app";
     program = "${program}";

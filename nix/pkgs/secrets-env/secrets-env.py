@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["typer", "pydantic", "pydantic-settings", "python-dotenv"]
+# dependencies = ["typer", "pydantic", "pydantic-settings", "python-dotenv", "sh"]
 # [tool.uv]
 # exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
@@ -24,11 +24,11 @@ import base64
 import json
 import os
 import shlex
-import subprocess
 import tempfile
 from pathlib import Path
 from typing import Annotated, Literal
 
+import sh
 import typer
 from dotenv import dotenv_values
 from pydantic import BaseModel, Field
@@ -55,10 +55,13 @@ class Source(BaseModel):
 settings = Settings()
 
 
-def run(*args: str, env: dict[str, str] | None = None) -> str:
-    """Run a vault CLI without stdin; its output minus trailing newlines, like $(...)."""
-    out = subprocess.run(args, stdin=subprocess.DEVNULL, capture_output=True, text=True, check=True, env=env)
-    return out.stdout.rstrip("\n")
+# Vault CLIs get empty stdin, so a locked vault fails instead of prompting.
+vault = sh.bake(_in="", _tty_out=False)  # pipe stdout: no TTY prompts or colors
+
+
+def text(output: str) -> str:
+    """Drop trailing newlines, like $(...)."""
+    return output.rstrip("\n")
 
 
 def split_field(ref: str, default: str = "") -> tuple[str, str]:
@@ -69,13 +72,13 @@ def split_field(ref: str, default: str = "") -> tuple[str, str]:
 def keeper(ref: str) -> str:
     uid, field = split_field(ref, "password")
     if field == "password":
-        return run("keeper", "get", uid, "--format", "password")
+        return text(vault.keeper.get(uid, "--format", "password"))
     if field == "file":
         with tempfile.TemporaryDirectory(dir=settings.xdg_runtime_dir) as tmp:
-            run("keeper", "download-attachment", uid, "--out-dir", tmp)
+            vault.keeper("download-attachment", uid, "--out-dir", tmp)
             [attachment] = Path(tmp).iterdir()  # exactly one attachment
             return attachment.read_text()
-    record = json.loads(run("keeper", "get", uid, "--format", "json", "--unmask"))
+    record = json.loads(vault.keeper.get(uid, "--format", "json", "--unmask"))
     if field == "notes":
         return record["notes"]
     fields = record.get("fields", []) + record.get("custom", [])
@@ -84,16 +87,16 @@ def keeper(ref: str) -> str:
 
 def rbw(ref: str) -> str:
     entry, field = split_field(ref)
-    return run("rbw", "get", *(["--field", field] if field else []), entry)
+    return text(vault.rbw.get(*(["--field", field] if field else []), entry))
 
 
 def sops(ref: str) -> str:
     file, key = split_field(ref)
-    return run("sops", "decrypt", "--extract", "".join(f'["{k}"]' for k in key.split("/")), file)
+    return text(vault.sops.decrypt("--extract", "".join(f'["{k}"]' for k in key.split("/")), file))
 
 
 def age(ref: str) -> str:
-    return run("age", "--decrypt", "--identity", str(settings.age_identity), ref)
+    return text(vault.age("--decrypt", "--identity", settings.age_identity, ref))
 
 
 def file(ref: str) -> str:
@@ -112,12 +115,19 @@ def ksm(sources: list[Source], values: dict[str, str]) -> dict[str, str]:
         env["KSM_CONFIG"] = values["KSM_CONFIG"]
     elif settings.ksm_config_file and settings.ksm_config_file.is_file():
         env["KSM_CONFIG"] = base64.b64encode(settings.ksm_config_file.read_bytes()).decode()
-    output = run("ksm", "exec", "--", "env", "-0", env={**os.environ, **env})
+    output = vault.ksm.exec("--", "env", "-0", _env={**os.environ, **env})
     resolved = dict(pair.split("=", 1) for pair in output.split("\0") if "=" in pair)
     for s in sources:
         if resolved.get(s.name, s.ref).startswith("keeper://"):
             raise ValueError(f"ksm did not resolve {s.ref}")
     return {s.name: resolved[s.name] for s in sources}
+
+
+def why(error: Exception) -> str:
+    """A failed CLI's stderr; never its stdout, which may hold secrets."""
+    if isinstance(error, sh.ErrorReturnCode):
+        return error.stderr.decode().strip() or f"exit {error.exit_code}"
+    return str(error)
 
 
 def resolve(path: Path) -> dict[str, str]:
@@ -128,12 +138,12 @@ def resolve(path: Path) -> dict[str, str]:
             try:
                 values[s.name] = RESOLVERS[s.scheme](s.ref)
             except Exception as e:
-                raise typer.Exit(f"secrets-env: {s.name}: cannot read {s.scheme}:{s.ref} ({e})") from e
+                raise typer.Exit(f"secrets-env: {s.name}: cannot read {s.scheme}:{s.ref} ({why(e)})") from e
     if ksm_sources := [s for s in sources if s.scheme == "ksm"]:
         try:
             values |= ksm(ksm_sources, values)
         except Exception as e:
-            raise typer.Exit(f"secrets-env: ksm failed ({e})") from e
+            raise typer.Exit(f"secrets-env: ksm failed ({why(e)})") from e
     return {s.name: values[s.name] for s in sources}
 
 

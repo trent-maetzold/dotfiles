@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["typer", "cryptography"]
+# dependencies = ["typer", "cryptography", "sh"]
 # [tool.uv]
 # exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
@@ -12,12 +12,12 @@ import base64
 import datetime
 import json
 import os
-import subprocess
 import tempfile
 import warnings
 from pathlib import Path
 from typing import Annotated
 
+import sh
 import typer
 from cryptography import x509
 from cryptography.hazmat.primitives.hashes import SHA256
@@ -41,8 +41,8 @@ def is_valid_ca(cert: x509.Certificate) -> bool:
 
 
 def main(out: Annotated[Path, typer.Argument(help="PEM bundle to write.")]) -> None:
-    script = subprocess.run(["wslpath", "-w", WINDOWS_CAS], capture_output=True, text=True, check=True).stdout.strip()
-    stores = json.loads(subprocess.run(["uv.exe", "run", "--no-project", "--script", script], capture_output=True, text=True, check=True).stdout)
+    script = sh.wslpath("-w", WINDOWS_CAS).strip()
+    stores = json.loads(sh.Command("uv.exe")("run", "--no-project", "--script", script))
 
     def load(store: str) -> set[x509.Certificate]:
         return {x509.load_der_x509_certificate(base64.b64decode(der)) for der in stores[store]}

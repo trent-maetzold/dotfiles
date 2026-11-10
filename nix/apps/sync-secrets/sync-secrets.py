@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["typer", "pydantic-settings", "python-dotenv", "gitpython"]
+# dependencies = ["typer", "pydantic-settings", "python-dotenv", "gitpython", "sh"]
 # [tool.uv]
 # exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
@@ -11,10 +11,11 @@ syntax (keeper:<uid>[#field], ksm:keeper://..., rbw:...)."""
 
 import json
 import os
-import subprocess
+import sys
 from pathlib import Path
 from typing import Annotated
 
+import sh
 import typer
 from dotenv import dotenv_values
 from git import Repo
@@ -26,7 +27,11 @@ class Settings(BaseSettings):
 
 
 def keeper_logged_in() -> bool:
-    return subprocess.run(["keeper", "whoami"], stdin=subprocess.DEVNULL, capture_output=True).returncode == 0
+    try:
+        sh.keeper.whoami(_in="")
+        return True
+    except sh.ErrorReturnCode:
+        return False
 
 
 def main(directory: Annotated[Path, typer.Argument(exists=True, file_okay=False)] = Path(".")) -> None:
@@ -36,18 +41,16 @@ def main(directory: Annotated[Path, typer.Argument(exists=True, file_okay=False)
     # Keeper: log in once (turning on persistent login) if the saved session expired.
     sources = dotenv_values("secrets.sources", interpolate=False)
     if any((ref or "").startswith("keeper:") for ref in sources.values()) and not keeper_logged_in():
-        subprocess.run(["keeper", "this-device", "register"], check=True)
-        subprocess.run(["keeper", "this-device", "persistent-login", "on"], check=True)
+        sh.keeper("this-device", "register", _fg=True)
+        sh.keeper("this-device", "persistent-login", "on", _fg=True)
 
     # Values travel over pipes only, never argv.
-    resolved = subprocess.run(["secrets-env", "--json", "secrets.sources"], stdout=subprocess.PIPE, text=True)
-    if resolved.returncode:
-        raise typer.Exit(resolved.returncode)
-    for name, value in json.loads(resolved.stdout).items():
-        subprocess.run(
-            ["sops", "set", "--idempotent", "--value-stdin", "secrets.yaml", f'["{name}"]'],
-            input=json.dumps(value), text=True, check=True,
-        )
+    try:
+        resolved = sh.Command("secrets-env")("--json", "secrets.sources", _err=sys.stderr)
+    except sh.ErrorReturnCode as e:
+        raise typer.Exit(e.exit_code) from e
+    for name, value in json.loads(resolved).items():
+        sh.sops.set("--idempotent", "--value-stdin", "secrets.yaml", f'["{name}"]', _in=json.dumps(value))
 
     repo = Repo(".")
     if repo.is_dirty(path="secrets.yaml"):
