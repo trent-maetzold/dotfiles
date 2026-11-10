@@ -1,5 +1,5 @@
 # Keeper vault fields -> files under /run/keeper-secrets; run by the
-# keeper-secrets NixOS module (../../nixos/keeper-secrets.nix).
+# keeper-secrets NixOS module (../../modules/nixos/keeper-secrets.nix).
 {
   venv,
   symlinkJoin,

@@ -4,8 +4,8 @@ Host-, user-, and employer-specific settings (hostname, username, git email,
 proxy bypass, CLI server URLs) live in the private system flake at
 `~/.config/nixos`, not here. `<host>` and `<user>` below stand for them.
 
-Development tools are declared in `nix/modules/`; language toolchains live in
-`nix/modules/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
+Development tools are declared in `nix/modules/home/`; language toolchains live in
+`nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
 `import-tree` to import every module recursively, so new modules need no manual
 import entries. Package expressions stay outside that tree in `nix/pkgs/`.
 Magpie is a
@@ -109,7 +109,7 @@ The exporter itself does not change system trust or activate NixOS.
 
 ## Tmux
 
-`nix/modules/term/tmux.nix` uses `Ctrl-b` as the prefix and follows Herdr's common
+`nix/modules/home/term/tmux.nix` uses `Ctrl-b` as the prefix and follows Herdr's common
 bindings: `v`/`-` split, `h/j/k/l` focus panes, Tab/Shift-Tab cycle panes,
 `c` creates a tab, `n`/`p` switch tabs, `T` renames a tab, `X` closes a tab,
 `x` closes a pane, `z` zooms, and `q` detaches. `r` enters resize mode
@@ -123,7 +123,7 @@ Projects use mise (`mise.toml`) for tools and env; mise's shell hook activates i
 per directory. Python packages with C extensions (psycopg2, gssapi) build on the
 host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
 are on PATH. uv passes gssapi the krb5 header path it needs
-(`nix/modules/dev/langs/python.nix`).
+(`nix/modules/home/dev/langs/python.nix`).
 
 ## Updating
 

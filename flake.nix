@@ -30,12 +30,11 @@
       lib.genAttrs systems (system:
         import ./nix/apps (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
 
-    # Every module under nix/modules. Modules take this flake's inputs as
-    # arguments, so the host passes them: extraSpecialArgs = dotfiles.inputs.
-    homeModules.default = import-tree ./nix/modules;
-
-    # Keeper vault fields as files under /run/keeper-secrets; see the module.
-    nixosModules.keeper-secrets = ./nix/nixos/keeper-secrets.nix;
+    # Every module under nix/modules/{home,nixos}. Modules take this flake's
+    # inputs and `user` as arguments, so the host passes them:
+    # specialArgs / home-manager.extraSpecialArgs = dotfiles.inputs // {inherit user;}.
+    homeModules.default = import-tree ./nix/modules/home;
+    nixosModules.default = import-tree ./nix/modules/nixos;
 
     # devShell that fetches secrets in its shellHook; see nix/dev-shells/mk-secrets-shell.nix.
     lib.mkSecretsShell = import ./nix/dev-shells/mk-secrets-shell.nix;
@@ -46,7 +45,11 @@
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     import-tree.url = "github:denful/import-tree";
 
-    # Home Manager modules
+    # Modules (nix/modules/{home,nixos})
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
