@@ -2,7 +2,7 @@
 # USER's Keeper Commander session into a new directory, set owner/group/mode
 # per secret, then repoint /run/keeper-secrets at it, like agenix's
 # /run/agenix. Nothing changes unless every secret resolved. Never prompts:
-# log in first with keeper-secrets-login.
+# the `switch` app logs in first (keeper-secrets-login).
 user=$1 manifest=$2
 root=/run/keeper-secrets.d
 

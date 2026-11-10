@@ -87,12 +87,12 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nvim
 
 ## Windows CA export (WSL)
 
-`just import-windows-ca [OUTPUT.pem]` exports current public CA certificates from the
+`just import-windows-ca OUTPUT.pem` (app: `nix run .#import-windows-ca -- OUTPUT.pem`) exports current public CA certificates from the
 Windows Current User and Local Machine Root and intermediate stores. It excludes
 expired/not-yet-valid and explicitly distrusted certificates, removes duplicates,
 and exports no private keys. It requires WSL with Windows interop enabled.
 
-By default it writes into the **system** flake, `~/.config/nixos/nix/certs/windows-ca.pem`.
+The system flake's `just import-windows-ca` writes `nix/certs/windows-ca.pem` there.
 
 Then set this in `~/.config/nixos/nix/configuration.nix` and rebuild:
 
@@ -146,8 +146,9 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 
 `nixosModules.keeper-secrets` writes Keeper vault fields to
 `/run/keeper-secrets/<name>` (like agenix/sops-nix), fetched with your Keeper
-Commander login. Log in once with `keeper-secrets-login` (it turns on persistent
-login); `switch` then fetches them during activation, and `keeper-secrets.service`
+Commander login. Switch with `just switch` (app: `nix run .#switch`): it logs in
+to Keeper if the session expired (and turns on persistent login), then
+activation fetches them, and `keeper-secrets.service`
 refetches at boot. CLIs read
 their file at launch through `pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so
 a token reaches only that process. Refetch by hand with `sudo keeper-secrets-sync`.

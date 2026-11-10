@@ -25,6 +25,11 @@
       (builtins.intersectAttrs (self.overlays.default null null)
         (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
+    # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
+    apps =
+      lib.genAttrs systems (system:
+        import ./nix/apps (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
+
     # Every module under nix/modules. Modules take this flake's inputs as
     # arguments, so the host passes them: extraSpecialArgs = dotfiles.inputs.
     homeModules.default = import-tree ./nix/modules;

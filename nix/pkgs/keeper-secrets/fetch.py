@@ -57,7 +57,7 @@ def fetch(manifest_path, outdir):
         manifest = json.load(f)
     params = get_params_from_config()
     if not resume(params):
-        sys.exit("keeper-secrets: no Keeper session; run `keeper-secrets-login`, then `sudo keeper-secrets-sync`")
+        sys.exit("keeper-secrets: no Keeper session; run `just switch` (or `nix run <dotfiles>#switch`)")
     sync_down(params)
 
     os.umask(0o077)

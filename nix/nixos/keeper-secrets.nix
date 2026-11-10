@@ -4,8 +4,8 @@
 #   keeper.user = "me";
 #   keeper.secrets.JIRA_API_TOKEN.record = "<record uid>";  # field defaults to password
 #
-# Log in once with `keeper-secrets-login` (persistent login); `switch` then
-# fetches them during activation without prompting. Activation can't prompt:
+# Switch with the dotfiles `switch` app: it logs in to Keeper (persistent
+# login) if needed, then activation fetches them without prompting. Activation can't prompt:
 # nh runs it outside the terminal's foreground, so reads fail. Boot activation
 # runs before the network, so keeper-secrets.service fetches then.
 # Needs the dotfiles overlay (pkgs.keeper-secrets).
@@ -66,7 +66,7 @@ in {
 
   config = lib.mkIf (cfg.secrets != {}) {
     # Refetch by hand, e.g. after adding a record: sudo keeper-secrets-sync
-    environment.systemPackages = [sync pkgs.keeper-secrets];
+    environment.systemPackages = [sync];
 
     # Only on switch: at boot, systemd isn't running yet and neither is the network.
     system.activationScripts.keeper-secrets = {

@@ -1,18 +1,13 @@
-# Tasks for this repo. Flake apps get a recipe here too (`nix run .#<app>`).
+# Tasks for this repo. Each recipe wraps a flake app (nix/apps), so host flakes
+# can run the same tasks with `nix run`.
 
 default:
     @just --list
 
-# Export Windows Root/intermediate CAs (WSL) to a PEM bundle, default: the nixos flake's certs.
-import-windows-ca out=(env("HOME") / ".config/nixos/nix/certs/windows-ca.pem"):
-    #!/usr/bin/env bash
-    set -euo pipefail
-    ps="$(command -v powershell.exe || echo /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe)"
-    dest="$(realpath -m -- "{{out}}")"
-    tmp="$(mktemp -- "$dest.XXXXXX")"
-    trap 'rm -f -- "$tmp"' EXIT
-    "$ps" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass \
-      -File "$(wslpath -w "{{justfile_directory()}}/scripts/import-windows-ca.ps1")" > "$tmp"
-    [[ -s "$tmp" ]] || { echo "Windows returned an empty CA bundle." >&2; exit 1; }
-    mv -- "$tmp" "$dest"
-    echo "Saved Windows CA bundle to $dest" >&2
+# Log in to Keeper if needed, then nh os switch (args go to nh).
+switch *args:
+    nix run .#switch -- {{args}}
+
+# Export Windows Root/intermediate CAs (WSL) to a PEM bundle.
+import-windows-ca out:
+    nix run .#import-windows-ca -- {{out}}
