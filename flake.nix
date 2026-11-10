@@ -25,7 +25,7 @@
       (builtins.intersectAttrs (self.overlays.default null null)
         (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
-    # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
+    # Deployment admin tasks (`nix run .#sync-secrets`); the justfile wraps each.
     apps =
       lib.genAttrs systems (system:
         import ./nix/apps (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
@@ -56,6 +56,10 @@
     };
 
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Packages
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.

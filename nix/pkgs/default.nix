@@ -19,6 +19,5 @@
     (final.callPackage ./keeper-cli {inherit uv2nix pyproject-nix pyproject-build-systems;})
     keeper-commander
     keeper-secrets-manager-cli
-    keeper-secrets
     ;
 }

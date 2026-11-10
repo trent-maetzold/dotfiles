@@ -4,9 +4,9 @@
 default:
     @just --list
 
-# Log in to Keeper if needed, then nh os switch (args go to nh).
-switch *args:
-    nix run .#switch -- {{args}}
+# Refresh secrets.yaml in DIR from the Keeper/rbw sources in DIR/secrets.sources.
+sync-secrets dir:
+    nix run .#sync-secrets -- {{dir}}
 
 # Export Windows Root/intermediate CAs (WSL) to a PEM bundle.
 import-windows-ca out:

@@ -144,11 +144,13 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 
 ## Secrets
 
-`nixosModules.keeper-secrets` writes Keeper vault fields to
-`/run/keeper-secrets/<name>` (like agenix/sops-nix), fetched with your Keeper
-Commander login. Switch with `just switch` (app: `nix run .#switch`): it logs in
-to Keeper if the session expired (and turns on persistent login), then
-activation fetches them, and `keeper-secrets.service`
-refetches at boot. CLIs read
-their file at launch through `pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so
-a token reaches only that process. Refetch by hand with `sudo keeper-secrets-sync`.
+Runtime secrets are plain sops-nix (`nix/modules/{home,nixos}/sops.nix`, age key
+`~/.config/age/keys.txt`); the host flake sets `sops.defaultSopsFile` and
+declares `sops.secrets`. Keeper and rbw are only sources: list
+`NAME=<source>` lines (secrets-env syntax, e.g. `keeper:<uid>#note`,
+`ksm:keeper://<uid>/field/login`, `rbw:github#token`) in `secrets.sources` next to
+`secrets.yaml`, and `just sync-secrets DIR` (app: `nix run .#sync-secrets -- DIR`)
+copies them into `secrets.yaml` as key `NAME` and commits. It logs in to Keeper
+first if the saved session expired. CLIs read their file at launch through
+`pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so a token reaches only that
+process.

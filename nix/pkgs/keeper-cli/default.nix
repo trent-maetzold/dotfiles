@@ -28,5 +28,4 @@
 in {
   keeper-commander = app "keeper" pythonSet.keepercommander;
   keeper-secrets-manager-cli = app "ksm" pythonSet.keeper-secrets-manager-cli;
-  keeper-secrets = callPackage ../keeper-secrets {inherit venv;};
 }

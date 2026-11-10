@@ -3,6 +3,7 @@
 #
 #   DB_PASSWORD=ksm:keeper://<record-uid>/field/password   Keeper Secrets Manager (KSM_CONFIG_FILE, else ksm's profile)
 #   API_TOKEN=keeper:<record-uid>                          Keeper Commander (needs a persistent login), password field
+#   JIRA_TOKEN=keeper:<record-uid>#note                    ... or a field by type or label, notes, or file (its one attachment)
 #   GH_TOKEN=rbw:github                                    Bitwarden via rbw: password, or rbw:<entry>#<field>
 #   N8N_KEY=sops:secrets.yaml#integrations/n8n/key         sops file, key path split on /
 #   SMTP_PASS=age:secrets/smtp.age                         age/agenix file ($AGE_IDENTITY, default ~/.ssh/id_ed25519)
@@ -16,6 +17,26 @@
 die() {
   echo "secrets-env: $*" >&2
   exit 1
+}
+
+# keeper_value <uid>[#field]: password, a field (type or label), notes, or file.
+keeper_value() {
+  local uid=${1%%#*} field=${1#*#} dir
+  [[ $1 == *'#'* ]] || field=password
+  case $field in
+    password) keeper get "$uid" --format password </dev/null ;;
+    file)
+      dir=$(mktemp -d -p "${XDG_RUNTIME_DIR:-/tmp}")
+      keeper download-attachment "$uid" --out-dir "$dir" </dev/null >/dev/null &&
+        [[ $(find "$dir" -type f | wc -l) == 1 ]] && cat "$dir"/*
+      local rc=$?
+      rm -rf -- "$dir"
+      return $rc
+      ;;
+    *) keeper get "$uid" --format json --unmask </dev/null |
+      jq -er --arg f "$field" 'if $f == "notes" then .notes else
+        [(.fields // [])[], (.custom // [])[]] | map(select(.type == $f or .label == $f)) | first | .value[0] end' ;;
+  esac
 }
 
 file=${1:-.env.secrets}
@@ -34,7 +55,7 @@ while IFS= read -r line || [[ -n $line ]]; do
       ksm+=("$name=${ref#ksm:}")
       continue
       ;;
-    keeper:*) value=$(keeper get "${ref#keeper:}" --format password </dev/null) ;;
+    keeper:*) value=$(keeper_value "${ref#keeper:}") ;;
     rbw:*)
       ref=${ref#rbw:}
       if [[ $ref == *'#'* ]]; then
@@ -59,7 +80,10 @@ done <"$file"
 if ((${#ksm[@]})); then
   config=()
   # The ksm CLI reads a base64 config from KSM_CONFIG; Keeper SDKs read the JSON file.
-  if [[ -r ${KSM_CONFIG_FILE:-} ]]; then config=("KSM_CONFIG=$(base64 -w0 <"$KSM_CONFIG_FILE")"); fi
+  # A KSM_CONFIG line in the same file (e.g. keeper:<uid>#file) bootstraps it.
+  if [[ -v values[KSM_CONFIG] ]]; then
+    config=("KSM_CONFIG=${values[KSM_CONFIG]}")
+  elif [[ -r ${KSM_CONFIG_FILE:-} ]]; then config=("KSM_CONFIG=$(base64 -w0 <"$KSM_CONFIG_FILE")"); fi
   out=$(mktemp -p "${XDG_RUNTIME_DIR:-/tmp}")
   trap 'rm -f -- "$out"' EXIT
   env "${config[@]}" "${ksm[@]}" ksm exec -- env -0 >"$out" </dev/null || die "ksm failed"

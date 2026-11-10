@@ -7,15 +7,10 @@ pkgs: let
     meta = {inherit description;};
   };
 in {
-  # Log in to Keeper if the saved session expired (keeper-secrets module), then
-  # `nh os switch`, whose activation fetches the secrets. Args go to nh.
-  switch = app "Log in to Keeper if needed, then nh os switch" (pkgs.writeShellApplication {
-    name = "switch";
-    runtimeInputs = [pkgs.keeper-secrets pkgs.nh];
-    text = ''
-      keeper-secrets-login
-      exec nh os switch "$@"
-    '';
+  sync-secrets = app "Refresh sops secrets from Keeper/rbw (secrets.sources)" (pkgs.writeShellApplication {
+    name = "sync-secrets";
+    runtimeInputs = with pkgs; [secrets-env keeper-commander keeper-secrets-manager-cli rbw sops jq git];
+    text = builtins.readFile ./sync-secrets.sh;
   });
 
   import-windows-ca = app "Export the Windows CAs (WSL) to a PEM bundle" (pkgs.writeShellApplication {

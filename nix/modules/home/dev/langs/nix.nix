@@ -11,5 +11,5 @@
   programs.nix-search-tv.enable = true;
   programs.nix-init.enable = true;
 
-  home.packages = with pkgs; [nurl nix-update nix-tree nix-diff nix-output-monitor];
+  home.packages = with pkgs; [nurl nix-update nix-tree nix-diff nix-output-monitor statix];
 }
