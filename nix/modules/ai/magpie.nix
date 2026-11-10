@@ -17,7 +17,9 @@ in {
     autoStart = true;
     containerConfig = {
       image = "ghcr.io/yetone/magpie:latest";
-      publishPorts = ["127.0.0.1:3425:3425"];
+      # Host network: callers arrive from loopback, which magpie trusts without a gateway key.
+      networks = ["host"];
+      environments.MAGPIE_ADDR = "127.0.0.1:3425";
       userns = "keep-id:uid=65532,gid=65532";
       volumes = [
         "magpie:/config"
