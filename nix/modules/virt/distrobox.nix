@@ -22,7 +22,7 @@
     # ${config.services.podman.builds.arch-build.file}
     run ${pkgs.systemd}/bin/systemctl --user restart podman-arch-build-build.service
     run ${pkgs.coreutils}/bin/env PATH="${lib.makeBinPath [config.services.podman.package pkgs.gawk]}:/run/current-system/sw/bin:$PATH" \
-      ${pkgs.distrobox}/bin/distrobox-assemble create --replace --name arch-build \
+      ${config.programs.distrobox.package}/bin/distrobox-assemble create --replace --name arch-build \
       --file ${lib.escapeShellArg "${config.xdg.configHome}/distrobox/containers.ini"}
   '';
 

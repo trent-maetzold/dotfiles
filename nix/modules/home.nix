@@ -29,23 +29,25 @@ in {
 
   systemd.user.startServices = "sd-switch";
 
+  # Search and navigation
+  programs.ripgrep.enable = true;
+  programs.fd.enable = true;
+  programs.fzf.enable = true;
+  # Native dependencies
+  programs.gcc.enable = true;
+
   home.packages = with pkgs;
     [
-      # Search and navigation
-      ripgrep
-      fd
-      fzf
       tree-sitter
 
       # Build toolchain for native dependencies
-      gcc
       gnumake
       pkg-config
 
       # General utilities
       curl
       unzip
-      just
+      just # programs.just is deprecated upstream
 
       # Docs lookup for agents
       ctx7 # Context7: current library docs

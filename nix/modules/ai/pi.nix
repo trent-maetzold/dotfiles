@@ -15,7 +15,7 @@
     config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/.config/dotfiles/config/pi${path}";
 in {
-  home.packages = [pkgs.pi-coding-agent];
+  programs.pi-coding-agent.enable = true;
 
   home.file.".pi".source = link "";
   home.file.".pi-lens".source = link "/packages/pi-lens";
