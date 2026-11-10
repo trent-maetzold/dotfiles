@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  sops-nix,
   ...
 }: let
   # gcx (Grafana) runs with its token read from a sops secret at launch, so it
@@ -12,7 +13,7 @@
     (pkgs.withSecrets pkgs.gcx {GRAFANA_TOKEN = config.sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN.path;});
 in {
   # config.sops.secrets are declared by the host flake.
-  imports = [inputs.sops-nix.homeManagerModules.sops];
+  imports = [sops-nix.homeManagerModules.sops];
 
   home.preferXdgDirectories = true;
   home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];

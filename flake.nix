@@ -1,7 +1,7 @@
 {
   description = "Home Manager dotfiles";
 
-  outputs = inputs @ {
+  outputs = {
     self,
     nixpkgs,
     import-tree,
@@ -25,8 +25,9 @@
       (builtins.intersectAttrs (self.overlays.default null null)
         (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
-    # Every module under nix/modules; each can use `inputs` directly.
-    homeModules.default = import-tree.addScoped {inherit inputs;} ./nix/modules;
+    # Every module under nix/modules. Modules take this flake's inputs as
+    # arguments, so the host passes them: extraSpecialArgs = dotfiles.inputs.
+    homeModules.default = import-tree ./nix/modules;
   };
 
   inputs = {
