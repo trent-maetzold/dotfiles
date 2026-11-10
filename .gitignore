@@ -1,3 +1,5 @@
+# Old pi-lens runtime dir; delete after switching (now config/pi/packages/pi-lens).
+config/pi-lens/
 
 # Beads / Dolt files (added by bd init)
 .dolt/
