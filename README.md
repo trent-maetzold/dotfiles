@@ -178,13 +178,11 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 Otherwise install your organization's trusted CA; do not disable TLS verification.
 Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.nix`.
 
-## Work CLIs and secrets
+## Grafana CLI and secrets
 
-Work CLIs (`bkt`, `confluence`, `gcx`, `jira`) are in `nix/modules/home.nix`.
-Each is installed only when the system flake declares its sops secret
-(`ACTIVEBATCH_PASSWORD`, `BITBUCKET_ACCESS_TOKEN`, `CONFLUENCE_API_TOKEN`,
-`GRAFANA_SERVICE_ACCOUNT_TOKEN`, `JIRA_API_TOKEN`), and is wrapped with
-`nix/lib/with-secrets.nix`, which reads the decrypted file when the CLI
-starts, so the token reaches only that process. Server URLs come from session
-variables set in the system flake.
+`gcx` (Grafana) is in `nix/modules/home.nix`. It is installed only when the
+system flake declares the `GRAFANA_SERVICE_ACCOUNT_TOKEN` sops secret, and is
+wrapped with `nix/lib/with-secrets.nix`, which reads the decrypted file when
+the CLI starts, so the token reaches only that process. `GRAFANA_SERVER` comes
+from session variables set in the system flake.
 The system flake sets `sops.defaultSopsFile` and the age key.

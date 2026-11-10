@@ -5,8 +5,6 @@
   inputs.nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
   # Own nixpkgs (no follows) so packages hit the numtide binary cache.
   inputs.llm-agents.url = "github:numtide/llm-agents.nix";
-  inputs.bkt.url = "github:avivsinai/bitbucket-cli";
-  inputs.bkt.inputs.nixpkgs.follows = "nixpkgs";
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   # Python apps from uv.lock (nix/pkgs/keeper-cli).
@@ -20,7 +18,7 @@
   inputs.pyproject-build-systems.inputs.pyproject-nix.follows = "pyproject-nix";
   inputs.pyproject-build-systems.inputs.uv2nix.follows = "uv2nix";
 
-  outputs = { self, nixpkgs, import-tree, llm-agents, bkt, sops-nix, uv2nix, pyproject-nix, pyproject-build-systems, ... }: {
+  outputs = { self, nixpkgs, import-tree, llm-agents, sops-nix, uv2nix, pyproject-nix, pyproject-build-systems, ... }: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
     overlays.default = import ./nix/pkgs { inherit uv2nix pyproject-nix pyproject-build-systems; };
@@ -35,7 +33,6 @@
         sops-nix.homeManagerModules.sops
       ];
       _module.args.llmAgents = llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
-      _module.args.bkt = bkt.packages.${pkgs.stdenv.hostPlatform.system}.bkt;
     };
   };
 }
