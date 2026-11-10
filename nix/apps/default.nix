@@ -1,29 +1,12 @@
 # Flake apps: tasks for administering NixOS/Home Manager deployments, so a host
-# flake can re-export them (apps = dotfiles.apps). The justfiles wrap each one.
+# flake can re-export them (apps = dotfiles.apps); the justfiles wrap each one.
+# One folder per app; its default.nix takes {pkgs, app} and returns `app ...`.
 pkgs: let
   app = description: drv: {
     type = "app";
     program = pkgs.lib.getExe drv;
     meta = {inherit description;};
   };
-in {
-  # Update every input of the host flake (programs.nh.flake, else pass one),
-  # committing flake.lock, then switch. Args go to nh.
-  switch = app "Update flake inputs, then nh os switch" (pkgs.writeShellApplication {
-    name = "switch";
-    runtimeInputs = [pkgs.nh];
-    text = ''exec nh os switch --update --commit-lock-file "$@"'';
-  });
-
-  sync-secrets = app "Refresh sops secrets from Keeper/rbw (secrets.sources)" (pkgs.writeShellApplication {
-    name = "sync-secrets";
-    runtimeInputs = with pkgs; [secrets-env keeper-commander keeper-secrets-manager-cli rbw sops jq git];
-    text = builtins.readFile ./sync-secrets.sh;
-  });
-
-  import-windows-ca = app "Export the Windows CAs (WSL) to a PEM bundle" (pkgs.writeShellApplication {
-    name = "import-windows-ca";
-    runtimeEnv.PS1_SCRIPT = ./import-windows-ca.ps1;
-    text = builtins.readFile ./import-windows-ca.sh;
-  });
-}
+in
+  builtins.mapAttrs (name: _: import ./${name} {inherit pkgs app;})
+  (pkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./.))

@@ -1,5 +1,7 @@
 # billion-context log.
 config/pi/acp.log
+# pi-lens in a pi session started before the switch still writes here; delete after restarting pi.
+config/pi-lens/
 
 # Beads / Dolt files (added by bd init)
 .dolt/
