@@ -3,9 +3,12 @@
 # the sync-secrets app.
 {
   config,
+  pkgs,
   sops-nix,
   ...
 }: {
   imports = [sops-nix.homeManagerModules.sops];
+  # CLIs for editing secrets and the vaults sync-secrets reads.
+  home.packages = with pkgs; [sops rage rbw];
   sops.age.keyFile = "${config.xdg.configHome}/age/keys.txt";
 }
