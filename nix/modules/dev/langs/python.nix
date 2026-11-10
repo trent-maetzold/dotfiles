@@ -3,7 +3,13 @@
   pkgs,
   ...
 }: {
-  programs.uv.enable = true;
+  programs.uv = {
+    enable = true;
+    # gssapi's setup.py looks for gssapi_ext.h under `krb5-config --prefix`, which
+    # is krb5's lib output on Nix; without this its source build fails. uv passes
+    # it only to gssapi's build.
+    settings.extra-build-variables.gssapi.GSSAPI_COMPILER_ARGS = "-I${pkgs.krb5.dev}/include -DHAS_GSSAPI_EXT_H";
+  };
   programs.ty.enable = true;
   programs.ruff = {
     enable = true;
