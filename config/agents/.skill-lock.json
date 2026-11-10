@@ -18,6 +18,15 @@
       "skillFolderHash": "76a98a285cb0434f3d39e1a873823556330e398b",
       "installedAt": "2026-11-09T19:32:53.718Z",
       "updatedAt": "2026-11-09T19:32:53.718Z"
+    },
+    "fnox": {
+      "source": "jdx/fnox",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/jdx/fnox.git",
+      "skillPath": "skills/fnox/SKILL.md",
+      "skillFolderHash": "5b05196064c85d951dd88bdec2da69d6afc9ef80",
+      "installedAt": "2026-11-10T22:42:29.636Z",
+      "updatedAt": "2026-11-10T22:42:29.636Z"
     }
   },
   "dismissed": {
