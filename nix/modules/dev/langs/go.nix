@@ -1,5 +1,8 @@
-{ config, pkgs, ... }:
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.go = {
     enable = true;
     env = {
@@ -9,6 +12,6 @@
     telemetry.mode = "off";
   };
 
-  home.sessionPath = [ "${config.xdg.dataHome}/go/bin" ];
-  home.packages = with pkgs; [ gopls delve ];
+  home.sessionPath = ["${config.xdg.dataHome}/go/bin"];
+  home.packages = with pkgs; [gopls delve];
 }

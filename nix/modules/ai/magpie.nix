@@ -1,9 +1,11 @@
-{ config, pkgs, ... }:
-let
-  magpie = pkgs.magpie-cli;
-in
 {
-  home.packages = [ magpie ];
+  config,
+  pkgs,
+  ...
+}: let
+  magpie = pkgs.magpie-cli;
+in {
+  home.packages = [magpie];
 
   systemd.user.services.magpie = {
     Unit.Description = "Magpie gateway";
@@ -14,6 +16,6 @@ in
       Restart = "on-failure";
       RestartSec = 5;
     };
-    Install.WantedBy = [ "default.target" ];
+    Install.WantedBy = ["default.target"];
   };
 }

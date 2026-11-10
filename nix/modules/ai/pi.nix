@@ -6,13 +6,16 @@
 # billion-context: autoUpdate/advisoryCheck are off because pi updates the
 # package (`pi update --extensions`); bili's updater would `npm install -g` a
 # second copy.
-{ config, pkgs, ... }:
-let
-  link = path: config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/.config/dotfiles/config/pi${path}";
-in
 {
-  home.packages = [ pkgs.pi-coding-agent ];
+  config,
+  pkgs,
+  ...
+}: let
+  link = path:
+    config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/.config/dotfiles/config/pi${path}";
+in {
+  home.packages = [pkgs.pi-coding-agent];
 
   home.file.".pi".source = link "";
   home.file.".pi-lens".source = link "/packages/pi-lens";

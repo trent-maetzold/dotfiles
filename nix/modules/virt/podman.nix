@@ -1,5 +1,9 @@
-{ config, lib, pkgs, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   noProxy = config.home.sessionVariables.NO_PROXY or null;
   context = pkgs.writeTextDir "Containerfile" ''
     FROM docker.io/library/archlinux:latest
@@ -9,10 +13,9 @@ let
         && pacman -Syu --noconfirm --needed base-devel postgresql-libs krb5 git uv \
         && pacman -Scc --noconfirm
   '';
-in
-{
+in {
   # Provider for `podman compose`, found on PATH.
-  home.packages = [ pkgs.podman-compose ];
+  home.packages = with pkgs; [podman-compose lazydocker];
 
   services.podman = {
     enable = true;

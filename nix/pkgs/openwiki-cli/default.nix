@@ -1,5 +1,10 @@
-{ lib, buildNpmPackage, fetchurl, jq, python3 }:
-
+{
+  lib,
+  buildNpmPackage,
+  fetchurl,
+  jq,
+  python3,
+}:
 # The npm tarball ships a prebuilt dist/. devDependencies and scripts are
 # stripped so package-lock.json covers runtime deps only and nothing is built
 # beyond native addons (better-sqlite3, compiled by `npm rebuild`).
@@ -26,7 +31,7 @@ buildNpmPackage rec {
 
   npmDepsHash = "sha256-4/sM9o70RtH5iunww6/DQaQEwY0mZmNKU8vtjfWI9RY=";
   dontNpmBuild = true;
-  nativeBuildInputs = [ python3 ]; # node-gyp for better-sqlite3
+  nativeBuildInputs = [python3]; # node-gyp for better-sqlite3
 
   meta = {
     description = "LangChain OpenWiki CLI";

@@ -1,5 +1,9 @@
-{ lib, buildNpmPackage, fetchurl, jq }:
-
+{
+  lib,
+  buildNpmPackage,
+  fetchurl,
+  jq,
+}:
 # Prebuilt npm tarball; same update recipe as ../openwiki-cli/default.nix.
 buildNpmPackage rec {
   pname = "deepwiki";

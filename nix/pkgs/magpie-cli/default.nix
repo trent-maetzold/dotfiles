@@ -1,5 +1,9 @@
-{ lib, stdenv, fetchurl, autoPatchelfHook }:
-
+{
+  lib,
+  stdenv,
+  fetchurl,
+  autoPatchelfHook,
+}:
 stdenv.mkDerivation {
   pname = "magpie-cli";
   version = "0.1.3419";
@@ -10,8 +14,8 @@ stdenv.mkDerivation {
   };
 
   dontUnpack = true;
-  nativeBuildInputs = [ autoPatchelfHook ];
-  buildInputs = [ stdenv.cc.cc.lib ];
+  nativeBuildInputs = [autoPatchelfHook];
+  buildInputs = [stdenv.cc.cc.lib];
   installPhase = ''
     runHook preInstall
     install -Dm755 "$src" "$out/bin/magpie"
@@ -22,7 +26,7 @@ stdenv.mkDerivation {
     description = "Magpie terminal-only model gateway";
     homepage = "https://github.com/yetone/magpie";
     license = lib.licenses.mit;
-    platforms = [ "x86_64-linux" ];
+    platforms = ["x86_64-linux"];
     mainProgram = "magpie";
   };
 }

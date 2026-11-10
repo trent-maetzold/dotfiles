@@ -1,16 +1,21 @@
-{ config, lib, pkgs, user, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  user,
+  ...
+}: let
   # gcx (Grafana) runs with its token read from a sops secret at launch, so it
   # reaches only that process. Installed only when the host declares the secret
   # (sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN); set GRAFANA_SERVER there too.
   withSecrets = import ../lib/with-secrets.nix pkgs;
-  grafana = lib.optional (config.sops.secrets ? GRAFANA_SERVICE_ACCOUNT_TOKEN)
-    (withSecrets pkgs.gcx { GRAFANA_TOKEN = config.sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN.path; });
-in
-{
+  grafana =
+    lib.optional (config.sops.secrets ? GRAFANA_SERVICE_ACCOUNT_TOKEN)
+    (withSecrets pkgs.gcx {GRAFANA_TOKEN = config.sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN.path;});
+in {
   home.stateVersion = user.stateVersion;
   home.preferXdgDirectories = true;
-  home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
+  home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
 
   home.sessionVariables = {
     SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
@@ -23,26 +28,27 @@ in
 
   systemd.user.startServices = "sd-switch";
 
-  home.packages = with pkgs; [
-    # Search and navigation
-    ripgrep
-    fd
-    fzf
-    tree-sitter
+  home.packages = with pkgs;
+    [
+      # Search and navigation
+      ripgrep
+      fd
+      fzf
+      tree-sitter
 
-    # Build toolchain for native dependencies
-    gcc
-    gnumake
-    pkg-config
+      # Build toolchain for native dependencies
+      gcc
+      gnumake
+      pkg-config
 
-    # General utilities
-    curl
-    unzip
-    just
+      # General utilities
+      curl
+      unzip
+      just
 
-    # Docs lookup for agents
-    ctx7 # Context7: current library docs
-    deepwiki-cli # DeepWiki docs for public GitHub repos
-  ]
-  ++ grafana;
+      # Docs lookup for agents
+      ctx7 # Context7: current library docs
+      deepwiki-cli # DeepWiki docs for public GitHub repos
+    ]
+    ++ grafana;
 }

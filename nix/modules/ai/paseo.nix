@@ -1,7 +1,10 @@
-{ config, pkgs, ... }:
 {
+  config,
+  pkgs,
+  ...
+}: {
   # Daemon and CLI, not paseo.desktop.
-  home.packages = [ pkgs.paseo ];
+  home.packages = [pkgs.paseo];
 
   systemd.user.services.paseo = {
     Unit.Description = "Paseo daemon";
@@ -12,6 +15,6 @@
       Restart = "on-failure";
       RestartSec = 5;
     };
-    Install.WantedBy = [ "default.target" ];
+    Install.WantedBy = ["default.target"];
   };
 }
