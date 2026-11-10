@@ -2,6 +2,8 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = ["typer", "pydantic", "pydantic-settings", "python-dotenv"]
+# [tool.uv]
+# exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
 """Resolve NAME=<source> lines (default .env.secrets) into shell exports.
 

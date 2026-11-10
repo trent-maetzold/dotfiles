@@ -2,6 +2,8 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = ["typer", "pydantic-settings", "python-dotenv", "gitpython"]
+# [tool.uv]
+# exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
 """Copy each NAME=<source> line of DIR/secrets.sources into DIR/secrets.yaml as
 the sops key NAME, then commit DIR if it changed. Sources use secrets-env

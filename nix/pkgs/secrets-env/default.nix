@@ -1,12 +1,7 @@
-# Resolve .env.secrets references from the vault CLIs on PATH (ksm, keeper,
-# rbw, sops, age) into shell exports; see ./secrets-env. uv installs the
-# script's PEP 723 dependencies from secrets-env.lock on first run.
-{
-  writeShellApplication,
-  uv,
-}:
-writeShellApplication {
-  name = "secrets-env";
-  runtimeInputs = [uv];
-  text = ''exec uv run --quiet --script ${./.}/secrets-env "$@"'';
-}
+# Resolve .env.secrets references into shell exports; see secrets-env.py. A uv
+# script, so it needs uv (and the vault CLIs it calls) on PATH.
+{runCommandLocal}:
+runCommandLocal "secrets-env" {meta.mainProgram = "secrets-env";} ''
+  mkdir -p $out/bin
+  ln -s ${./secrets-env.py} $out/bin/secrets-env
+''

@@ -2,6 +2,8 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = ["typer", "cryptography"]
+# [tool.uv]
+# exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
 """Export the Windows Root/intermediate CAs (from WSL) to a PEM bundle: valid
 CA certificates only, minus anything in the Disallowed store."""

@@ -1,9 +1,3 @@
-{
-  pkgs,
-  app,
-}:
-app "Refresh sops secrets from Keeper/rbw (secrets.sources)" (pkgs.writeShellApplication {
-  name = "sync-secrets";
-  runtimeInputs = with pkgs; [uv secrets-env keeper-commander keeper-secrets-manager-cli rbw sops git];
-  text = ''exec uv run --quiet --script ${./.}/sync-secrets "$@"'';
-})
+# Needs uv, plus the CLIs for your sources (keeper, ksm, rbw), sops, git and
+# secrets-env on PATH.
+{app, ...}: app "Refresh sops secrets from Keeper/rbw (secrets.sources)" ./sync-secrets.py

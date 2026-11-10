@@ -1,10 +1,3 @@
-{
-  pkgs,
-  app,
-}:
-# The Windows half (windows-cas.py) runs under uv.exe from the same folder.
-app "Export the Windows CAs (WSL) to a PEM bundle" (pkgs.writeShellApplication {
-  name = "import-windows-ca";
-  runtimeInputs = [pkgs.uv];
-  text = ''exec uv run --quiet --script ${./.}/import-windows-ca "$@"'';
-})
+# Needs uv here and uv.exe on Windows, which runs windows-cas.py. The whole
+# folder goes to the store, so windows-cas.py sits beside the script.
+{app, ...}: app "Export the Windows CAs (WSL) to a PEM bundle" "${./.}/import-windows-ca.py"

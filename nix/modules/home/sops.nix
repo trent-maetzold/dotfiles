@@ -3,9 +3,11 @@
 # the sync-secrets app.
 {
   config,
+  pkgs,
   sops-nix,
   ...
 }: {
   imports = [sops-nix.homeManagerModules.sops];
+  home.packages = [pkgs.sops];
   sops.age.keyFile = "${config.xdg.configHome}/age/keys.txt";
 }
