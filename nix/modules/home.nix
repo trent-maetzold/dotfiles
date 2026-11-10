@@ -8,10 +8,9 @@
   # gcx (Grafana) runs with its token read from a sops secret at launch, so it
   # reaches only that process. Installed only when the host declares the secret
   # (sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN); set GRAFANA_SERVER there too.
-  withSecrets = import ../lib/with-secrets.nix pkgs;
   grafana =
     lib.optional (config.sops.secrets ? GRAFANA_SERVICE_ACCOUNT_TOKEN)
-    (withSecrets pkgs.gcx {GRAFANA_TOKEN = config.sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN.path;});
+    (pkgs.withSecrets pkgs.gcx {GRAFANA_TOKEN = config.sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN.path;});
 in {
   home.stateVersion = user.stateVersion;
   home.preferXdgDirectories = true;

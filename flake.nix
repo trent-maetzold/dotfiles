@@ -1,6 +1,8 @@
 {
   description = "Home Manager dotfiles";
 
+  inputs.bkt.url = "github:avivsinai/bitbucket-cli";
+  inputs.bkt.inputs.nixpkgs.follows = "nixpkgs";
   inputs.import-tree.url = "github:denful/import-tree";
   inputs.nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
   # Own nixpkgs (no follows) so packages hit the numtide binary cache.
@@ -23,6 +25,7 @@
   outputs = {
     self,
     nixpkgs,
+    bkt,
     import-tree,
     llm-agents,
     nix-index-database,
@@ -34,11 +37,12 @@
   }: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
-    overlays.default = import ./nix/pkgs {inherit uv2nix pyproject-nix pyproject-build-systems;};
+    overlays.default = import ./nix/pkgs {inherit bkt uv2nix pyproject-nix pyproject-build-systems;};
 
     packages = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"] (system:
-      builtins.intersectAttrs (self.overlays.default null null)
-      (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
+      nixpkgs.lib.filterAttrs (_: nixpkgs.lib.isDerivation)
+      (builtins.intersectAttrs (self.overlays.default null null)
+        (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
     homeModules.default = {pkgs, ...}: {
       imports = [
