@@ -16,6 +16,7 @@ in {
   imports = [sops-nix.homeManagerModules.sops];
 
   home.preferXdgDirectories = true;
+  home.shellAliases.dot = "nvim ${config.home.homeDirectory}/.config/dotfiles";
   home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
 
   home.sessionVariables = {
