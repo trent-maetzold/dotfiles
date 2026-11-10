@@ -146,7 +146,8 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 
 `nixosModules.keeper-secrets` writes Keeper vault fields to
 `/run/keeper-secrets/<name>` (like agenix/sops-nix), fetched with your Keeper
-Commander login: on `nh os switch` it prompts for a Keeper login when the saved
-session has expired, and `keeper-secrets.service` refetches at boot. CLIs read
+Commander login. Log in once with `keeper-secrets-login` (it turns on persistent
+login); `switch` then fetches them during activation, and `keeper-secrets.service`
+refetches at boot. CLIs read
 their file at launch through `pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so
 a token reaches only that process. Refetch by hand with `sudo keeper-secrets-sync`.

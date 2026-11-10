@@ -1,10 +1,11 @@
 """fetch.py MANIFEST OUTDIR: write each Keeper field in MANIFEST to OUTDIR/<name>.
+fetch.py (no args): log in to Keeper if the saved session can't resume.
 
 MANIFEST maps name -> {"record": uid, "field": type or label}, e.g.
 {"JIRA_API_TOKEN": {"record": "Abc...", "field": "password"}}.
-Uses Keeper Commander's saved session (~/.keeper/config.json). When stdin is a
-terminal and the session can't resume, it runs Commander's interactive login and
-turns on persistent login, so the next non-interactive run resumes silently.
+Fetching only resumes Keeper Commander's saved session (~/.keeper/config.json)
+and never prompts. Login mode runs Commander's interactive login in your
+terminal and turns on persistent login, so later fetches resume silently.
 """
 import json
 import os
@@ -28,26 +29,35 @@ def value(record, field):
     return None
 
 
-def main(manifest_path, outdir):
+def resume(params):
+    """Resume the saved session without prompting; True on success."""
+    if not params.user:
+        return False
+    try:
+        api.login(params)
+    except (Exception, EOFError, KeyboardInterrupt):
+        return False
+    return bool(params.session_token)
+
+
+def login():
+    params = get_params_from_config()
+    if resume(params):
+        return
+    print("keeper-secrets: log in to Keeper", file=sys.stderr)
+    cli.do_command(params, "login")
+    if not params.session_token:
+        sys.exit("keeper-secrets: Keeper login failed")
+    cli.do_command(params, "this-device register")
+    cli.do_command(params, "this-device persistent-login on")
+
+
+def fetch(manifest_path, outdir):
     with open(manifest_path) as f:
         manifest = json.load(f)
     params = get_params_from_config()
-    interactive = sys.stdin.isatty()
-    try:
-        if params.user:
-            api.login(params)
-    except (Exception, EOFError, KeyboardInterrupt) as e:
-        if not interactive:
-            sys.exit(f"keeper-secrets: Keeper session expired ({e}); run `sudo keeper-secrets-sync` in a terminal")
-    if not params.session_token:
-        if not interactive:
-            sys.exit("keeper-secrets: not logged in to Keeper; run `sudo keeper-secrets-sync` in a terminal")
-        print("keeper-secrets: log in to Keeper", file=sys.stderr)
-        cli.do_command(params, "login")
-        if not params.session_token:
-            sys.exit("keeper-secrets: Keeper login failed")
-        cli.do_command(params, "this-device register")
-        cli.do_command(params, "this-device persistent-login on")
+    if not resume(params):
+        sys.exit("keeper-secrets: no Keeper session; run `keeper-secrets-login`, then `sudo keeper-secrets-sync`")
     sync_down(params)
 
     os.umask(0o077)
@@ -65,4 +75,4 @@ def main(manifest_path, outdir):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    fetch(*sys.argv[1:3]) if len(sys.argv) > 1 else login()
