@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  user,
   ...
 }: let
   # gcx (Grafana) runs with its token read from a sops secret at launch, so it
@@ -12,7 +11,6 @@
     lib.optional (config.sops.secrets ? GRAFANA_SERVICE_ACCOUNT_TOKEN)
     (pkgs.withSecrets pkgs.gcx {GRAFANA_TOKEN = config.sops.secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN.path;});
 in {
-  home.stateVersion = user.stateVersion;
   home.preferXdgDirectories = true;
   home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
 
