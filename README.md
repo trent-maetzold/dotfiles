@@ -142,11 +142,11 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 Otherwise install your organization's trusted CA; do not disable TLS verification.
 Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.nix`.
 
-## Grafana CLI and secrets
+## Secrets
 
-`gcx` (Grafana) is in `nix/modules/home.nix`. It is installed only when the
-system flake declares the `GRAFANA_SERVICE_ACCOUNT_TOKEN` sops secret, and is
-wrapped with `nix/lib/with-secrets.nix`, which reads the decrypted file when
-the CLI starts, so the token reaches only that process. `GRAFANA_SERVER` comes
-from session variables set in the system flake.
-The system flake sets `sops.defaultSopsFile` and the age key.
+`nixosModules.keeper-secrets` writes Keeper vault fields to
+`/run/keeper-secrets/<name>` (like agenix/sops-nix), fetched with your Keeper
+Commander login: on `nh os switch` it prompts for a Keeper login when the saved
+session has expired, and `keeper-secrets.service` refetches at boot. CLIs read
+their file at launch through `pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so
+a token reaches only that process. Refetch by hand with `sudo keeper-secrets-sync`.

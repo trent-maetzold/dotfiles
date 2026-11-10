@@ -29,6 +29,9 @@
     # arguments, so the host passes them: extraSpecialArgs = dotfiles.inputs.
     homeModules.default = import-tree ./nix/modules;
 
+    # Keeper vault fields as files under /run/keeper-secrets; see the module.
+    nixosModules.keeper-secrets = ./nix/nixos/keeper-secrets.nix;
+
     # devShell that fetches secrets in its shellHook; see nix/dev-shells/mk-secrets-shell.nix.
     lib.mkSecretsShell = import ./nix/dev-shells/mk-secrets-shell.nix;
   };
@@ -39,10 +42,6 @@
     import-tree.url = "github:denful/import-tree";
 
     # Home Manager modules
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";

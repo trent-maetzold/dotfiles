@@ -1,5 +1,5 @@
 # Wrap every binary of `package` so it reads its secrets from files at launch,
-# e.g. pkgs.withSecrets pkgs.foo { FOO_TOKEN = config.sops.secrets.foo-token.path; }.
+# e.g. pkgs.withSecrets pkgs.foo { FOO_TOKEN = "/run/keeper-secrets/FOO_TOKEN"; }.
 # The value reaches only that process, never argv or the Nix store; an
 # unreadable file leaves any inherited value alone.
 pkgs: package: secrets: let
