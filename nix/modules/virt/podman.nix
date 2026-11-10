@@ -1,4 +1,4 @@
-{ config, lib, pkgs, osConfig, ... }:
+{ config, lib, pkgs, ... }:
 let
   noProxy = config.home.sessionVariables.NO_PROXY or null;
   context = pkgs.writeTextDir "Containerfile" ''
@@ -22,7 +22,8 @@ in
       file = "${context}/Containerfile";
       workingDirectory = "${context}";
       extraPodmanArgs = [
-        "--volume=${osConfig.security.pki.caBundle}:/run/host-ca.pem:ro"
+        # Standard host CA bundle path (NixOS and most distros); no osConfig so non-NixOS hosts work.
+        "--volume=/etc/ssl/certs/ca-certificates.crt:/run/host-ca.pem:ro"
       ];
       # WSL has no host network-online target for Quadlet's user wait helper.
       extraConfig.Quadlet.DefaultDependencies = false;

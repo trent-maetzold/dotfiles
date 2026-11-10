@@ -1,6 +1,6 @@
 { lib, buildNpmPackage, fetchurl, jq }:
 
-# Prebuilt npm tarball; same update recipe as ../openwiki/default.nix.
+# Prebuilt npm tarball; same update recipe as ../openwiki-cli/default.nix.
 buildNpmPackage rec {
   pname = "confluence-cli";
   version = "2.31.0";

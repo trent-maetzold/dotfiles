@@ -1,13 +1,13 @@
 # Wrap every binary of `package` so it reads its secrets from files at launch,
-# e.g. withSecrets pkgs.foo { FOO_TOKEN = config.sops.secrets.foo-token.path; }.
+# e.g. (import ./with-secrets.nix pkgs) pkgs.foo { FOO_TOKEN = config.sops.secrets.foo-token.path; }.
 # The value reaches only that process, never argv or the Nix store; an
 # unreadable file leaves any inherited value alone.
-{ lib, symlinkJoin, makeWrapper }:
-package: secrets:
-symlinkJoin {
+pkgs: package: secrets:
+let inherit (pkgs) lib; in
+pkgs.symlinkJoin {
   name = "${package.name}-with-secrets";
   paths = [ package ];
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [ pkgs.makeWrapper ];
   postBuild = ''
     for bin in $out/bin/*; do
       wrapProgram "$bin" ${lib.concatStringsSep " " (lib.mapAttrsToList (name: path:

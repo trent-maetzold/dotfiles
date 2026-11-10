@@ -9,14 +9,25 @@
   inputs.bkt.inputs.nixpkgs.follows = "nixpkgs";
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+  # Python apps from uv.lock (nix/pkgs/keeper-cli).
+  inputs.pyproject-nix.url = "github:pyproject-nix/pyproject.nix";
+  inputs.pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.uv2nix.url = "github:pyproject-nix/uv2nix";
+  inputs.uv2nix.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.uv2nix.inputs.pyproject-nix.follows = "pyproject-nix";
+  inputs.pyproject-build-systems.url = "github:pyproject-nix/build-system-pkgs";
+  inputs.pyproject-build-systems.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.pyproject-build-systems.inputs.pyproject-nix.follows = "pyproject-nix";
+  inputs.pyproject-build-systems.inputs.uv2nix.follows = "uv2nix";
 
-  outputs = { nixpkgs, import-tree, llm-agents, bkt, sops-nix, ... }: {
+  outputs = { self, nixpkgs, import-tree, llm-agents, bkt, sops-nix, uv2nix, pyproject-nix, pyproject-build-systems, ... }: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
-    packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
-      export-windows-cas = nixpkgs.legacyPackages.${system}.callPackage ./nix/pkgs/export-windows-cas.nix { };
-      openwiki = nixpkgs.legacyPackages.${system}.callPackage ./nix/pkgs/openwiki { };
-    });
+    overlays.default = import ./nix/pkgs { inherit uv2nix pyproject-nix pyproject-build-systems; };
+
+    packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+      builtins.intersectAttrs (self.overlays.default null null)
+        (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
 
     homeModules.default = { pkgs, ... }: {
       imports = [

@@ -1,0 +1,9 @@
+# Locked Keeper CLIs, built by uv2nix (see default.nix). Update: uv lock --upgrade
+[project]
+name = "keeper-tools"
+version = "0"
+requires-python = "==3.13.*" # keeper-mlkem ships wheels up to cp313 only
+dependencies = ["keepercommander", "keeper-secrets-manager-cli"]
+
+[tool.uv]
+package = false

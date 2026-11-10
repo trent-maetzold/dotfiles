@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  magpie = pkgs.callPackage ../../pkgs/magpie-cli.nix { };
+  magpie = pkgs.magpie-cli;
 in
 {
   home.packages = [ magpie ];

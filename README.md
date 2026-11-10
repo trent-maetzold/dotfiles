@@ -87,22 +87,12 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nvim
 
 ## Windows CA export (WSL)
 
-`export-windows-cas OUTPUT.pem` exports current public CA certificates from the
+`just import-windows-ca [OUTPUT.pem]` exports current public CA certificates from the
 Windows Current User and Local Machine Root and intermediate stores. It excludes
 expired/not-yet-valid and explicitly distrusted certificates, removes duplicates,
 and exports no private keys. It requires WSL with Windows interop enabled.
 
-Home Manager installs the command. Without rebuilding, run from this checkout:
-
-```sh
-nix run path:.#export-windows-cas -- /tmp/windows-ca.pem
-```
-
-To use the export for NixOS system trust, write it inside the **system** flake:
-
-```sh
-export-windows-cas ~/.config/nixos/nix/certs/windows-ca.pem
-```
+By default it writes into the **system** flake, `~/.config/nixos/nix/certs/windows-ca.pem`.
 
 Then set this in `~/.config/nixos/nix/configuration.nix` and rebuild:
 
@@ -186,13 +176,15 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 ```
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.
-Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli.nix`.
+Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.nix`.
 
 ## Work CLIs and secrets
 
-`nix/modules/tools/` has one module per CLI (`jira`, `bkt`, `gcx`,
-`confluence`, `ctx7`, `deepwiki`). Server URLs come from session variables set
-in the system flake. Tokens come from sops-nix: each module declares its own
-secret and wraps its CLI with `nix/pkgs/with-secrets.nix`, which reads the
-decrypted file when the CLI starts, so the token reaches only that process.
+Work CLIs (`bkt`, `confluence`, `gcx`, `jira`) are in `nix/modules/home.nix`.
+Each is installed only when the system flake declares its sops secret
+(`ACTIVEBATCH_PASSWORD`, `BITBUCKET_ACCESS_TOKEN`, `CONFLUENCE_API_TOKEN`,
+`GRAFANA_SERVICE_ACCOUNT_TOKEN`, `JIRA_API_TOKEN`), and is wrapped with
+`nix/lib/with-secrets.nix`, which reads the decrypted file when the CLI
+starts, so the token reaches only that process. Server URLs come from session
+variables set in the system flake.
 The system flake sets `sops.defaultSopsFile` and the age key.

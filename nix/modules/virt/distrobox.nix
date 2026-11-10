@@ -1,4 +1,4 @@
-{ config, lib, pkgs, osConfig, ... }:
+{ config, lib, pkgs, ... }:
 {
   programs.distrobox = {
     enable = true;
@@ -14,8 +14,8 @@
   };
 
   home.activation.recreateArchBuild = lib.hm.dag.entryAfter [ "reloadSystemd" ] ''
-    # Rebuild/recreate when the image definition or host CA generation changes.
-    # ${config.services.podman.builds.arch-build.file} ${osConfig.security.pki.caBundle}
+    # Rebuild/recreate when the image definition changes.
+    # ${config.services.podman.builds.arch-build.file}
     run ${pkgs.systemd}/bin/systemctl --user restart podman-arch-build-build.service
     run ${pkgs.coreutils}/bin/env PATH="${lib.makeBinPath [ config.services.podman.package pkgs.gawk ]}:/run/current-system/sw/bin:$PATH" \
       ${pkgs.distrobox}/bin/distrobox-assemble create --replace --name arch-build \
