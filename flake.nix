@@ -48,6 +48,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
+
     # Packages
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     llm-agents.url = "github:numtide/llm-agents.nix";
