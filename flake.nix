@@ -25,7 +25,7 @@
       (builtins.intersectAttrs (self.overlays.default null null)
         (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
-    # Deployment admin tasks (`nix run .#sync-secrets`); the justfile wraps each.
+    # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
     apps =
       lib.genAttrs systems (system:
         import ./nix/apps (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
@@ -35,9 +35,6 @@
     # specialArgs / home-manager.extraSpecialArgs = dotfiles.inputs // {inherit user;}.
     homeModules.default = import-tree ./nix/modules/home;
     nixosModules.default = import-tree ./nix/modules/nixos;
-
-    # devShell that fetches secrets in its shellHook; see nix/dev-shells/mk-secrets-shell.nix.
-    lib.mkSecretsShell = import ./nix/dev-shells/mk-secrets-shell.nix;
   };
 
   inputs = {

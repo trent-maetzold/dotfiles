@@ -4,6 +4,10 @@
 default:
     @just --list
 
+# Update the host flake's inputs (programs.nh.flake), then switch (args go to nh).
+switch *args:
+    nix run .#switch -- {{args}}
+
 # Refresh secrets.yaml in DIR from the Keeper/rbw sources in DIR/secrets.sources.
 sync-secrets dir:
     nix run .#sync-secrets -- {{dir}}

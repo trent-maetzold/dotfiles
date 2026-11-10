@@ -7,6 +7,14 @@ pkgs: let
     meta = {inherit description;};
   };
 in {
+  # Update every input of the host flake (programs.nh.flake, else pass one),
+  # committing flake.lock, then switch. Args go to nh.
+  switch = app "Update flake inputs, then nh os switch" (pkgs.writeShellApplication {
+    name = "switch";
+    runtimeInputs = [pkgs.nh];
+    text = ''exec nh os switch --update --commit-lock-file "$@"'';
+  });
+
   sync-secrets = app "Refresh sops secrets from Keeper/rbw (secrets.sources)" (pkgs.writeShellApplication {
     name = "sync-secrets";
     runtimeInputs = with pkgs; [secrets-env keeper-commander keeper-secrets-manager-cli rbw sops jq git];

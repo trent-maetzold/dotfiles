@@ -1,5 +1,5 @@
-# Old pi-lens runtime dir; delete after switching (now config/pi/packages/pi-lens).
-config/pi-lens/
+# billion-context log.
+config/pi/acp.log
 
 # Beads / Dolt files (added by bd init)
 .dolt/
