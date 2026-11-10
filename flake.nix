@@ -53,10 +53,6 @@
     };
 
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     # Packages
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.

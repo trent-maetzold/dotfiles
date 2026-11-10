@@ -121,9 +121,8 @@ Tmux sessions act as workspaces: `w` opens the picker, `N` creates one,
 ## Python projects
 
 Projects use direnv: an `.envrc` with `use mise` loads `mise.toml` (tools and env)
-on entering the directory. Project secrets come from a sops template declared in
-the host config (`sops.templates."<project>.env"` with `config.sops.placeholder.NAME`);
-the `.envrc` loads it with `dotenv ~/.config/sops-nix/secrets/rendered/<project>.env`. Python packages with C extensions (psycopg2, gssapi) build on the
+on entering the directory. Project secrets go in a project `fnox.toml`
+(`fnox exec -- <cmd>`). Python packages with C extensions (psycopg2, gssapi) build on the
 host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
 are on PATH. uv passes gssapi the krb5 header path it needs
 (`nix/modules/home/dev/langs/python.nix`).
@@ -147,16 +146,13 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 
 ## Secrets
 
-Runtime secrets are plain sops-nix (`nix/modules/{home,nixos}/sops.nix`, age key
-`~/.config/age/keys.txt`); the host flake sets `sops.defaultSopsFile` and
-declares `sops.secrets`. Keeper and rbw are only sources: list
-`NAME=<source>` lines (e.g. `keeper:<uid>#note`,
-`ksm:keeper://<uid>/field/login`, `rbw:github#token`) in a sources file, and
-`nix run .#sync-secrets -- --input-file SOURCES --output-file secrets.yaml` copies them into the
-sops file as key `NAME` (`--input-file`/`--output-file`/`--sops-key-file` default to `$SYNC_SECRETS_INPUT_FILE`/`$SYNC_SECRETS_OUTPUT_FILE`/`$SYNC_SECRETS_SOPS_KEY_FILE`; the key may be age, SSH or PGP,
-which the system flake's `.envrc` sets). Committing is the caller's job.
-Every app setting comes from a flag, else an env var, else an env file
-(`$ENV_FILE`, default `./.env`); with none set the app exits with an error. It logs in to Keeper
-first if the saved session expired. CLIs read their file at launch through
-`pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so a token reaches only that
-process.
+Secrets live in `fnox.toml` files, age-encrypted to `~/.config/age/keys.txt`
+or as references to a remote provider (`fnox sync` caches those encrypted in
+the same file). `nix/modules/home/fnox.nix` enables `programs.fnox` with the
+age provider; the host adds its recipient and other providers. Add or change
+a secret with `fnox set NAME` or `fnox edit` in the file's directory. CLIs run
+under `fnox exec` through `pkgs.withFnox` (`nix/lib/with-fnox.nix`), so a token
+reaches only that process.
+
+The apps (`import-win-ca`) take each setting from a flag, else an env var, else
+an env file (`$ENV_FILE`, default `./.env`); with none set they exit with an error.

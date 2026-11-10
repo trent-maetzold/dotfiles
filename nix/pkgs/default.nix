@@ -5,11 +5,12 @@
   pyproject-nix,
   pyproject-build-systems,
 }: final: prev: {
-  # Wrap a package so it reads secrets from files at launch; see ../lib/with-secrets.nix.
-  withSecrets = import ../lib/with-secrets.nix final;
+  # Wrap a package to run under `fnox exec`; see ../lib/with-fnox.nix.
+  withFnox = import ../lib/with-fnox.nix final;
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt;
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
+  fnox = final.callPackage ./fnox {};
   magpie-cli = final.callPackage ./magpie-cli {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
