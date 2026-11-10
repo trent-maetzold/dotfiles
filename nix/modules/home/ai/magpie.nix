@@ -1,5 +1,5 @@
 # Magpie gateway on 127.0.0.1:3425, from its upstream image (runs as uid 65532,
-# HOME=/config/home). Rootless: a user unit, no NixOS podman needed.
+# HOME=/config/home). Rootless user unit; needs the NixOS quadlet.nix generator.
 {
   config,
   pkgs,
