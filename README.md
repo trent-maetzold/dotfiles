@@ -119,8 +119,10 @@ Tmux sessions act as workspaces: `w` opens the picker, `N` creates one,
 
 ## Python projects
 
-Projects use mise (`mise.toml`) for tools and env; mise's shell hook activates it
-per directory. Python packages with C extensions (psycopg2, gssapi) build on the
+Projects use direnv: an `.envrc` with `use mise` loads `mise.toml` (tools and env)
+on entering the directory. Project secrets come from a sops template declared in
+the host config (`sops.templates."<project>.env"` with `config.sops.placeholder.NAME`);
+the `.envrc` loads it with `dotenv ~/.config/sops-nix/secrets/rendered/<project>.env`. Python packages with C extensions (psycopg2, gssapi) build on the
 host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
 are on PATH. uv passes gssapi the krb5 header path it needs
 (`nix/modules/home/dev/langs/python.nix`).
@@ -147,7 +149,7 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 Runtime secrets are plain sops-nix (`nix/modules/{home,nixos}/sops.nix`, age key
 `~/.config/age/keys.txt`); the host flake sets `sops.defaultSopsFile` and
 declares `sops.secrets`. Keeper and rbw are only sources: list
-`NAME=<source>` lines (secrets-env syntax, e.g. `keeper:<uid>#note`,
+`NAME=<source>` lines (e.g. `keeper:<uid>#note`,
 `ksm:keeper://<uid>/field/login`, `rbw:github#token`) in `secrets.sources` next to
 `secrets.yaml`, and `just sync-secrets DIR` (app: `nix run .#sync-secrets -- DIR`)
 copies them into `secrets.yaml` as key `NAME` and commits. It logs in to Keeper
