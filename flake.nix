@@ -28,6 +28,9 @@
     # Every module under nix/modules. Modules take this flake's inputs as
     # arguments, so the host passes them: extraSpecialArgs = dotfiles.inputs.
     homeModules.default = import-tree ./nix/modules;
+
+    # devShell that fetches secrets in its shellHook; see nix/dev-shells/mk-secrets-shell.nix.
+    lib.mkSecretsShell = import ./nix/dev-shells/mk-secrets-shell.nix;
   };
 
   inputs = {

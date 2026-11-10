@@ -13,6 +13,7 @@
   magpie-cli = final.callPackage ./magpie-cli {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
+  secrets-env = final.callPackage ./secrets-env {};
   outlook-cli = final.callPackage ./outlook-cli {};
   inherit
     (final.callPackage ./keeper-cli {inherit uv2nix pyproject-nix pyproject-build-systems;})
