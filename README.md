@@ -117,49 +117,13 @@ bindings: `v`/`-` split, `h/j/k/l` focus panes, Tab/Shift-Tab cycle panes,
 Tmux sessions act as workspaces: `w` opens the picker, `N` creates one,
 `W` renames it, and `D` closes it. All these keys follow the prefix.
 
-## Arch build box
+## Python projects
 
-NixOS enables rootless Podman. `nix/modules/virt/distrobox.nix` installs Distrobox
-and the global `bx` shell alias. `services.podman.builds.arch-build` in
-`nix/modules/virt/podman.nix` builds a custom Arch image with the development
-packages. Its generated Containerfile uses the host CA bundle during the build
-without disabling TLS verification. Distrobox uses the resulting local image,
-`localhost/homemanager/arch-build:latest`. Home Manager waits for the build service
-to succeed before replacing the box.
-Inspect it with `systemctl --user status podman-arch-build-build`.
-
-After rebuilding, run this from your project directory:
-
-```sh
-bx uv sync
-```
-
-`bx` only enters the existing `arch-build` box; it does not create it.
-Commands run in your current directory with the shared home and return to your
-host shell when finished. With no arguments, `bx` opens a shell in the box.
-The custom image supplies `base-devel`, `postgresql-libs` (libpq headers/`pg_config`),
-`krb5` (Kerberos headers/`krb5-config`), `git` and `uv`. The image enables
-`UV_SYSTEM_CERTS` and bypasses the proxy for the hosts in `NO_PROXY` (set in the system flake), so
-internal package and Git servers are accessed directly. No database/Kerberos services are configured. Arch bundles development files with its libraries; the packages
-include libraries too, but only inside the container.
-
-The host CA bundle is mounted read-only at Arch's
-`/etc/ca-certificates/extracted/tls-ca-bundle.pem`, which its standard
-`/etc/ssl/certs/ca-certificates.crt` symlink uses. Home Manager recreates
-`arch-build` on activation (including switches that activate a changed Home Manager
-generation). Host CA changes also trigger a new generation so the file mount
-resolves the current store path. An unchanged/no-op system switch may skip Home
-Manager activation.
-
-**Recreation stops running work and discards container-local files and manually
-installed packages.** The shared home directory is preserved. Declare packages
-in the Containerfile in `nix/modules/virt/podman.nix`; keep projects in your shared
-home. Home Manager rebuilds the image before recreating the box, using Podman's
-build cache. This replaces the upstream hash-cached Distrobox service; it does not
-recreate containers at login.
-
-Python native extensions built here target Arch, not NixOS. Use the environment
-inside the box (e.g. `bx uv run ...`), not as a host-native virtualenv.
+Projects use mise (`mise.toml`) for tools and env; mise's shell hook activates it
+per directory. Python packages with C extensions (psycopg2, gssapi) build on the
+host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
+are on PATH. uv passes gssapi the krb5 header path it needs
+(`nix/modules/dev/langs/python.nix`).
 
 ## Updating
 
