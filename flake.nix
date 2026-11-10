@@ -1,13 +1,10 @@
 {
   description = "Home Manager dotfiles";
 
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
     import-tree,
-    sops-nix,
-    nix-index-database,
-    llm-agents,
     bkt,
     pyproject-nix,
     uv2nix,
@@ -28,14 +25,8 @@
       (builtins.intersectAttrs (self.overlays.default null null)
         (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
-    homeModules.default = {pkgs, ...}: {
-      imports = [
-        (import-tree ./nix/modules)
-        sops-nix.homeManagerModules.sops
-        nix-index-database.homeModules.nix-index
-      ];
-      _module.args.llmAgents = llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
-    };
+    # Every module under nix/modules; each can use `inputs` directly.
+    homeModules.default = import-tree.addScoped {inherit inputs;} ./nix/modules;
   };
 
   inputs = {

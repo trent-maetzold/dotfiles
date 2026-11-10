@@ -2,7 +2,6 @@
 {
   config,
   pkgs,
-  llmAgents,
   ...
 }: {
   home.file.".agents".source =
@@ -13,8 +12,7 @@
       # openwiki CLI; its pi extension is installed by pi ("npm:openwiki" in config/pi/agent/settings.json).
       pkgs.openwiki-cli
     ]
-    ++ (with llmAgents; [
-      # From github:numtide/llm-agents.nix.
+    ++ (with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
       beads # bd: issue tracker for agent workflows
       plannotator # plan and code review for agents
       ralph-tui # agent loop orchestrator
