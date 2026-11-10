@@ -87,13 +87,13 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nvim
 
 ## Windows CA export (WSL)
 
-`just import-windows-ca --of OUTPUT.pem` (app: `nix run .#import-windows-ca -- --of OUTPUT.pem`;
-`--of` defaults to `$IMPORT_WINDOWS_CA_OF`) exports current public CA certificates from the
+`just import-win-ca --output-file OUTPUT.pem` (app: `nix run .#import-win-ca -- --output-file OUTPUT.pem`;
+`--output-file` defaults to `$IMPORT_WIN_CA_OUTPUT_FILE`) exports current public CA certificates from the
 Windows Current User and Local Machine Root and intermediate stores. It excludes
 expired/not-yet-valid and explicitly distrusted certificates, removes duplicates,
 and exports no private keys. It requires WSL with Windows interop enabled.
 
-The system flake's `.envrc` sets `IMPORT_WINDOWS_CA_OF` to its `nix/certs/windows-ca.pem`.
+The system flake's `.envrc` sets `IMPORT_WIN_CA_OUTPUT_FILE` to its `nix/certs/windows-ca.pem`.
 
 Then set this in `~/.config/nixos/nix/configuration.nix` and rebuild:
 
@@ -152,8 +152,8 @@ Runtime secrets are plain sops-nix (`nix/modules/{home,nixos}/sops.nix`, age key
 declares `sops.secrets`. Keeper and rbw are only sources: list
 `NAME=<source>` lines (e.g. `keeper:<uid>#note`,
 `ksm:keeper://<uid>/field/login`, `rbw:github#token`) in a sources file, and
-`nix run .#sync-secrets -- --if SOURCES --of secrets.yaml` copies them into the
-sops file as key `NAME` (`--if`/`--of` default to `$SYNC_SECRETS_IF`/`$SYNC_SECRETS_OF`,
+`nix run .#sync-secrets -- --input-file SOURCES --output-file secrets.yaml` copies them into the
+sops file as key `NAME` (`--input-file`/`--output-file`/`--sops-key-file` default to `$SYNC_SECRETS_INPUT_FILE`/`$SYNC_SECRETS_OUTPUT_FILE`/`$SYNC_SECRETS_SOPS_KEY_FILE`; the key may be age, SSH or PGP,
 which the system flake's `.envrc` sets). Committing is the caller's job.
 Every app setting comes from a flag, else an env var, else an env file
 (`$ENV_FILE`, default `./.env`); with none set the app exits with an error. It logs in to Keeper

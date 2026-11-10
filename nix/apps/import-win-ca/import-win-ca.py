@@ -19,11 +19,11 @@ from typing import Annotated
 
 import sh
 import typer
-from dotenv import load_dotenv
 from cryptography import x509
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.utils import CryptographyDeprecationWarning
+from dotenv import load_dotenv
 
 # Some Windows roots have non-positive serial numbers; cryptography still loads them.
 warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
@@ -41,15 +41,29 @@ def is_valid_ca(cert: x509.Certificate) -> bool:
     return is_ca and cert.not_valid_before_utc <= now < cert.not_valid_after_utc
 
 
-def main(out: Annotated[Path, typer.Option("--of", envvar="IMPORT_WINDOWS_CA_OF", help="PEM bundle to write.")]) -> None:
+def main(
+    out: Annotated[
+        Path,
+        typer.Option(
+            "--output-file",
+            envvar="IMPORT_WIN_CA_OUTPUT_FILE",
+            help="PEM bundle to write.",
+        ),
+    ],
+) -> None:
     script = sh.wslpath("-w", WINDOWS_CAS).strip()
     stores = json.loads(sh.Command("uv.exe")("run", "--no-project", "--script", script))
 
     def load(store: str) -> set[x509.Certificate]:
-        return {x509.load_der_x509_certificate(base64.b64decode(der)) for der in stores[store]}
+        return {
+            x509.load_der_x509_certificate(base64.b64decode(der))
+            for der in stores[store]
+        }
 
     trusted = (load("ROOT") | load("CA")) - load("Disallowed")
-    certs = sorted((c for c in trusted if is_valid_ca(c)), key=lambda c: c.fingerprint(SHA256()))  # stable order, so reruns diff cleanly
+    certs = sorted(
+        (c for c in trusted if is_valid_ca(c)), key=lambda c: c.fingerprint(SHA256())
+    )  # stable order, so reruns diff cleanly
     if not certs:
         raise typer.Exit("No valid Windows CA certificates found.")
 

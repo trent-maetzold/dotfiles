@@ -6,7 +6,7 @@
   app,
 }:
 app "Export the Windows CAs (WSL) to a PEM bundle" (pkgs.lib.getExe (pkgs.writeShellApplication {
-  name = "import-windows-ca";
+  name = "import-win-ca";
   runtimeInputs = [pkgs.uv];
-  text = ''exec ${./.}/import-windows-ca.py "$@"'';
+  text = ''exec ${./.}/import-win-ca.py "$@"'';
 }))
