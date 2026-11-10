@@ -1,6 +1,7 @@
+#!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["typer", "pydantic-settings", "cryptography"]
+# dependencies = ["typer", "cryptography"]
 # ///
 """Export the Windows Root/intermediate CAs (from WSL) to a PEM bundle: valid
 CA certificates only, minus anything in the Disallowed store."""
@@ -20,14 +21,12 @@ from cryptography import x509
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.utils import CryptographyDeprecationWarning
-from pydantic_settings import BaseSettings
 
 # Some Windows roots have non-positive serial numbers; cryptography still loads them.
 warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
 
-class Settings(BaseSettings):
-    windows_cas_script: Path = Path(__file__).with_name("windows-cas.py")
+WINDOWS_CAS = Path(__file__).with_name("windows-cas.py")
 
 
 def is_valid_ca(cert: x509.Certificate) -> bool:
@@ -40,7 +39,7 @@ def is_valid_ca(cert: x509.Certificate) -> bool:
 
 
 def main(out: Annotated[Path, typer.Argument(help="PEM bundle to write.")]) -> None:
-    script = subprocess.run(["wslpath", "-w", Settings().windows_cas_script], capture_output=True, text=True, check=True).stdout.strip()
+    script = subprocess.run(["wslpath", "-w", WINDOWS_CAS], capture_output=True, text=True, check=True).stdout.strip()
     stores = json.loads(subprocess.run(["uv.exe", "run", "--no-project", "--script", script], capture_output=True, text=True, check=True).stdout)
 
     def load(store: str) -> set[x509.Certificate]:
