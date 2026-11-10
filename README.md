@@ -87,12 +87,13 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nvim
 
 ## Windows CA export (WSL)
 
-`just import-windows-ca OUTPUT.pem` (app: `nix run .#import-windows-ca -- OUTPUT.pem`) exports current public CA certificates from the
+`just import-windows-ca --of OUTPUT.pem` (app: `nix run .#import-windows-ca -- --of OUTPUT.pem`;
+`--of` defaults to `$IMPORT_WINDOWS_CA_OF`) exports current public CA certificates from the
 Windows Current User and Local Machine Root and intermediate stores. It excludes
 expired/not-yet-valid and explicitly distrusted certificates, removes duplicates,
 and exports no private keys. It requires WSL with Windows interop enabled.
 
-The system flake's `just import-windows-ca` writes `nix/certs/windows-ca.pem` there.
+The system flake's `.envrc` sets `IMPORT_WINDOWS_CA_OF` to its `nix/certs/windows-ca.pem`.
 
 Then set this in `~/.config/nixos/nix/configuration.nix` and rebuild:
 
@@ -150,9 +151,12 @@ Runtime secrets are plain sops-nix (`nix/modules/{home,nixos}/sops.nix`, age key
 `~/.config/age/keys.txt`); the host flake sets `sops.defaultSopsFile` and
 declares `sops.secrets`. Keeper and rbw are only sources: list
 `NAME=<source>` lines (e.g. `keeper:<uid>#note`,
-`ksm:keeper://<uid>/field/login`, `rbw:github#token`) in `secrets.sources` next to
-`secrets.yaml`, and `just sync-secrets DIR` (app: `nix run .#sync-secrets -- DIR`)
-copies them into `secrets.yaml` as key `NAME` and commits. It logs in to Keeper
+`ksm:keeper://<uid>/field/login`, `rbw:github#token`) in a sources file, and
+`nix run .#sync-secrets -- --if SOURCES --of secrets.yaml` copies them into the
+sops file as key `NAME` (`--if`/`--of` default to `$SYNC_SECRETS_IF`/`$SYNC_SECRETS_OF`,
+which the system flake's `.envrc` sets). Committing is the caller's job.
+Every app setting comes from a flag, else an env var, else an env file
+(`$ENV_FILE`, default `./.env`); with none set the app exits with an error. It logs in to Keeper
 first if the saved session expired. CLIs read their file at launch through
 `pkgs.withSecrets` (`nix/lib/with-secrets.nix`), so a token reaches only that
 process.

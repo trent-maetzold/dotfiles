@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["typer", "cryptography", "sh"]
+# dependencies = ["typer", "cryptography", "sh", "python-dotenv"]
 # [tool.uv]
 # exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
@@ -19,6 +19,7 @@ from typing import Annotated
 
 import sh
 import typer
+from dotenv import load_dotenv
 from cryptography import x509
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import Encoding
@@ -40,7 +41,7 @@ def is_valid_ca(cert: x509.Certificate) -> bool:
     return is_ca and cert.not_valid_before_utc <= now < cert.not_valid_after_utc
 
 
-def main(out: Annotated[Path, typer.Argument(help="PEM bundle to write.")]) -> None:
+def main(out: Annotated[Path, typer.Option("--of", envvar="IMPORT_WINDOWS_CA_OF", help="PEM bundle to write.")]) -> None:
     script = sh.wslpath("-w", WINDOWS_CAS).strip()
     stores = json.loads(sh.Command("uv.exe")("run", "--no-project", "--script", script))
 
@@ -61,4 +62,6 @@ def main(out: Annotated[Path, typer.Argument(help="PEM bundle to write.")]) -> N
 
 
 if __name__ == "__main__":
+    # Settings: flags, else env vars, else an env file ($ENV_FILE, default ./.env).
+    load_dotenv(os.environ.get("ENV_FILE", ".env"))
     typer.run(main)

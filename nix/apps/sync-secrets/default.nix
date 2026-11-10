@@ -5,6 +5,6 @@
 }:
 app "Refresh sops secrets from Keeper/rbw (secrets.sources)" (pkgs.lib.getExe (pkgs.writeShellApplication {
   name = "sync-secrets";
-  runtimeInputs = with pkgs; [uv keeper-commander keeper-secrets-manager-cli rbw sops git];
+  runtimeInputs = with pkgs; [uv keeper-commander keeper-secrets-manager-cli rbw sops];
   text = ''exec ${./sync-secrets.py} "$@"'';
 }))

@@ -1,12 +1,13 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["typer", "pydantic-settings", "python-dotenv", "gitpython", "sh"]
+# dependencies = ["typer", "pydantic-settings", "python-dotenv", "sh"]
 # [tool.uv]
 # exclude-newer = "2026-11-10T00:00:00Z"  # pins the resolution; bump to update
 # ///
-"""Copy each NAME=<source> line of DIR/secrets.sources into DIR/secrets.yaml as
-the sops key NAME, then commit DIR if it changed. Sources:
+"""Copy each NAME=<source> line of the sources file (--if) into the sops file
+(--of, which must exist) as the key NAME. sops finds its key the usual way
+(e.g. SOPS_AGE_KEY_FILE). Sources:
 
     API_TOKEN=keeper:<record-uid>                         Keeper Commander, password field
     JIRA_TOKEN=keeper:<record-uid>#note                   ... or a field by type or label, notes, or file (its one attachment)
@@ -26,13 +27,11 @@ from typing import Annotated
 
 import sh
 import typer
-from dotenv import dotenv_values
-from git import Repo
+from dotenv import dotenv_values, load_dotenv
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    sops_age_key_file: Path = Path.home() / ".config/age/keys.txt"
     ksm_config_file: Path | None = None
 
 
@@ -113,10 +112,11 @@ def keeper_logged_in() -> bool:
         return False
 
 
-def main(directory: Annotated[Path, typer.Argument(exists=True, file_okay=False)] = Path(".")) -> None:
-    os.chdir(directory)
-    os.environ["SOPS_AGE_KEY_FILE"] = str(settings.sops_age_key_file)
-    sources = {name: value or "" for name, value in dotenv_values("secrets.sources", interpolate=False).items()}
+def main(
+    infile: Annotated[Path, typer.Option("--if", envvar="SYNC_SECRETS_IF", exists=True, dir_okay=False, help="NAME=<source> lines.")],
+    outfile: Annotated[Path, typer.Option("--of", envvar="SYNC_SECRETS_OF", exists=True, dir_okay=False, help="sops file to update.")],
+) -> None:
+    sources = {name: value or "" for name, value in dotenv_values(infile, interpolate=False).items()}
 
     # Keeper: log in once (turning on persistent login) if the saved session expired.
     if any(s.startswith("keeper:") for s in sources.values()) and not keeper_logged_in():
@@ -125,15 +125,11 @@ def main(directory: Annotated[Path, typer.Argument(exists=True, file_okay=False)
 
     # Values travel over pipes only, never argv.
     for name, value in resolve(sources).items():
-        sh.sops.set("--idempotent", "--value-stdin", "secrets.yaml", f'["{name}"]', _in=json.dumps(value), _err=sys.stderr)
-
-    repo = Repo(".")
-    if repo.is_dirty(path="secrets.yaml"):
-        repo.git.commit("-qm", "sync-secrets", "--", "secrets.yaml", "secrets.sources")
-        print("sync-secrets: committed; update the flake input that points here")
-    else:
-        print("sync-secrets: no changes")
+        sh.sops.set("--idempotent", "--value-stdin", outfile, f'["{name}"]', _in=json.dumps(value), _err=sys.stderr)
+    typer.echo(f"sync-secrets: {len(sources)} secrets in {outfile}", err=True)
 
 
 if __name__ == "__main__":
+    # Settings: flags, else env vars, else an env file ($ENV_FILE, default ./.env).
+    load_dotenv(os.environ.get("ENV_FILE", ".env"))
     typer.run(main)

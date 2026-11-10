@@ -8,10 +8,10 @@ default:
 switch *args:
     nix run .#switch -- {{args}}
 
-# Refresh secrets.yaml in DIR from the Keeper/rbw sources in DIR/secrets.sources.
-sync-secrets dir:
-    nix run .#sync-secrets -- {{dir}}
+# Copy Keeper/rbw sources into a sops file (--if/--of, or SYNC_SECRETS_IF/_OF).
+sync-secrets *args:
+    nix run .#sync-secrets -- {{args}}
 
-# Export Windows Root/intermediate CAs (WSL) to a PEM bundle.
-import-windows-ca out:
-    nix run .#import-windows-ca -- {{out}}
+# Export Windows Root/intermediate CAs (WSL) to a PEM bundle (--of, or IMPORT_WINDOWS_CA_OF).
+import-windows-ca *args:
+    nix run .#import-windows-ca -- {{args}}
