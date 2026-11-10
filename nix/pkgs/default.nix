@@ -4,6 +4,7 @@
   pyproject-nix,
   pyproject-build-systems,
 }: final: prev: {
+  confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   magpie-cli = final.callPackage ./magpie-cli {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
