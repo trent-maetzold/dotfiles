@@ -38,11 +38,13 @@
     };
   };
 
+  # / and /etc are wiped every boot, so `passwd` can't persist. Passwords are
+  # hash files on /persist (bootstrap writes them); change one by rewriting it:
+  #   mkpasswd --method=yescrypt | sudo tee /persist/passwords/trent
+  users.mutableUsers = false;
   users.users.trent = {
     isNormalUser = true;
-    # userborn sets this when it creates trent at first boot. With mutableUsers,
-    # later `passwd` changes persist in /persist/etc/shadow.
-    initialHashedPassword = "$y$j9T$A.e1ypndL0LQDTqAh5tWE0$.yjCLnNcPJje89GjTOowWyMdUQNVwaDDmfpGhbHyeH2";
+    hashedPasswordFile = "/persist/passwords/trent";
     extraGroups = ["networkmanager" "wheel"];
   };
 

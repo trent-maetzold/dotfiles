@@ -16,6 +16,12 @@ def main [host: string] {
 
   ^nix run $"($config).system.build.destroyFormatMount"
 
-  # Passwords come from the config: userborn applies them at first boot.
+  # The host's hashedPasswordFile for trent; userborn reads it at every boot.
+  print "Login password for trent:"
+  mkdir /mnt/persist/passwords
+  ^chmod 700 /mnt/persist/passwords
+  ^mkpasswd --method=yescrypt | save /mnt/persist/passwords/trent
+  ^chmod 600 /mnt/persist/passwords/trent
+
   ^nixos-install --flake $"@flake@#($host)" --no-root-password
 }
