@@ -24,19 +24,14 @@ journalctl --user -u magpie -u paseo -f
 Hosts installed straight from this flake live in `nix/hosts/<host>`, each
 wired up (with its Home Manager `home.nix`) in `flake.nix`.
 
-From a NixOS live USB, install a host onto this machine with disko-install. It
-checks the host's disks exist, offers to remove stale UEFI hard drive boot
-entries, asks twice, then repartitions the disks and installs:
+From a NixOS live USB, install a host onto this machine. It offers to remove
+stale UEFI hard drive boot entries, runs the host's disko script (which asks
+before wiping and for the disk passphrase), then runs `nixos-install`. On
+first boot, log in with the password whose hash is the user's
+`initialHashedPassword` in the host config, then change it with `passwd`:
 
 ```sh
 nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn
-```
-
-Add an address to install onto another machine with nixos-anywhere instead (it
-must accept SSH as root, or pass `user@address`):
-
-```sh
-nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn 192.168.1.50
 ```
 
 Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#muninn`.

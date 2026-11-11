@@ -24,9 +24,6 @@
             content = {
               type = "luks";
               name = "muninn";
-              # Passphrase for the initial encryption only (bootstrap asks for
-              # it and writes it here); boot still prompts for it.
-              passwordFile = "/tmp/muninn-disk-password";
               settings.allowDiscards = true;
               content = {
                 type = "btrfs";

@@ -40,7 +40,9 @@
 
   users.users.trent = {
     isNormalUser = true;
-    hashedPasswordFile = "/persist/etc/trent-password-hash";
+    # userborn sets this when it creates trent at first boot. With mutableUsers,
+    # later `passwd` changes persist in /persist/etc/shadow.
+    initialHashedPassword = "$y$j9T$fIRF1YxCKEGt5Be8TfMgY0$6YvErZuo2AtLAk2MYP2gb4Lqd7HHoU42uMYLq30UQ45";
     extraGroups = ["networkmanager" "wheel"];
   };
 
