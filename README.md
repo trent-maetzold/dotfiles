@@ -24,8 +24,9 @@ journalctl --user -u magpie -u paseo -f
 Hosts installed straight from this flake live in `nix/hosts/<host>`, each
 wired up (with its Home Manager `home.nix`) in `flake.nix`.
 
-From a NixOS live USB, install a host onto this machine. If the disks don't
-already match the host's disko layout, it asks before formatting them:
+From a NixOS live USB, install a host onto this machine with disko-install. It
+checks the host's disks exist, offers to remove stale UEFI hard drive boot
+entries, asks twice, then repartitions the disks and installs:
 
 ```sh
 nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn
