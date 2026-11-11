@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "outlook": {
-      "command": "uvx.exe",
-      "args": ["--from", "outlook-classic-mcp", "outlook-mcp"]
-    }
-  }
-}
