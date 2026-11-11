@@ -1,16 +1,11 @@
 # muninn: the encrypted ephemeral-root laptop. The flake adds Home Manager and
 # ./home.nix for trent.
-{
-  inputs,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
-    inputs.disko.nixosModules.disko
-    inputs.preservation.nixosModules.default
     ./configuration.nix
     ./desktop.nix
     ./disko.nix
+    ./preservation.nix
   ];
 
   # Lets rootless Podman quadlets (dotfiles' quadlet-nix) run as user units.

@@ -1,5 +1,7 @@
 # muninn's 2 GiB ESP and LUKS2-encrypted Btrfs persistent storage.
-{
+{inputs, ...}: {
+  imports = [inputs.disko.nixosModules.disko];
+
   disko.devices = {
     disk.main = {
       type = "disk";
