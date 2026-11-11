@@ -1,9 +1,10 @@
 {
   description = "Home Manager dotfiles";
 
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
+    home-manager,
     import-tree,
     bkt,
     pyproject-nix,
@@ -13,7 +14,33 @@
   }: let
     inherit (nixpkgs) lib;
     systems = ["x86_64-linux" "aarch64-linux"];
+
+    trent = {
+      name = "trent";
+      home = "/home/trent";
+      fullName = "Trent Maetzold";
+      email = "trent@maetzold.net";
+    };
   in {
+    # Machines installed straight from this flake (`nix run .#bootstrap -- <host>`).
+    nixosConfigurations.muninn = nixpkgs.lib.nixosSystem {
+      specialArgs = {inherit inputs;};
+      modules = [
+        ./nix/hosts/muninn
+        home-manager.nixosModules.home-manager
+        {
+          nixpkgs.overlays = [self.overlays.default];
+
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            extraSpecialArgs = inputs // {user = trent;};
+            users.trent = import ./nix/hosts/muninn/home.nix;
+          };
+        }
+      ];
+    };
+
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
     # Local packages as pkgs.<name>; the host flake applies this overlay.
@@ -26,9 +53,11 @@
         (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
 
     # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
-    apps =
-      lib.genAttrs systems (system:
-        import ./nix/apps (nixpkgs.legacyPackages.${system}.extend self.overlays.default));
+    apps = lib.genAttrs systems (system:
+      import ./nix/apps {
+        pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.default;
+        inherit self;
+      });
 
     # Every module under nix/modules/{home,nixos}. Modules take this flake's
     # inputs and `user` as arguments, so the host passes them:
@@ -41,6 +70,17 @@
     # Core
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     import-tree.url = "github:denful/import-tree";
+
+    # Hosts (nix/hosts)
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    preservation.url = "github:nix-community/preservation";
 
     # Modules (nix/modules/{home,nixos})
     nixos-wsl = {

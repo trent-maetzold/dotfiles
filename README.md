@@ -19,6 +19,27 @@ systemctl --user status magpie paseo
 journalctl --user -u magpie -u paseo -f
 ```
 
+## Bootstrap a machine
+
+Hosts installed straight from this flake live in `nix/hosts/<host>`, each
+wired up (with its Home Manager `home.nix`) in `flake.nix`.
+
+From a NixOS live USB, install a host onto this machine. If the disks don't
+already match the host's disko layout, it asks before formatting them:
+
+```sh
+nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn
+```
+
+Add an address to install onto another machine with nixos-anywhere instead (it
+must accept SSH as root, or pass `user@address`):
+
+```sh
+nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn 192.168.1.50
+```
+
+Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#muninn`.
+
 ## Rebuild
 
 ```sh
