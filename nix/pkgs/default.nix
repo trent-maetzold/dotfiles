@@ -1,6 +1,7 @@
 # Local packages as an overlay (pkgs.<name>). When nixpkgs gains one, delete its line.
 {
   bkt,
+  fnox,
   uv2nix,
   pyproject-nix,
   pyproject-build-systems,
@@ -10,7 +11,7 @@
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt;
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
-  fnox = final.callPackage ./fnox {};
+  fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;
   magpie-cli = final.callPackage ./magpie-cli {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
