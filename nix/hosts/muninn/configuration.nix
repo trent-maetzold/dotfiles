@@ -42,7 +42,7 @@
     isNormalUser = true;
     # userborn sets this when it creates trent at first boot. With mutableUsers,
     # later `passwd` changes persist in /persist/etc/shadow.
-    initialHashedPassword = "!"; # locked: replace with a real yescrypt hash
+    initialHashedPassword = "$y$j9T$A.e1ypndL0LQDTqAh5tWE0$.yjCLnNcPJje89GjTOowWyMdUQNVwaDDmfpGhbHyeH2";
     extraGroups = ["networkmanager" "wheel"];
   };
 
