@@ -9,7 +9,10 @@
   # Wrap a package to run under `fnox exec`; see ../lib/with-fnox.nix.
   withFnox = import ../lib/with-fnox.nix final;
   billion-context = final.callPackage ./billion-context {};
-  bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt;
+  # Patched so `bkt pr create` always adds the repo's default reviewers.
+  bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [./bkt/default-reviewers.patch];
+  });
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;

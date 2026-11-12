@@ -1,0 +1,40 @@
+--- a/pkg/cmd/pr/pr.go	2026-11-12 21:32:17.213153741 +0000
++++ b/pkg/cmd/pr/pr.go	2026-11-12 21:32:17.252105882 +0000
+@@ -1018,8 +1018,8 @@
+ The title defaults to the first unique commit subject on the source branch.
+ 
+ Reviewers can be added with repeatable --reviewer flags.
+---with-default-reviewers merges the repository's configured default reviewers
+-into the reviewer list. On Cloud, the current user is automatically excluded.
++The repository's configured default reviewers are always merged into the
++reviewer list. On Cloud, the current user is automatically excluded.
+ 
+ On Data Center, --source-project and --source-repo select a fork repository for
+ the source branch. Each defaults to the destination project or repository when
+@@ -1080,7 +1080,9 @@
+ 	cmd.Flags().StringVar(&opts.Destination, "destination", "", "Target branch (alias for --target)")
+ 	cmd.Flags().StringSliceVar(&opts.Reviewers, "reviewer", nil, "Reviewer username or {UUID} (repeatable)")
+ 	cmd.Flags().BoolVar(&opts.CloseSource, "close-source", false, "Close source branch on merge")
+-	cmd.Flags().BoolVar(&opts.WithDefaultReviewers, "with-default-reviewers", false, "Add repository default reviewers")
++	// Patched: default reviewers are always added; the flag stays for compatibility.
++	cmd.Flags().BoolVar(&opts.WithDefaultReviewers, "with-default-reviewers", true, "Add repository default reviewers (always on)")
++	_ = cmd.Flags().MarkHidden("with-default-reviewers")
+ 	cmd.Flags().BoolVarP(&opts.Draft, "draft", "d", false, "Create pull request as a draft (DC 8.18+, Cloud always supported)")
+ 
+ 	return cmd
+@@ -1124,6 +1126,7 @@
+ 		sourceRepoSlug := cmdutil.FirstNonEmpty(opts.SourceRepo, repoSlug)
+ 
+ 		reviewers := opts.Reviewers
++		opts.WithDefaultReviewers = true // patched: enforced
+ 		if opts.WithDefaultReviewers {
+ 			defaultUsers, err := getDCDefaultReviewersForRepositories(
+ 				ctx, client,
+@@ -1182,6 +1185,7 @@
+ 		defer cancel()
+ 
+ 		reviewers := opts.Reviewers
++		opts.WithDefaultReviewers = true // patched: enforced
+ 		if opts.WithDefaultReviewers {
+ 			me, err := client.CurrentUser(ctx)
+ 			if err != nil {
