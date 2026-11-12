@@ -26,9 +26,10 @@ wired up (with its Home Manager `home.nix`) in `flake.nix`.
 
 From a NixOS live USB, install a host onto this machine. It offers to remove
 stale UEFI hard drive boot entries, runs the host's disko script (which asks
-before wiping and for the disk passphrase), asks for trent's login password
-(stored hashed at `/persist/passwords/trent`), then runs `nixos-install`. `/etc`
-is wiped every boot, so change the password by rewriting that file, not `passwd`:
+before wiping and for the disk passphrase), runs `nixos-install`, then enters
+the new system and runs `passwd trent`. Users are managed imperatively from
+there. `/` is wiped every boot; `/etc` is an overlay whose changes persist in
+`/.rw-etc/upper`, so `ls -R /.rw-etc/upper` shows how `/etc` has drifted.
 
 ```sh
 nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn

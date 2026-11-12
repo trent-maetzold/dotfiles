@@ -15,13 +15,21 @@ def main [host: string] {
   }
 
   ^nix run $"($config).system.build.destroyFormatMount"
-
-  # The host's hashedPasswordFile for trent; userborn reads it at every boot.
-  print "Login password for trent:"
-  mkdir /mnt/persist/passwords
-  ^chmod 700 /mnt/persist/passwords
-  ^mkpasswd --method=yescrypt | save /mnt/persist/passwords/trent
-  ^chmod 600 /mnt/persist/passwords/trent
-
   ^nixos-install --flake $"@flake@#($host)" --no-root-password
+
+  # Enter the new system with the /etc overlay's persisted layer bind-mounted,
+  # the way preservation does it at boot. Activation then mounts /etc on it,
+  # userborn creates the users, and passwd sets trent's password.
+  mkdir /mnt/persist/.rw-etc /mnt/.rw-etc
+  ^mount --bind /mnt/persist/.rw-etc /mnt/.rw-etc
+
+  let userborn = (
+    ^nix eval --json $"($config).systemd.services.userborn"
+      --apply "service: { command = service.serviceConfig.ExecStart; inherit (service) environment; }"
+    | from json
+  )
+  let environment = ($userborn.environment | transpose name value | each {|variable| $"($variable.name)='($variable.value)'" } | str join " ")
+
+  print "Login password for trent:"
+  ^nixos-enter --root /mnt -c $"export PATH=/run/current-system/sw/bin; env ($environment) ($userborn.command) && until passwd trent; do :; done"
 }

@@ -5,7 +5,7 @@
   app,
   self,
 }: let
-  path = pkgs.lib.makeBinPath (with pkgs; [efibootmgr mkpasswd nixos-install-tools]);
+  path = pkgs.lib.makeBinPath (with pkgs; [efibootmgr nixos-install-tools]);
 
   script =
     builtins.replaceStrings ["@path@" "@flake@"] [path "${self}"]

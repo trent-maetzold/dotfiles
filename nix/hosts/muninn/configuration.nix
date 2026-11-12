@@ -38,22 +38,18 @@
     };
   };
 
-  # / and /etc are wiped every boot, so `passwd` can't persist. Passwords are
-  # hash files on /persist (bootstrap writes them); change one by rewriting it:
-  #   mkpasswd --method=yescrypt | sudo tee /persist/passwords/trent
-  users.mutableUsers = false;
+  # /etc is an overlay; runtime changes land in /.rw-etc (see preservation.nix).
+  system.etc.overlay.enable = true;
+
+  # Bootstrap sets the first password; change it with `passwd`.
   users.users.trent = {
     isNormalUser = true;
-    hashedPasswordFile = "/persist/passwords/trent";
     extraGroups = ["networkmanager" "wheel"];
   };
 
   services = {
     openssh.enable = true;
-    userborn = {
-      enable = true;
-      passwordFilesLocation = "/persist/etc";
-    };
+    userborn.enable = true;
   };
 
   security.sudo.wheelNeedsPassword = true;
