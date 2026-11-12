@@ -13,6 +13,10 @@
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt.overrideAttrs (old: {
     patches = (old.patches or []) ++ [./bitbucket-cli/default-reviewers.patch];
   });
+  # Require an epic and assign the active Risk-YYYYMM sprint on issue creation.
+  jira-cli-go = prev.jira-cli-go.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [./jira-cli/risk-creation-defaults.patch];
+  });
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;

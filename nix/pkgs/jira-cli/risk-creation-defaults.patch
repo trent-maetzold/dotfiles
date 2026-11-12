@@ -1,0 +1,326 @@
+--- a/internal/cmd/issue/create/create.go
++++ b/internal/cmd/issue/create/create.go
+@@ -3,6 +3,8 @@
+ import (
+ 	"encoding/json"
+ 	"fmt"
++	"strconv"
++	"time"
+ 
+ 	"github.com/AlecAivazis/survey/v2"
+ 	"github.com/spf13/cobra"
+@@ -18,7 +20,9 @@
+ )
+ 
+ const (
+-	helpText = `Create an issue in a given project with minimal information.`
++	helpText = `Create an issue in a given project and assign the active Risk-YYYYMM sprint.
++Requires --parent for the epic, unless --no-epic is passed.
++Sub-tasks inherit their parent's epic and sprint; the parent must be in the current sprint.`
+ 	examples = `$ jira issue create
+ 
+ # Create issue in the configured project
+@@ -61,6 +65,7 @@
+ 	}
+ 
+ 	cmd.Flags().Bool(flagRaw, false, "Print output in JSON format")
++	cmd.Flags().Bool("no-epic", false, "Allow creation without an epic (sub-tasks still require --parent)")
+ 
+ 	return &cmd
+ }
+@@ -101,6 +106,16 @@
+ 		cmdutil.ExitIfError(err)
+ 	}
+ 
++	noEpic, err := cmd.Flags().GetBool("no-epic")
++	cmdutil.ExitIfError(err)
++	isSubtask, err := cc.validateEpic(noEpic, projectType, viper.GetString("epic.link"))
++	cmdutil.ExitIfError(err)
++	sprintID, err := resolveRiskSprint(client, time.Now())
++	cmdutil.ExitIfError(err)
++	if isSubtask {
++		cmdutil.ExitIfError(cc.validateSubtask(sprintID, noEpic))
++	}
++
+ 	params.Reporter = cmdcommon.GetRelevantUser(client, project, params.Reporter)
+ 	params.Assignee = cmdcommon.GetRelevantUser(client, project, params.Assignee)
+ 
+@@ -132,8 +147,8 @@
+ 			cr.WithCustomFields(configuredCustomFields)
+ 		}
+ 
+-		if handle := cmdutil.GetSubtaskHandle(params.IssueType, cc.issueTypes); handle != "" {
+-			cr.SubtaskField = handle
++		if isSubtask {
++			cr.SubtaskField = params.IssueType
+ 		}
+ 
+ 		return client.CreateV2(&cr)
+@@ -141,6 +156,12 @@
+ 
+ 	cmdutil.ExitIfError(err)
+ 
++	if !isSubtask {
++		if err := client.SprintIssuesAdd(strconv.Itoa(sprintID), issue.Key); err != nil {
++			cmdutil.ExitIfError(fmt.Errorf("issue %s was created, but sprint assignment failed; do not rerun create; retry with jira sprint add %d %s: %w", issue.Key, sprintID, issue.Key, err))
++		}
++	}
++
+ 	jsonFlag, err := cmd.Flags().GetBool(flagRaw)
+ 	cmdutil.ExitIfError(err)
+ 	if jsonFlag {
+@@ -267,7 +288,7 @@
+ func (cc *createCmd) getRemainingQuestions() []*survey.Question {
+ 	var qs []*survey.Question
+ 
+-	if cc.params.ParentIssueKey == "" {
++	if cc.params.ParentIssueKey == "" && !cc.params.NoInput {
+ 		for _, t := range cc.issueTypes {
+ 			if t.Subtask && (t.Name == cc.params.IssueType || (t.Handle != "" && t.Handle == cc.params.IssueType)) {
+ 				qs = append(qs, &survey.Question{
+--- a/internal/cmd/issue/create/risk_defaults.go
++++ b/internal/cmd/issue/create/risk_defaults.go
+@@ -0,0 +1,91 @@
++package create
++
++import (
++	"fmt"
++	"strings"
++	"time"
++
++	"github.com/ankitpokhrel/jira-cli/internal/cmdutil"
++	"github.com/ankitpokhrel/jira-cli/pkg/jira"
++	"github.com/spf13/viper"
++)
++
++// Sub-tasks inherit their parent's epic and sprint.
++func (cc *createCmd) validateEpic(noEpic bool, projectType, epicField string) (bool, error) {
++	if strings.EqualFold(cc.params.IssueType, jira.IssueTypeEpic) {
++		return false, fmt.Errorf("use jira epic create to create an epic")
++	}
++	var issueType *jira.IssueType
++	for _, t := range cc.issueTypes {
++		if strings.EqualFold(t.Name, cc.params.IssueType) || (t.Handle != "" && strings.EqualFold(t.Handle, cc.params.IssueType)) {
++			issueType = t
++			break
++		}
++	}
++	if issueType == nil {
++		return false, fmt.Errorf("unknown issue type %q", cc.params.IssueType)
++	}
++	cc.params.ParentIssueKey = strings.TrimSpace(cc.params.ParentIssueKey)
++	if cc.params.ParentIssueKey == "" && (issueType.Subtask || !noEpic) {
++		return false, fmt.Errorf("--parent is required; use --no-epic only for an ordinary issue without an epic")
++	}
++	if !issueType.Subtask && noEpic && cc.params.ParentIssueKey != "" {
++		return false, fmt.Errorf("--parent and --no-epic cannot be combined for an ordinary issue")
++	}
++	if cc.params.ParentIssueKey != "" && !noEpic && projectType != jira.ProjectTypeNextGen && strings.TrimSpace(epicField) == "" {
++		return false, fmt.Errorf("configure epic.link before creating an issue with an epic")
++	}
++	if cc.params.ParentIssueKey != "" {
++		cc.params.ParentIssueKey = cmdutil.GetJiraIssueKey(viper.GetString("project.key"), cc.params.ParentIssueKey)
++	}
++	return issueType.Subtask, nil
++}
++
++func (cc *createCmd) validateSubtask(sprintID int, noEpic bool) error {
++	jql := fmt.Sprintf("key = %q AND sprint = %d", cc.params.ParentIssueKey, sprintID)
++	if !noEpic {
++		field := strings.TrimPrefix(viper.GetString("epic.link"), "customfield_")
++		jql += fmt.Sprintf(" AND cf[%s] is not EMPTY", field)
++	}
++	parents, err := cc.client.SearchV2(jql, 0, 1)
++	if err != nil {
++		return fmt.Errorf("check sub-task parent: %w", err)
++	}
++	if len(parents.Issues) != 1 {
++		return fmt.Errorf("sub-task parent must belong to the current Risk sprint and have an epic (or pass --no-epic)")
++	}
++	return nil
++}
++
++func resolveRiskSprint(client *jira.Client, now time.Time) (int, error) {
++	// The configured board can be Kanban; Risk sprints belong to scrum board 84.
++	const boardID, pageSize = 84, 50
++	want := "Risk-" + now.Format("200601")
++	var sprintID int
++	for start := 0; ; {
++		page, err := client.Sprints(boardID, "state="+jira.SprintStateActive, start, pageSize)
++		if err != nil {
++			return 0, fmt.Errorf("list active Risk sprints: %w", err)
++		}
++		for _, sprint := range page.Sprints {
++			if sprint.Name == want && sprint.Status == jira.SprintStateActive {
++				if sprintID != 0 && sprintID != sprint.ID {
++					return 0, fmt.Errorf("multiple active sprints named %q", want)
++				}
++				sprintID = sprint.ID
++			}
++		}
++		if page.IsLast {
++			break
++		}
++		next := page.StartAt + len(page.Sprints)
++		if next <= start {
++			return 0, fmt.Errorf("Risk sprint pagination did not advance")
++		}
++		start = next
++	}
++	if sprintID == 0 {
++		return 0, fmt.Errorf("no active sprint named %q on board %d; issue was not created", want, boardID)
++	}
++	return sprintID, nil
++}
+--- a/internal/cmd/issue/create/risk_defaults_test.go
++++ b/internal/cmd/issue/create/risk_defaults_test.go
+@@ -0,0 +1,149 @@
++package create
++
++import (
++	"fmt"
++	"net/http"
++	"net/http/httptest"
++	"testing"
++	"time"
++
++	"github.com/ankitpokhrel/jira-cli/internal/cmdcommon"
++	"github.com/ankitpokhrel/jira-cli/pkg/jira"
++	"github.com/spf13/viper"
++)
++
++func TestEpicPolicy(t *testing.T) {
++	viper.Set("project.key", "RD")
++	defer viper.Reset()
++	for _, tc := range []struct {
++		name, kind, parent, field  string
++		noEpic, subtask, wantError bool
++	}{
++		{"missing", "Bug", "", "customfield_10452", false, false, true},
++		{"linked", "Bug", "3534", "customfield_10452", false, false, false},
++		{"explicit opt out", "Bug", "", "", true, false, false},
++		{"contradictory", "Bug", "RD-3534", "customfield_10452", true, false, true},
++		{"unconfigured", "Bug", "RD-3534", "", false, false, true},
++		{"whitespace", "Bug", " ", "customfield_10452", false, false, true},
++		{"subtask missing", "Sub-task", "", "customfield_10452", true, true, true},
++		{"subtask parent", "Sub-task", "3534", "customfield_10452", false, true, false},
++		{"subtask handle", "child", "3534", "customfield_10452", false, true, false},
++		{"epic", "Epic", "", "", true, false, true},
++		{"unknown", "Typo", "", "", true, false, true},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			cc := createCmd{
++				params:     &cmdcommon.CreateParams{IssueType: tc.kind, ParentIssueKey: tc.parent},
++				issueTypes: []*jira.IssueType{{Name: "Bug"}, {Name: "Sub-task", Handle: "child", Subtask: true}},
++			}
++			subtask, err := cc.validateEpic(tc.noEpic, "classic", tc.field)
++			if (err != nil) != tc.wantError {
++				t.Fatalf("error = %v", err)
++			}
++			if err == nil && subtask != tc.subtask {
++				t.Fatalf("subtask = %v", subtask)
++			}
++			if err == nil && tc.parent == "3534" && cc.params.ParentIssueKey != "RD-3534" {
++				t.Fatal("parent not normalized")
++			}
++		})
++	}
++}
++
++func TestResolveRiskSprint(t *testing.T) {
++	for _, tc := range []struct {
++		name, month, values string
++		wantError           bool
++	}{
++		{"exact", "2026-11", `{"id":343,"name":"Risk-202611","state":"active"}`, false},
++		{"wrong month", "2026-11", `{"id":343,"name":"Risk-202610","state":"active"}`, true},
++		{"closed", "2026-11", `{"id":343,"name":"Risk-202611","state":"closed"}`, true},
++		{"suffix", "2026-11", `{"id":343,"name":"Risk-202611-other","state":"active"}`, true},
++		{"ambiguous", "2026-11", `{"id":343,"name":"Risk-202611","state":"active"},{"id":344,"name":"Risk-202611","state":"active"}`, true},
++		{"december", "2026-12", `{"id":344,"name":"Risk-202612","state":"active"}`, false},
++		{"january", "2027-01", `{"id":345,"name":"Risk-202701","state":"active"}`, false},
++		{"missing", "2026-11", ``, true},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++				if r.URL.Path != "/rest/agile/1.0/board/84/sprint" || r.URL.Query().Get("state") != "active" {
++					t.Errorf("unexpected request %s", r.URL)
++				}
++				fmt.Fprintf(w, `{"isLast":true,"values":[%s]}`, tc.values)
++			}))
++			defer server.Close()
++			now, _ := time.Parse("2006-01", tc.month)
++			id, err := resolveRiskSprint(jira.NewClient(jira.Config{Server: server.URL}), now)
++			if (err != nil) != tc.wantError {
++				t.Fatalf("id=%d error=%v", id, err)
++			}
++			if err == nil && id == 0 {
++				t.Fatal("missing sprint ID")
++			}
++		})
++	}
++}
++
++func TestResolveRiskSprintPaginationAndErrors(t *testing.T) {
++	for _, mode := range []string{"later page", "stalled", "http error"} {
++		t.Run(mode, func(t *testing.T) {
++			calls := 0
++			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++				calls++
++				if mode == "http error" {
++					http.Error(w, "unavailable", http.StatusServiceUnavailable)
++					return
++				}
++				if mode == "stalled" {
++					fmt.Fprint(w, `{"isLast":false,"startAt":0,"values":[]}`)
++					return
++				}
++				if calls == 1 {
++					fmt.Fprint(w, `{"isLast":false,"startAt":0,"values":[{"id":1,"name":"Other","state":"active"}]}`)
++					return
++				}
++				if r.URL.Query().Get("startAt") != "1" {
++					t.Errorf("unexpected pagination %s", r.URL)
++				}
++				fmt.Fprint(w, `{"isLast":true,"startAt":1,"values":[{"id":343,"name":"Risk-202611","state":"active"}]}`)
++			}))
++			defer server.Close()
++			id, err := resolveRiskSprint(jira.NewClient(jira.Config{Server: server.URL}), time.Date(2026, 11, 12, 0, 0, 0, 0, time.UTC))
++			if mode == "later page" {
++				if err != nil || id != 343 || calls != 2 {
++					t.Fatalf("id=%d calls=%d error=%v", id, calls, err)
++				}
++			} else if err == nil {
++				t.Fatal("expected error")
++			}
++		})
++	}
++}
++
++func TestSubtaskInheritance(t *testing.T) {
++	viper.Set("epic.link", "customfield_10452")
++	defer viper.Reset()
++	for _, noEpic := range []bool{false, true} {
++		for _, present := range []bool{false, true} {
++			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++				want := `key = "RD-123" AND sprint = 343`
++				if !noEpic {
++					want += " AND cf[10452] is not EMPTY"
++				}
++				if r.URL.Query().Get("jql") != want {
++					t.Errorf("query = %s", r.URL.Query().Get("jql"))
++				}
++				if present {
++					fmt.Fprint(w, `{"issues":[{"key":"RD-123"}]}`)
++				} else {
++					fmt.Fprint(w, `{"issues":[]}`)
++				}
++			}))
++			cc := createCmd{client: jira.NewClient(jira.Config{Server: server.URL}), params: &cmdcommon.CreateParams{ParentIssueKey: "RD-123"}}
++			if err := cc.validateSubtask(343, noEpic); (err == nil) != present {
++				t.Errorf("present=%v error=%v", present, err)
++			}
++			server.Close()
++		}
++	}
++}

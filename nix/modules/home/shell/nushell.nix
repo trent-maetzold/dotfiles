@@ -39,23 +39,14 @@
       use custom-completions/ssh/ssh-completions.nu *
       use custom-completions/tar/tar-completions.nu *
 
+      # oh-my-zsh's git aliases; nushell-only since some call nushell functions.
       use aliases/git/git-aliases.nu *
-      use aliases/eza/eza-aliases.nu *
-      use aliases/bat/bat-aliases.nu *
 
       # Prefixed, so argx's `parse` doesn't shadow the builtin (fzf's integration uses it).
       use modules/argx
       use modules/lg
       use modules/kubernetes *
 
-      def lsa [] { ls -al | table --width 350 }
-      def dus [path: string = ""] {
-        if $path == "" { du | table --width 350 } else { du $path | table --width 350 }
-      }
-      def genpass [length: int = 12] {
-        let bytes = (($length * 3 + 2) / 4 | math ceil) + 3
-        ^openssl rand -base64 $bytes | str trim | str substring 0..<$length
-      }
     '';
   };
 
