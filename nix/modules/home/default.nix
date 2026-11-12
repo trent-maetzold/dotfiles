@@ -23,6 +23,15 @@
   programs.ripgrep.enable = true;
   programs.fd.enable = true;
   programs.fzf.enable = true;
+  programs.zoxide = {
+    enable = true;
+    options = ["--cmd cd"]; # cd learns frecent dirs; nushell's ls stays structured
+  };
+  programs.bat.enable = true;
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+  };
   # Native dependencies
   programs.gcc.enable = true;
 
@@ -35,6 +44,8 @@
 
     # General utilities
     curl
+    jq
+    yq-go
     unzip
     just # programs.just is deprecated upstream
 
