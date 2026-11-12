@@ -21,7 +21,4 @@ in {
   home.file.".pi-lens".source = link "/packages/pi-lens";
   xdg.configFile."billion-context".source = link "/packages/billion-context";
   xdg.configFile."ponytail".source = link "/packages/ponytail";
-
-  # Mounted into the magpie container (ai/magpie.nix) so it finds this agent's sign-in.
-  virtualisation.quadlet.containers.magpie.containerConfig.volumes = ["${config.home.homeDirectory}/.pi:/config/home/.pi"];
 }
