@@ -9,6 +9,7 @@
   home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
 
   home.sessionVariables = {
+    DO_NOT_TRACK = "1";
     SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     SSL_CERT_DIR = "/etc/ssl/certs";
@@ -27,7 +28,24 @@
     enable = true;
     options = ["--cmd cd"]; # cd learns frecent dirs; nushell's ls stays structured
   };
-  programs.bat.enable = true;
+  programs.bat = {
+    enable = true;
+    config.pager = "less -FR";
+  };
+  programs.eza = {
+    enable = true;
+    enableNushellIntegration = false; # nushell's ls is better; eza aliases come from nu_scripts
+    git = true;
+    icons = "auto";
+  };
+  programs.tealdeer = {
+    enable = true;
+    enableAutoUpdates = true;
+    settings.display = {
+      compact = false;
+      use_pager = true;
+    };
+  };
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
@@ -42,11 +60,39 @@
     gnumake
     pkg-config
 
-    # General utilities
+    # General utilities (after github:ryan4yin/nix-config)
     curl
+    xh # friendlier curl for APIs
+    aria2
+    croc # send files between machines
     jq
     yq-go
+    sad # find-and-replace with preview
+    ast-grep
     unzip
+    zip
+    p7zip
+    file
+    tree
+    lsof
+    pv
+    trash-cli
+    fastfetch
+    visidata # TUI for csv/xlsx/json/sqlite
+    pgcli
+    nvd # diff two system builds
+
+    # Disk and network
+    duf
+    gdu
+    mtr
+    gping
+    doggo # dig, readable
+    dnsutils
+    nmap
+    socat
+    tcpdump
+    iperf3
     just # programs.just is deprecated upstream
 
     # Docs lookup for agents
