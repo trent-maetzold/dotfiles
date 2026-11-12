@@ -3,7 +3,7 @@
   "defaultProvider": "magpie",
   "lastChangelogVersion": "1.5.0",
   "packages": [
-    "npm:billion-context",
+    "~/.local/share/pi/packages/billion-context",
     "npm:@dietrichgebert/ponytail",
     "npm:openwiki",
     "npm:pi-caveman",
