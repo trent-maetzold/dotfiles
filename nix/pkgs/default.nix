@@ -13,6 +13,7 @@
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;
   magpie-cli = final.callPackage ./magpie-cli {};
+  mu = final.callPackage ./mu {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
   outlook-cli = final.callPackage ./outlook-cli {};

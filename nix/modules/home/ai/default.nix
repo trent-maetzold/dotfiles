@@ -12,6 +12,7 @@
     [
       # openwiki CLI; its pi extension is installed by pi ("npm:openwiki" in config/pi/agent/settings.json).
       pkgs.openwiki-cli
+      pkgs.mu # pi plus a small judge model for yes/no calls (~/.mu)
     ]
     ++ (with llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
       beads # bd: issue tracker for agent workflows
