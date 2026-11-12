@@ -78,6 +78,7 @@
     # General utilities (after github:ryan4yin/nix-config)
     curl
     xh # friendlier curl for APIs
+    openssl # genpass, cert inspection
     aria2
     croc # send files between machines
     jq
