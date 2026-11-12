@@ -2,6 +2,8 @@
 # into the mutable dsh-tui profile (~/.dsh/profiles/dsh-tui); `dsh-tui` adds it
 # on first launch, and its own /update keeps it current.
 {
+  lib,
+  config,
   pkgs,
   llm-agents,
   ...
@@ -20,4 +22,8 @@
   };
 in {
   home.packages = [dsh dsh-tui];
+
+  # Mounted into the magpie container (ai/magpie.nix) so it finds this agent's sign-in.
+  virtualisation.quadlet.containers.magpie.containerConfig.volumes = ["${config.home.homeDirectory}/.dsh:/config/home/.dsh"];
+  home.activation.dshDir = lib.hm.dag.entryBefore ["writeBoundary"] "mkdir -p ~/.dsh";
 }
