@@ -23,13 +23,8 @@ def main [host: string] {
   mkdir /mnt/persist/.rw-etc /mnt/.rw-etc
   ^mount --bind /mnt/persist/.rw-etc /mnt/.rw-etc
 
-  let userborn = (
-    ^nix eval --json $"($config).systemd.services.userborn"
-      --apply "service: { command = service.serviceConfig.ExecStart; inherit (service) environment; }"
-    | from json
-  )
-  let environment = ($userborn.environment | transpose name value | each {|variable| $"($variable.name)='($variable.value)'" } | str join " ")
+  let userborn = (r#'@userborn@'# | from json | get $host)
 
   print "Login password for trent:"
-  ^nixos-enter --root /mnt -c $"export PATH=/run/current-system/sw/bin; env ($environment) ($userborn.command) && until passwd trent; do :; done"
+  ^nixos-enter --root /mnt -c $"export PATH=/run/current-system/sw/bin; ($userborn) && until passwd trent; do :; done"
 }

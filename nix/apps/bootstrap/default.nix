@@ -5,11 +5,23 @@
   app,
   self,
 }: let
-  path = pkgs.lib.makeBinPath (with pkgs; [efibootmgr nixos-install-tools]);
+  inherit (pkgs) lib;
+
+  path = lib.makeBinPath (with pkgs; [efibootmgr nixos-install-tools]);
+
+  # Each host's userborn unit as a shell command, run by hand in the chroot.
+  # Its store paths are used only inside /mnt, where nixos-install puts them,
+  # so the app itself needn't depend on them.
+  userbornCommands = builtins.mapAttrs (host: system: let
+    service = system.config.systemd.services.userborn;
+  in
+    builtins.unsafeDiscardStringContext
+    "env ${lib.escapeShellArgs (lib.mapAttrsToList (name: value: "${name}=${value}") service.environment)} ${service.serviceConfig.ExecStart}")
+  self.nixosConfigurations;
 
   script =
-    builtins.replaceStrings ["@path@" "@flake@"] [path "${self}"]
+    builtins.replaceStrings ["@path@" "@flake@" "@userborn@"] [path "${self}" (builtins.toJSON userbornCommands)]
     (builtins.readFile ./bootstrap.nu);
 in
   app "Install a host from this flake onto this machine (live USB)"
-  (pkgs.lib.getExe (pkgs.writers.writeNuBin "bootstrap" script))
+  (lib.getExe (pkgs.writers.writeNuBin "bootstrap" script))
