@@ -5,7 +5,7 @@
 // as providers magpie-systemone and magpie-images. Take Pi off magpie in
 // magpie to have this file gone; with this first line changed, magpie
 // leaves the file to you.
-const MAGPIE = {"apiKey":"magpie","baseUrl":"http://127.0.0.1:3425/v1","classifiers":[],"images":[{"id":"codex/gpt-image-2","name":"GPT Image · Codex","input":["text"]}]};
+const MAGPIE = {"apiKey":"magpie","baseUrl":"http://127.0.0.1:3425/v1","classifiers":[{"id":"llama-swap/d3-mini","name":"d3-mini · llama-swap"}],"images":[{"id":"codex/gpt-image-2","name":"GPT Image · Codex","input":["text"]}]};
 
 export default async function (pi) {
 	// a Pi older than its classifier models (1.x) has no such module, or a
