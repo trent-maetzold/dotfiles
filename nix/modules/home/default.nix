@@ -7,6 +7,7 @@
   home.preferXdgDirectories = true;
   # Shell-agnostic aliases (Home Manager writes them for every enabled shell).
   home.shellAliases = {
+    wtf = "wtfutil";
     dot = "nvim ${config.home.homeDirectory}/.config/dotfiles";
     l = "eza -lah --git"; # oh-my-zsh's l
     # eza and bat aliases from nu_scripts (ryan4yin's setup)
@@ -19,7 +20,6 @@
     b = "bat";
     bn = "bat --number";
     bp = "bat --plain";
-    genpass = "openssl rand -base64 18";
   };
   home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
 

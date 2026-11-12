@@ -28,6 +28,14 @@
       };
     };
     extraConfig = ''
+      # ryan4yin's helpers (nushell-only: they use nu tables/types).
+      def lsa [] { ls -al | table --width 350 }
+      def dus [path: string = "."] { du $path | table --width 350 }
+      def genpass [length: int = 12] {
+        let bytes = (($length * 3 + 2) / 4 | math ceil) + 3
+        ^openssl rand -base64 $bytes | str trim | str substring 0..<$length
+      }
+
       const NU_LIB_DIRS = $NU_LIB_DIRS ++ ['${pkgs.nu_scripts}/share/nu_scripts']
 
       use custom-completions/curl/curl-completions.nu *
