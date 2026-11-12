@@ -6,11 +6,11 @@
 }:
 stdenv.mkDerivation rec {
   pname = "magpie-cli";
-  version = "0.1.3940";
+  version = "0.1.3951";
 
   src = fetchurl {
     url = "https://github.com/yetone/magpie/releases/download/v${version}/magpie-cli-linux-amd64";
-    hash = "sha256-D0D69qHOxynmmyiWirPvlEC99Xk8uRJN3sevYGx526A=";
+    hash = "sha256-Rlfew50pHGjJormVVrB7MOt0V1B5S/OW29vIuoT2oec=";
   };
 
   dontUnpack = true;
