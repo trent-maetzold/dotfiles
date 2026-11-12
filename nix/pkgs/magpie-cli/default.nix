@@ -4,13 +4,13 @@
   fetchurl,
   autoPatchelfHook,
 }:
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   pname = "magpie-cli";
-  version = "0.1.3419";
+  version = "0.1.3940";
 
   src = fetchurl {
-    url = "https://usemagpie.ai/files/v0.1.3419/magpie-cli-linux-amd64";
-    sha256 = "83f47ff506b1ddbc4de2d4faf789735881a221940a40a6fb4491e4f5bcba1789";
+    url = "https://github.com/yetone/magpie/releases/download/v${version}/magpie-cli-linux-amd64";
+    hash = "sha256-D0D69qHOxynmmyiWirPvlEC99Xk8uRJN3sevYGx526A=";
   };
 
   dontUnpack = true;
