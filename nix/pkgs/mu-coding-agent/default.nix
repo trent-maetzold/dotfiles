@@ -23,7 +23,7 @@
   };
 in
   stdenv.mkDerivation rec {
-    pname = "mu";
+    pname = "mu-coding-agent";
     version = "0.3.11";
     src = npm "mu-agent" version "sha512-i1lLjwffPN1Mf79zUYV4ZulM/w4DSaRL92RCIXvc3g8L8BZlpw8o3UdPtEwGbJEbLI4Jm9tYmgKACaEo0OvClw==";
 

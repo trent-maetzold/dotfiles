@@ -13,7 +13,7 @@
       # openwiki CLI; its pi extension is installed by pi ("npm:openwiki" in config/pi/agent/settings.json).
       pkgs.openwiki-cli
       pkgs.rtk # CLI proxy that trims command output for agents
-      pkgs.mu # pi plus a small judge model for yes/no calls (~/.mu)
+      pkgs.mu-coding-agent # pi plus a small judge model for yes/no calls (~/.mu)
     ]
     ++ (with llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
       beads # bd: issue tracker for agent workflows

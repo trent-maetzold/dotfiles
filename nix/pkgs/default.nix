@@ -11,13 +11,13 @@
   billion-context = final.callPackage ./billion-context {};
   # Patched so `bkt pr create` always adds the repo's default reviewers.
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [./bkt/default-reviewers.patch];
+    patches = (old.patches or []) ++ [./bitbucket-cli/default-reviewers.patch];
   });
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;
   magpie-cli = final.callPackage ./magpie-cli {};
-  mu = final.callPackage ./mu {};
+  mu-coding-agent = final.callPackage ./mu-coding-agent {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
   outlook-cli = final.callPackage ./outlook-cli {};
