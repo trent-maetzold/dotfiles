@@ -9,6 +9,7 @@
   # Wrap a package to run under `fnox exec`; see ../lib/with-fnox.nix.
   withFnox = import ../lib/with-fnox.nix final;
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt;
+  codewhale = final.callPackage ./codewhale {};
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;

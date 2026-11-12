@@ -8,15 +8,13 @@ Development tools are declared in `nix/modules/home/`; language toolchains live 
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
 `import-tree` to import every module recursively, so new modules need no manual
 import entries. Package expressions stay outside that tree in `nix/pkgs/`.
-Magpie is a
-pinned terminal-only binary; Paseo is the daemon/CLI package, not the desktop
-app. Both run as systemd user services (`magpie.service` and `paseo.service`),
-starting at login and restarting on failure. Magpie runs the gateway without a
-web UI; Paseo runs its foreground daemon. Inspect them with:
+Magpie is a pinned terminal-only binary running the gateway without a web UI,
+and the herdr-core daemon keeps agent terminals alive. Both run as systemd user
+services, starting at login and restarting on failure:
 
 ```sh
-systemctl --user status magpie paseo
-journalctl --user -u magpie -u paseo -f
+systemctl --user status magpie herdr-core
+journalctl --user -u magpie -u herdr-core -f
 ```
 
 ## Bootstrap a machine
