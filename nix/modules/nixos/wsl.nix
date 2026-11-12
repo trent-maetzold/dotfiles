@@ -16,6 +16,8 @@
     environment.systemPackages = with pkgs; [
       wsl-open
       (writeShellScriptBin "xdg-open" ''exec ${wsl-open}/bin/wsl-open "$@"'')
+      # The Windows driver's nvidia-smi; it finds NVML only on the driver path.
+      (writeShellScriptBin "nvidia-smi" ''LD_LIBRARY_PATH=/run/opengl-driver/lib exec /usr/lib/wsl/lib/nvidia-smi "$@"'')
     ];
     environment.variables.BROWSER = "wsl-open";
 
@@ -26,5 +28,8 @@
     hardware.nvidia-container-toolkit.suppressNvidiaDriverAssertion = true;
     hardware.nvidia.package = pkgs.runCommand "wsl-nvidia-driver-stub" {outputs = ["out" "lib"];} "mkdir -p $out $lib";
     nixpkgs.config.allowUnfreePackages = ["nvidia-container-toolkit"];
+    # WSL's libcuda dlopens libdxcore.so by bare name, so CUDA programs need the
+    # driver dir on the search path.
+    systemd.services.llama-swap.environment.LD_LIBRARY_PATH = "/run/opengl-driver/lib";
   };
 }
