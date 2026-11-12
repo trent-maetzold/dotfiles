@@ -25,6 +25,7 @@ in {
       mods = {
         todo = {
           type = "todo";
+          enabled = true;
           title = "Todo";
           filename = "todo.yml"; # in ~/.config/wtf; edit in the widget (n new, space toggle)
           position = {
@@ -37,6 +38,7 @@ in {
         };
         resources = {
           type = "resourceusage";
+          enabled = true;
           position = {
             top = 0;
             left = 1;
