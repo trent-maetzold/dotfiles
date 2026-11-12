@@ -136,8 +136,8 @@ Tmux sessions act as workspaces: `w` opens the picker, `N` creates one,
 
 ## Python projects
 
-Projects use direnv: an `.envrc` with `use mise` loads `mise.toml` (tools and env)
-on entering the directory. Project secrets go in a project `fnox.toml`
+Projects use mise: its shell hook loads `mise.toml` (tools and `[env]`) on entering
+the directory; direnv is only for `.envrc` files such as nix-direnv's `use flake`. Project secrets go in a project `fnox.toml`
 (`fnox exec -- <cmd>`). Python packages with C extensions (psycopg2, gssapi) build on the
 host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
 are on PATH. uv passes gssapi the krb5 header path it needs
