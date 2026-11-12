@@ -25,7 +25,7 @@ Hosts installed straight from this flake live in `nix/hosts/<host>`, each
 wired up (with its Home Manager `home.nix`) in `flake.nix`.
 
 From a NixOS live USB, install a host onto this machine. It offers to remove
-stale UEFI hard drive boot entries, runs the host's disko script (which asks
+all UEFI boot entries (firmware re-adds its built-in ones), runs the host's disko script (which asks
 before wiping and for the disk passphrase), runs `nixos-install`, then enters
 the new system and runs `passwd trent`. Users are managed imperatively from
 there. `/` is wiped every boot; `/etc` is an overlay whose changes persist in

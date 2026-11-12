@@ -8,8 +8,9 @@ def main [host: string] {
   $env.NIX_CONFIG = "experimental-features = nix-command flakes"
   let config = $"@flake@#nixosConfigurations.($host).config"
 
-  if (input "Remove all UEFI hard drive boot entries? [y/N] ") == "y" {
-    for entry in (^efibootmgr | parse --regex '^Boot(?<number>[0-9A-F]{4})\*? [^\t]*\tHD\(') {
+  # Firmware re-adds its built-in entries; nixos-install adds the new one.
+  if (input "Remove all UEFI boot entries? [y/N] ") == "y" {
+    for entry in (^efibootmgr | parse --regex '^Boot(?<number>[0-9A-F]{4})') {
       ^efibootmgr --quiet --bootnum $entry.number --delete-bootnum
     }
   }
