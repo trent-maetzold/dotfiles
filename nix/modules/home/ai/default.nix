@@ -20,4 +20,6 @@
       plannotator # plan and code review for agents
       ralph-tui # agent loop orchestrator
     ]);
+
+  home.shellAliases.rt = "ralph-tui";
 }
