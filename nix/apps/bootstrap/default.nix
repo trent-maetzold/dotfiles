@@ -7,7 +7,7 @@
 }: let
   inherit (pkgs) lib;
 
-  path = lib.makeBinPath (with pkgs; [efibootmgr nixos-install-tools util-linux]);
+  path = lib.makeBinPath (with pkgs; [efibootmgr mkpasswd nixos-install-tools util-linux]);
 
   # What bootstrap needs from each host: its disko disks, and its userborn unit
   # as a shell command to run by hand in the chroot. The command's store paths
