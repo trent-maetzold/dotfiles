@@ -30,7 +30,7 @@ trent as admin), `desktop`, `hardware`. `common`, `services` and `wsl` make up
 | Host | Machine | Desktop |
 | --- | --- | --- |
 | `muninn` | trent's laptop | Niri + Noctalia, Home Manager for trent |
-| `sif` | Justine's Yoga 720-13IKB | XFCE (X11), Flatpak apps via GNOME Software |
+| `sif` | Justine's Yoga 720-13IKB | XFCE (X11), Flatpak apps via GNOME Software; `/` is a Btrfs subvolume wiped each boot (last boot's kept as `@old-root`) |
 
 From a NixOS live USB, install a host onto this machine. It offers to remove
 all UEFI boot entries (firmware re-adds its built-in ones), runs the host's disko script (which asks

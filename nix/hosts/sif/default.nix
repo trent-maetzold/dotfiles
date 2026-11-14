@@ -19,8 +19,9 @@
   # Generate on the laptop before installing (see README); until then, no report.
   hardware.facter.reportPath = lib.mkIf (builtins.pathExists ./facter.json) ./facter.json;
 
-  # 8 GB of RAM: keep tmpfs / small and compress swap in RAM.
-  disko.devices.nodev."/".mountOptions = ["size=2G" "mode=755"];
+  # / on disk, wiped every boot (machine/disko.nix), not in her 8 GB of RAM.
+  machine.root = "btrfs";
+  # Compressed swap in RAM.
   zramSwap.enable = true;
 
   # trent logs in over SSH with his keys only (machine/admin.nix).
