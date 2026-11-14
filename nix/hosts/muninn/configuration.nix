@@ -44,6 +44,7 @@
   # Bootstrap sets the first password; change it with `passwd`.
   users.users.trent = {
     isNormalUser = true;
+    shell = pkgs.nushell;
     extraGroups = ["networkmanager" "wheel"];
   };
 

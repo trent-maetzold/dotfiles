@@ -130,6 +130,75 @@ Windows chain/revocation policies. Keep machine-specific exports outside dotfile
 add them to Git only if the system flake is Git-backed and your policy allows it.
 The exporter itself does not change system trust or activate NixOS.
 
+## Desktop shortcuts (muninn)
+
+Niri's keymap borrows from [Ryan's Niri configuration](https://github.com/ryan4yin/nix-config/blob/1bef53bfe698a99db9298b4cdd18f212ebfc8e13/home/linux/gui/niri/conf/keybindings.kdl),
+keeping the existing Shift-to-move convention. `Mod` means Super/Windows.
+The **[keyboard reference](docs/keybindings.md)** covers Niri monitors/layouts,
+Noctalia panels and media keys.
+The table below is the short version.
+
+| Keys | Action |
+| --- | --- |
+| Mod+Space (or Mod+D) | Toggle Noctalia launcher |
+| Mod+Return / Mod+Q | Terminal / close window |
+| Mod+grave (Super+`) | Toggle dropkitty running pi |
+| Mod+H/L | Focus column left/right (arrows still work) |
+| Mod+J / Mod+PageUp | Next/down or previous/up workspace |
+| Mod+Shift+H/L | Move column left/right |
+| Mod+Shift+J/K | Send window to next/previous workspace |
+| Mod+Ctrl+J/K | Focus window down/up within a column |
+| Mod+Ctrl+Shift+J/K | Move window down/up within a column |
+| Mod+1…9 / Mod+Shift+1…9 | Focus workspace / send window there |
+| Mod+[ / Mod+] | Pull into or push out of a column |
+| Mod+R / Mod+Shift+R | Cycle column width / window height |
+| Mod+Minus/Equal | Shrink/grow column; add Shift for window height |
+| Mod+C / Mod+F / Mod+Shift+F | Center / maximize column / fullscreen |
+| Mod+V / Mod+Shift+V | Toggle floating / focus floating vs tiled |
+| Mod+W / Mod+O | Toggle tabbed column / overview |
+| Print / Ctrl+Print / Alt+Print | Screenshot area / screen / window |
+| Mod+K / Mod+Shift+/ | Show desktop shortcut overlay |
+| Mod+Escape | Toggle application shortcut inhibition |
+
+`prefer-no-csd` requests undecorated application windows. Restart existing apps
+for it to take effect; GTK headerbars that contain application controls cannot
+all be removed this way. Noctalia's interactive settings remain yours to explore.
+Super+Space and Super+D toggle its native launcher with
+`noctalia msg panel-toggle launcher`.
+
+## Foot and dropkitty (muninn)
+
+Foot uses Omarchy's defaults with a larger 12-point JetBrainsMono Nerd Font,
+14-pixel padding, 10,000 scrollback lines, a non-blinking block cursor,
+Ctrl+Shift+C/V (plus Ctrl+Insert/Shift+Insert) clipboard bindings, and distinct Shift+Enter/Alt+Shift+Enter
+sequences. The client-side titlebar is disabled. Niri's Mod+Return opens Foot.
+Noctalia's built-in Foot template writes the writable include
+`~/.config/foot/themes/noctalia`; apply a theme and reopen Foot to pick up colors.
+If Noctalia's GUI has saved a different template selection, enable Foot there.
+Until a theme is generated, the empty include leaves Foot's default colors.
+
+**Super+`** toggles the pinned Noctalia **dropkitty** plugin, with a matching bar
+button beside the existing launcher, wallpaper and workspace widgets. It uses
+Kitty's layer-shell quick-access terminal, opens `pi` automatically, and preserves
+that process while hidden. Mod+Return remains a normal Foot terminal. Exiting pi
+closes the dropdown; the next toggle starts a new session. This is a separate
+Kitty window, not an attached Noctalia panel. The pinned Noctalia version has
+no embedded terminal widget; native panel rendering needs a separate terminal
+backend, not a dropkitty setting.
+
+Noctalia's default bar layout is preserved with the added button. GUI overrides
+can supersede the declared plugin enablement, bar layout or terminal config.
+Restarting dropkitty, including to move it between monitors, terminates its
+terminal session. Do not restart it during work you want to keep.
+
+`python3 tests/check-dropkitty.py CONFIG_JSON` checks the generated plugin source,
+bar/key configuration and pi command, and exercises the wrapped helper in a
+private runtime directory without launching pi. Real dropdown focus, visibility
+and bar clearance still require an interactive check.
+
+`tests/check-keymaps.py NIRI_KDL` checks Niri, Win+K and
+Noctalia commands.
+
 ## Tmux
 
 `nix/modules/home/term/tmux.nix` uses `Ctrl-b` as the prefix and follows Herdr's common

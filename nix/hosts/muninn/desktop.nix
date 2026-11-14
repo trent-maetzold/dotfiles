@@ -24,6 +24,6 @@
     HandleLidSwitchDocked = "suspend";
     IdleAction = "ignore";
   };
-  environment.systemPackages = with pkgs; [foot fuzzel xwayland-satellite bitwarden-desktop];
+  environment.systemPackages = with pkgs; [xwayland-satellite bitwarden-desktop];
   fonts.packages = with pkgs; [noto-fonts noto-fonts-color-emoji nerd-fonts.jetbrains-mono];
 }
