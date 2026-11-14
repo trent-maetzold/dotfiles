@@ -19,8 +19,7 @@
   # Generate on the laptop before installing (see README); until then, no report.
   hardware.facter.reportPath = lib.mkIf (builtins.pathExists ./facter.json) ./facter.json;
 
-  # 8 GB of RAM: keep tmpfs / small and compress swap in RAM. If tmpfs gets
-  # tight, machine.root = "btrfs" moves / onto the disk (machine/disko.nix).
+  # 8 GB of RAM: keep tmpfs / small and compress swap in RAM.
   disko.devices.nodev."/".mountOptions = ["size=2G" "mode=755"];
   zramSwap.enable = true;
 
