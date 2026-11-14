@@ -119,6 +119,11 @@
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
 
     # Packages
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     llm-agents.url = "github:numtide/llm-agents.nix";
     bkt = {

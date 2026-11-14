@@ -2,7 +2,42 @@
 
 `Super` is the Windows/Mod key. **Super+K** (or Super+Shift+/) shows Niri's
 shortcut overlay. Super+PageUp still selects the previous workspace; Super+K
-no longer does that.
+no longer does that. The overlay covers desktop shortcuts, not browser commands.
+
+## Zen and Vimium C: stock bindings
+
+Nix no longer declares custom Zen or Vimium bindings. Removing declarations
+alone does not erase overrides already saved in a browser profile.
+
+After rebuilding:
+
+1. Open Zen's **about:keyboard** and use its **Reset All** action.
+2. In **Vimium C → Options → Custom key mappings**, clear the entire field and
+   **Save Changes**. Leave other extension settings and storage alone.
+
+These reset only keybindings, not bookmarks, passwords, Bitwarden, or other
+browser data. Restart Zen after resetting. Plain `o` belongs to Vimium again,
+not Zen's native address bar; Ctrl+L opens the native address bar everywhere.
+Use **?** on an ordinary webpage for Vimium help and **about:keyboard** for Zen's
+current keys. Vimium cannot run on protected `about:` pages or browser menus;
+use native shortcuts, Tab/Shift+Tab, arrow keys and Enter there.
+
+## Luakit
+
+Luakit is available alongside Zen, with the restored Noctalia palette, dark
+fallback theme, 16/14-pixel page/monospace fonts, blank new tabs, no window
+decorations, bundled Dark Reader, and pinned AdGuard request filters.
+
+| Keys | Action |
+| --- | --- |
+| :help | Luakit's built-in help |
+| ,d | Toggle Dark Reader on the current page |
+| ,p | Open the Bitwarden picker; verify the HTTPS origin before pasting |
+| Alt+u / Alt+p / Alt+t in picker | Copy username / password / TOTP |
+
+The picker clears copied secrets after 30 seconds and requires rbw authentication.
+AdGuard rules block requests, not cosmetic page elements. No existing browser
+profile data is deleted or migrated.
 
 ## Niri: windows, columns and workspaces
 
