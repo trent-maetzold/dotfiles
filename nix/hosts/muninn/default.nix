@@ -6,6 +6,7 @@
     ./desktop.nix
     ./disko.nix
     ./preservation.nix
+    ./secrets.nix
   ];
 
   # Lets rootless Podman quadlets (dotfiles' quadlet-nix) run as user units.

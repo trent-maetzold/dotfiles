@@ -1,8 +1,8 @@
-# NixOS-WSL dotfiles
+# NixOS dotfiles
 
-Host-, user-, and employer-specific settings (hostname, username, git email,
-proxy bypass, CLI server URLs) live in the private system flake at
-`~/.config/nixos`, not here. `<host>` and `<user>` below stand for them.
+The standalone laptop configuration is `muninn` in `nix/hosts/muninn`.
+Downstream WSL hosts can also import these modules from their own system flake
+at `~/.config/nixos`; the WSL instructions below refer to that layout.
 
 Development tools are declared in `nix/modules/home/`; language toolchains live in
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
@@ -35,9 +35,13 @@ there. `/` is wiped every boot; `/etc` is an overlay whose changes persist in
 nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn
 ```
 
-Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#muninn`.
+Rebuild after changes: `rbw unlock`, then
+`sudo nixos-rebuild switch --flake ~/.config/dotfiles#muninn`.
+The candidate configuration checks that the vault is unlocked and can decrypt
+its pinned secrets before activation. Fresh installation/bootloader setup
+(`boot`) is exempt because it has no logged-in user vault.
 
-## Rebuild
+## Rebuild a downstream WSL host
 
 ```sh
 sudo nixos-rebuild switch --flake ~/.config/nixos#<host>
@@ -164,13 +168,49 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 
 ## Secrets
 
-Secrets live in `fnox.toml` files, age-encrypted to `~/.config/age/keys.txt`
-or as references to a remote provider (`fnox sync` caches those encrypted in
-the same file). `nix/modules/home/fnox.nix` enables `programs.fnox` with the
-age provider; the host adds its recipient and other providers. Add or change
-a secret with `fnox set NAME` or `fnox edit` in the file's directory. CLIs run
-under `fnox exec` through `pkgs.withFnox` (`nix/lib/with-fnox.nix`), so a token
-reaches only that process.
+`infra` is a **non-flake input** from `github:trent-maetzold/infra/staging`.
+`flake.lock` pins its encrypted `secrets.yaml`; this repository does not copy
+or migrate the secrets to fnox. Update it explicitly with `nix flake update infra`.
+
+On an existing system without rbw, first enter
+`nix shell --inputs-from . nixpkgs#rbw nixpkgs#pinentry-qt` from this checkout.
+Fresh installations already have these tools.
+Configure rbw for your Bitwarden account (and server URL if self-hosted), then
+authenticate locally:
+
+```sh
+rbw config set email YOUR_BITWARDEN_EMAIL
+rbw config set pinentry pinentry-qt
+rbw register
+rbw login
+rbw unlock
+```
+
+The `rbw-agent` user service supplies `SSH_AUTH_SOCK` to shells and user services.
+Bitwarden SSH-key items are served through that socket; do not export private
+SSH keys to disk. Existing forwarded agent sockets are preserved in SSH sessions.
+The desktop Bitwarden app and rbw authenticate separately.
+
+The Bitwarden item **`age-master`** must contain the existing age private key
+in its password field. sops retrieves it with `SOPS_AGE_KEY_CMD=rbw get age-master`;
+the private key is not written to disk or the Nix store. Home Manager's sops-nix
+service decrypts only `shared/codeberg-token` and `shared/deepseek-api-key`, into
+user-private runtime files linked under `~/.config/sops-nix/secrets/shared/`.
+They are not automatically exported into every process's environment. Other
+infra service credentials remain encrypted.
+
+After a reboot, unlock the vault and run
+`systemctl --user restart sops-nix.service` (or switch generations) to restore
+those runtime files. Locking the vault does **not** revoke already decrypted
+files; it blocks subsequent switches and decryptions. The pre-switch check is
+not a transaction with user-service activation: if the vault relocks during a
+long switch, unlock it and restart the sops service.
+
+To edit secrets, check out `infra` on `staging` and run `sops edit secrets.yaml`
+from a new login shell with rbw unlocked. The pinned input in the Nix store is
+read-only. Never paste `rbw get age-master` output into a terminal or commit it.
+
+Validate the switch gate without a real vault using `nix build .#checks.x86_64-linux.vault`.
 
 The apps (`import-win-ca`) take each setting from a flag, else an env var, else
 an env file (`$ENV_FILE`, default `./.env`); with none set they exit with an error.

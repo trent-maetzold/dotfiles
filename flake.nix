@@ -44,6 +44,21 @@
 
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
+    checks = lib.genAttrs systems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      vault =
+        pkgs.runCommand "vault-gate-check" {
+          nativeBuildInputs = [pkgs.bash pkgs.rage pkgs.rbw pkgs.sops inputs.sops-nix.packages.${system}.sops-install-secrets];
+        } ''
+          mkdir -p nix/lib tests
+          cp ${./nix/lib/check-vault.sh} nix/lib/check-vault.sh
+          cp ${./tests/check-vault.sh} tests/check-vault.sh
+          bash tests/check-vault.sh
+          touch "$out"
+        '';
+    });
+
     # Local packages as pkgs.<name>; the host flake applies this overlay.
     overlays.default = import ./nix/pkgs {inherit bkt fnox uv2nix pyproject-nix pyproject-build-systems;};
 
@@ -82,6 +97,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     preservation.url = "github:nix-community/preservation";
+    infra = {
+      url = "github:trent-maetzold/infra/staging";
+      flake = false;
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Modules (nix/modules/{home,nixos})
     nixos-wsl = {

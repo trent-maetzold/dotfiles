@@ -220,6 +220,23 @@
         "type": "github"
       }
     },
+    "infra": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794147837,
+        "narHash": "sha256-nn8gTsxr7e4P+ihvHlZ+MbVfE48CkGNAgxS03PDNwxU=",
+        "owner": "trent-maetzold",
+        "repo": "infra",
+        "rev": "094c13a52e2ea8ca269c3e58f140578fa96facd7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "trent-maetzold",
+        "ref": "staging",
+        "repo": "infra",
+        "type": "github"
+      }
+    },
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -395,6 +412,7 @@
         "fnox": "fnox",
         "home-manager": "home-manager",
         "import-tree": "import-tree",
+        "infra": "infra",
         "llm-agents": "llm-agents",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
@@ -403,7 +421,28 @@
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",
         "quadlet-nix": "quadlet-nix",
+        "sops-nix": "sops-nix",
         "uv2nix": "uv2nix"
+      }
+    },
+    "sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794624949,
+        "narHash": "sha256-3q/hxp/flW1PnV3Dx+H3p8kHGEHJ7251BqVMNsAAB9E=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "11e5885d241743ff0193465d533b20e754bc3ce0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
       }
     },
     "systems": {
