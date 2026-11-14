@@ -23,6 +23,12 @@
   disko.devices.nodev."/".mountOptions = ["size=2G" "mode=755"];
   zramSwap.enable = true;
 
+  # trent logs in over SSH with his keys only (machine/admin.nix).
+  services.openssh.settings = {
+    PasswordAuthentication = false;
+    KbdInteractiveAuthentication = false;
+  };
+
   # Set her password once with `sudo passwd justine`.
   users.users.justine = {
     isNormalUser = true;

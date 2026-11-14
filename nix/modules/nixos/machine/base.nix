@@ -36,6 +36,15 @@
 
   services = {
     openssh.enable = true;
+    # <host>.local on the LAN, and resolving other hosts' .local names.
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        addresses = true;
+      };
+    };
     userborn.enable = true;
   };
 

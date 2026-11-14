@@ -48,7 +48,8 @@ Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#mun
 **sif:** first generate its hardware report from the live USB and commit it as
 `nix/hosts/sif/facter.json` (`sudo nix run nixpkgs#nixos-facter -- -o facter.json`),
 then bootstrap `sif`. After install, set Justine's password with
-`sudo passwd justine`. Her XFCE theme and Windows-style taskbar are first-login
+`sudo passwd justine`. SSH in as `ssh trent@sif.local` (keys only: the
+Bitwarden keys `tm@nixos` and `trent@huginn`). Her XFCE theme and Windows-style taskbar are first-login
 defaults; her own changes stick. Flathub is added on first boot.
 
 ## Rebuild
