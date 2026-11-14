@@ -1,0 +1,4 @@
+# Runtime state (logs, caches, tools, downloaded rules); track config only.
+*
+!.gitignore
+!config.json
