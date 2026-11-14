@@ -1,11 +1,9 @@
-# muninn's base system: boot, locale, users.
+# Standalone (non-WSL) machines: boot, locale, network, nix.
 {
   lib,
   pkgs,
   ...
 }: {
-  hardware.facter.reportPath = ./facter.json;
-
   time.timeZone = "America/Chicago";
   i18n = {
     defaultLocale = "en_US.UTF-8";
@@ -26,26 +24,15 @@
     variant = "";
   };
 
-  networking = {
-    hostName = "muninn";
-    networkmanager.enable = true;
-  };
+  networking.networkmanager.enable = true;
 
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
   };
 
   # /etc is an overlay; runtime changes land in /.rw-etc (see preservation.nix).
   system.etc.overlay.enable = true;
-
-  # Bootstrap sets the first password; change it with `passwd`.
-  users.users.trent = {
-    isNormalUser = true;
-    extraGroups = ["networkmanager" "wheel"];
-  };
 
   services = {
     openssh.enable = true;
@@ -61,5 +48,4 @@
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  system.stateVersion = "26.11";
 }

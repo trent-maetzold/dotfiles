@@ -24,22 +24,28 @@
     };
   in {
     # Machines installed straight from this flake (`nix run .#bootstrap -- <host>`).
-    nixosConfigurations.muninn = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        ./nix/hosts/muninn
-        home-manager.nixosModules.home-manager
-        {
-          nixpkgs.overlays = [self.overlays.default];
+    nixosConfigurations = {
+      muninn = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./nix/hosts/muninn
+          home-manager.nixosModules.home-manager
+          {
+            nixpkgs.overlays = [self.overlays.default];
 
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            extraSpecialArgs = inputs // {user = trent;};
-            users.trent = import ./nix/hosts/muninn/home.nix;
-          };
-        }
-      ];
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = inputs // {user = trent;};
+              users.trent = import ./nix/hosts/muninn/home.nix;
+            };
+          }
+        ];
+      };
+      sif = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [./nix/hosts/sif];
+      };
     };
 
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
@@ -60,11 +66,17 @@
         inherit self;
       });
 
-    # Every module under nix/modules/{home,nixos}. Modules take this flake's
-    # inputs and `user` as arguments, so the host passes them:
-    # specialArgs / home-manager.extraSpecialArgs = dotfiles.inputs // {inherit user;}.
+    # Modules take this flake's inputs and `user` as arguments, so the host
+    # passes them: specialArgs / home-manager.extraSpecialArgs = dotfiles.inputs // {inherit user;}.
     homeModules.default = import-tree ./nix/modules/home;
-    nixosModules.default = import-tree ./nix/modules/nixos;
+    # nix/modules/nixos is grouped. `default` is what downstream (WSL) hosts
+    # import; machine/desktop/hardware are for this flake's standalone hosts,
+    # which import them by path.
+    nixosModules.default = import-tree [
+      ./nix/modules/nixos/common
+      ./nix/modules/nixos/services
+      ./nix/modules/nixos/wsl
+    ];
   };
 
   inputs = {
