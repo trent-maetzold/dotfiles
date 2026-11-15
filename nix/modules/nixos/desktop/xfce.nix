@@ -21,6 +21,8 @@ in {
   };
   services.displayManager.defaultSession = "xfce";
   programs.nm-applet.enable = true;
+  # NixOS turns libinput's disable-while-typing off on X11; palms while typing.
+  services.libinput.touchpad.disableWhileTyping = true;
 
   environment.systemPackages = with pkgs; [
     fluent-gtk-theme

@@ -16,6 +16,8 @@
         touchpad {
           tap
           natural-scroll
+          // Ignore the touchpad briefly after a key press (palms while typing).
+          dwt
         }
       }
       binds {
