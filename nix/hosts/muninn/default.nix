@@ -10,6 +10,7 @@
     ../../modules/nixos/desktop/niri
     ../../modules/nixos/desktop/fonts.nix
     ../../modules/nixos/services/quadlet.nix
+    ./citrix.nix
   ];
 
   networking.hostName = "muninn";
