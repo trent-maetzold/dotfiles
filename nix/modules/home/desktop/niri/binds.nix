@@ -12,6 +12,14 @@
       _props.hotkey-overlay-title = "Open a Terminal: foot";
       spawn = ["foot"];
     };
+    "Mod+B" = {
+      _props.hotkey-overlay-title = "Browser: Luakit";
+      spawn = ["luakit"];
+    };
+    "Mod+Shift+B" = {
+      _props.hotkey-overlay-title = "Browser: Zen";
+      spawn = ["zen-beta"];
+    };
     "Mod+J".focus-workspace-down = {};
     "Mod+K".focus-workspace-up = {};
     "Mod+Ctrl+J".move-column-to-workspace-down = {};
