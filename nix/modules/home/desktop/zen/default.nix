@@ -5,8 +5,9 @@
 # Keys: Tridactyl's defaults, plus a `,` menu for Zen's own interface. Each
 # `,<letter>` is bound in Zen as Hyper+<letter> (Super+Ctrl+Alt+Shift; Niri
 # binds none of these), which Tridactyl presses with wtype through its native
-# helper. Zen and Firefox shortcuts that Tridactyl's defaults replace are
-# unbound.
+# helper. Every other Zen and Firefox shortcut is unbound except zoom, F12,
+# private window and clear history; text editing keys (copy, paste, ...) stay.
+# Bitwarden fills logins with its own Ctrl+Shift+L.
 {
   config,
   lib,
@@ -31,22 +32,16 @@
   };
   hyper = key: "${pkgs.wtype}/bin/wtype -M logo -M ctrl -M alt -M shift ${key} -m shift -m alt -m ctrl -m logo";
 
-  # Same keys (find Ctrl+F, bookmarks sidebar Ctrl+B, bookmark Ctrl+D, search
-  # Ctrl+E, glance and open file Ctrl+O, page info Ctrl+I, view source Ctrl+U)
-  # or same actions (mute Alt+M, pin Alt+P, copy URL yy) as Tridactyl.
-  replacedByTridactyl = [
-    "key_find"
-    "viewBookmarksSidebarKb"
-    "addBookmarkAsKb"
-    "key_search2"
-    "zen-glance-expand"
-    "openFileKb"
-    "key_viewInfo"
-    "key_viewSource"
-    "key_toggleMute"
-    "zen-toggle-pin-tab"
-    "zen-copy-url"
+  # Firefox shortcuts kept at their defaults.
+  kept = [
+    "key_fullZoomEnlarge"
+    "key_fullZoomReduce"
+    "key_fullZoomReset"
+    "key_toggleToolboxF12"
+    "key_privatebrowsing"
+    "key_sanitize"
   ];
+  unbound = lib.subtractLists (kept ++ lib.attrValues zenActions) (import ./_shortcut-ids.nix);
 in {
   imports = [zen-browser.homeModules.beta];
 
@@ -102,20 +97,7 @@ in {
           inherit id;
           disabled = true;
         })
-        replacedByTridactyl
-        ++ [
-          # Zen moved the inspector to Ctrl+Shift+L; back to Firefox's
-          # Ctrl+Shift+C (copy URL is Tridactyl's yy), so Bitwarden's
-          # Ctrl+Shift+L fills logins.
-          {
-            id = "key_inspector";
-            key = "c";
-            modifiers = {
-              accel = true;
-              shift = true;
-            };
-          }
-        ];
+        unbound;
     };
   };
 }
