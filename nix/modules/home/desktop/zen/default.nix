@@ -6,7 +6,8 @@
 # Keys: Zen's own actions that Vimium C has no key for are on
 # Ctrl+Alt+<letter> (the floating sidebar on Ctrl+S). Every other Zen and Firefox shortcut is unbound except zoom, F12,
 # private window and clear history; text editing keys (copy, paste, ...)
-# stay. Bitwarden fills logins with its own Ctrl+Shift+L.
+# stay. Bitwarden keeps its own keys: Ctrl+Shift+U opens it inside Zen (to
+# unlock), Ctrl+Shift+L fills a login.
 {
   config,
   lib,
@@ -50,25 +51,12 @@
 in {
   imports = [zen-browser.homeModules.beta];
 
-  # Zen opens as a maximized column (Niri's Mod+F), not fullscreen. Extension
-  # popups (Bitwarden's, ...) instead get the width they ask for.
+  # Zen opens as a maximized column (Niri's Mod+F), not fullscreen.
   wayland.windowManager.niri.settings._children = [
     {
       window-rule._children = [
         {match._props.app-id = "^zen-beta$";}
         {open-maximized = true;}
-      ];
-    }
-    {
-      window-rule._children = [
-        {
-          match._props = {
-            app-id = "^zen-beta$";
-            title = "^Extension: \\(";
-          };
-        }
-        {open-maximized = false;}
-        {default-column-width = {};}
       ];
     }
   ];
