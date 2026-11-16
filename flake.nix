@@ -68,7 +68,9 @@
 
     # Modules take this flake's inputs and `user` as arguments:
     # specialArgs / home-manager.extraSpecialArgs = inputs // {inherit user;}.
-    homeModules.default = import-tree ./nix/modules/home;
+    # Every home module except desktop/, which only desktop hosts import.
+    homeModules.default = import-tree.filterNot (lib.hasInfix "/desktop/") ./nix/modules/home;
+    homeModules.desktop = import-tree ./nix/modules/home/desktop;
     # nix/modules/nixos is grouped. Standalone hosts import machine, desktop,
     # hardware and deploy modules by path; `default` bundles common, services
     # and wsl for WSL hosts.
@@ -113,6 +115,11 @@
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
 
     # Packages
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     llm-agents.url = "github:numtide/llm-agents.nix";
     bkt = {

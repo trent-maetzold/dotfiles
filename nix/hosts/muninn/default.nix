@@ -1,6 +1,10 @@
 # muninn: trent's encrypted ephemeral-root laptop with Niri. The flake adds
 # Home Manager and ./home.nix for trent.
-{inputs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
   imports = [
     (inputs.import-tree ../../modules/nixos/machine)
     ../../modules/nixos/desktop/niri.nix
@@ -9,6 +13,7 @@
   ];
 
   networking.hostName = "muninn";
+  users.users.trent.shell = pkgs.nushell;
   hardware.facter.reportPath = ./facter.json;
   system.stateVersion = "26.11";
 }
