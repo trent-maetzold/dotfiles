@@ -13,10 +13,6 @@
       spawn = ["foot"];
     };
     "Mod+B" = {
-      _props.hotkey-overlay-title = "Browser: Luakit";
-      spawn = ["luakit"];
-    };
-    "Mod+Shift+B" = {
       _props.hotkey-overlay-title = "Browser: Zen";
       spawn = ["zen-beta"];
     };

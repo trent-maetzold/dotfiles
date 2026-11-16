@@ -1,4 +1,4 @@
-# Zen with Vimium C, Bitwarden and Dark Reader. Pages follow the system's
+# Zen with Tridactyl (vim keys), Bitwarden and Dark Reader. Pages follow the system's
 # light/dark theme (Zen's default); Dark Reader skips sites that are already
 # dark (its detectDarkTheme, on by default).
 {
@@ -14,9 +14,9 @@
   programs.zen-browser = {
     enable = true;
     policies.ExtensionSettings = {
-      "vimium-c@gdh1995.cn" = {
+      "tridactyl.vim@cmcaine.co.uk" = {
         installation_mode = "force_installed";
-        install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/tridactyl-vim/latest.xpi";
       };
       "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
         installation_mode = "force_installed";
