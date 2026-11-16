@@ -42,6 +42,16 @@
     inherit niriVt;
   };
 
+  wfclient = pkgs.writeText "wfclient.ini" (lib.generators.toINI {} {
+    WFClient = {
+      Version = 2;
+      # Win, Alt+Tab and the like go to Windows.
+      TransparentKeyPassthrough = "Remote";
+      # Windows at 100% on the 1920x1200 screen.
+      DPIMatchingEnabled = "False";
+    };
+  });
+
   session = pkgs.writeShellApplication {
     name = "citrix-session";
     runtimeInputs = [
@@ -100,6 +110,12 @@ in {
     '';
   };
 
-  # Niri's side of Win+\.
-  home-manager.users.trent.wayland.windowManager.niri.settings.input.keyboard.xkb.file = "${keymaps}/niri.xkb";
+  home-manager.users.trent = {lib, ...}: {
+    # Niri's side of Win+\.
+    wayland.windowManager.niri.settings.input.keyboard.xkb.file = "${keymaps}/niri.xkb";
+    # Written over on every switch, then Workspace adds its runtime settings.
+    home.activation.citrixConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      run install -D -m 0644 ${wfclient} "$HOME/.ICAClient/wfclient.ini"
+    '';
+  };
 }
