@@ -100,17 +100,6 @@ in {
     '';
   };
 
-  home-manager.users.trent = {
-    # Niri's side of Win+\.
-    wayland.windowManager.niri.settings.input.keyboard.xkb.file = "${keymaps}/niri.xkb";
-    home.file.".ICAClient/wfclient.ini".text = lib.generators.toINI {} {
-      WFClient = {
-        Version = 2;
-        # Win, Alt+Tab and the like go to Windows.
-        TransparentKeyPassthrough = "Remote";
-        # Windows at 100% on the 1920x1200 screen.
-        DPIMatchingEnabled = "False";
-      };
-    };
-  };
+  # Niri's side of Win+\.
+  home-manager.users.trent.wayland.windowManager.niri.settings.input.keyboard.xkb.file = "${keymaps}/niri.xkb";
 }

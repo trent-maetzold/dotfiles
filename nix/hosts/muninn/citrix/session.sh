@@ -30,6 +30,14 @@ fi
 
 matchbox-window-manager -use_titlebar no &
 
+# Windows at 100% on the 1920x1200 screen. Workspace owns wfclient.ini and
+# writes it on first run; Win and Alt+Tab already go to Windows in full screen
+# (its default TransparentKeyPassthrough=FullScreenOnly).
+ini="$HOME/.ICAClient/wfclient.ini"
+if [ -f "$ini" ] && ! grep -q '^DPIMatchingEnabled=False' "$ini"; then
+  sed -i '/^DPIMatchingEnabled=/d; s/^\[WFClient\]$/&\nDPIMatchingEnabled=False/' "$ini"
+fi
+
 if ! storebrowse --liststores | grep -qF "@storeHost@"; then
   storebrowse --addstore "@storeUrl@" || true
 fi
