@@ -126,10 +126,9 @@ The exporter itself does not change system trust or activate NixOS.
 Citrix Workspace runs as its own session on **tty8**: Xorg with no compositor,
 a kiosk window manager (matchbox) and Workspace, as trent, at 1920x1200 (the
 panel scales it). It shares trent's audio, so a Bluetooth headset stays
-connected across the switch. **Win+\\** switches between it and Niri on tty1,
-both ways; every other key, Win and Alt included, goes to Citrix and on to
-Windows. Niri doesn't know about it: the switch is in each side's keymap
-(`nix/hosts/muninn/citrix/keymap.nix`). The session starts the first time you
+connected across the switch. **Ctrl+Alt+F8** switches to it and
+**Ctrl+Alt+F1** back to Niri; every other key, Win and Alt included, goes to
+Windows. Niri doesn't know about it. The session starts the first time you
 switch to tty8 (after the first switch to this config, reboot once so logind
 allows tty8) and again after Workspace's X exits; it registers the employer
 store if it's missing. Logs: `journalctl -b -u autovt@tty8`.

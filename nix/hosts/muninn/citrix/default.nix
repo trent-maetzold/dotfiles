@@ -1,7 +1,7 @@
 # Citrix as its own "OS" on tty8: Xorg (no compositor), a kiosk window manager
-# and Workspace at 1920x1200. Win+\ switches between it and Niri on tty1,
-# through the keymaps (keymap.nix); every other key, Win and Alt included,
-# goes to Citrix. Niri knows nothing about it.
+# and Workspace at 1920x1200. Ctrl+Alt+F8 and Ctrl+Alt+F1 switch between it
+# and Niri; every other key, Win and Alt included, goes to Citrix. Niri knows
+# nothing about it.
 #
 # It runs as trent, so it shares trent's audio: a Bluetooth headset stays
 # connected across the switch. logind starts autovt@tty8 the first time tty8
@@ -39,11 +39,6 @@
       '';
   });
 
-  keymaps = pkgs.callPackage ./keymap.nix {
-    citrixVt = vt;
-    inherit niriVt;
-  };
-
   wfclient = pkgs.writeText "wfclient.ini" (lib.generators.toINI {} {
     WFClient = {
       Version = 2;
@@ -56,19 +51,8 @@
 
   session = pkgs.writeShellApplication {
     name = "citrix-session";
-    runtimeInputs = [
-      client
-      pkgs.gawk
-      pkgs.gnugrep
-      pkgs.gnused
-      pkgs.matchbox
-      pkgs.xkbcomp
-      pkgs.xmodmap
-      pkgs.xorg-server # cvt
-      pkgs.xrandr
-      pkgs.xset
-    ];
-    text = lib.replaceStrings ["@keymap@" "@xkbdir@" "@storeUrl@" "@storeHost@" "@adwaita@"] ["${keymaps}/xorg.xkb" config.services.xserver.xkb.dir store.url store.host "${pkgs.adwaita-icon-theme}"] (builtins.readFile ./session.sh);
+    runtimeInputs = [client pkgs.gnugrep pkgs.matchbox pkgs.xrandr pkgs.xset];
+    text = lib.replaceStrings ["@storeUrl@" "@storeHost@" "@adwaita@"] [store.url store.host "${pkgs.adwaita-icon-theme}"] (builtins.readFile ./session.sh);
   };
 in {
   # The client, the Zoom plugin and their manual downloads.
@@ -113,8 +97,6 @@ in {
   };
 
   home-manager.users.trent = {lib, ...}: {
-    # Niri's side of Win+\.
-    wayland.windowManager.niri.settings.input.keyboard.xkb.file = "${keymaps}/niri.xkb";
     # Written over on every switch, then Workspace adds its runtime settings.
     home.activation.citrixConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
       run install -D -m 0644 ${wfclient} "$HOME/.ICAClient/wfclient.ini"
