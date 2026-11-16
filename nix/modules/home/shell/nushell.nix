@@ -36,20 +36,9 @@
         ^openssl rand -base64 $bytes | str trim | str substring 0..<$length
       }
 
+      # nu_scripts for the kubernetes aliases here and git aliases (omz-aliases.nix);
+      # completions come from carapace (carapace.nix).
       const NU_LIB_DIRS = $NU_LIB_DIRS ++ ['${pkgs.nu_scripts}/share/nu_scripts']
-
-      use custom-completions/git/git-completions.nu *
-      use custom-completions/just/just-completions.nu *
-      use custom-completions/make/make-completions.nu *
-      use custom-completions/man/man-completions.nu *
-      use custom-completions/nix/nix-completions.nu *
-      use custom-completions/ssh/ssh-completions.nu *
-      use custom-completions/tar/tar-completions.nu *
-      # curl's file has no `export`, so `use` would import nothing.
-      source custom-completions/curl/curl-completions.nu
-
-      # oh-my-zsh's git aliases; nushell-only since some call nushell functions.
-      use aliases/git/git-aliases.nu *
 
       # Prefixed, so argx's `parse` doesn't shadow the builtin (fzf's integration uses it).
       use modules/argx

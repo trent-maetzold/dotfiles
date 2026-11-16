@@ -36,5 +36,13 @@
   ];
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  # Weekly cleanup of old generations, keeping the last 5 and two weeks.
+  programs.nh = {
+    enable = true;
+    clean = {
+      enable = true;
+      extraArgs = "--keep 5 --keep-since 14d";
+    };
+  };
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

@@ -1,4 +1,5 @@
 {
+  llm-agents,
   pkgs,
   user,
   ...
@@ -45,7 +46,21 @@
     true-color = "always";
   };
 
+  programs.jujutsu = {
+    enable = true;
+    settings.user = {
+      name = user.fullName;
+      inherit (user) email;
+    };
+  };
+
   programs.gh.enable = true;
   programs.lazygit.enable = true;
-  home.packages = with pkgs; [git-trim gitleaks];
+  home.packages = [
+    pkgs.git-trim
+    pkgs.gitleaks
+    # GitButler CLI: virtual branches and stacked diffs. From llm-agents.nix
+    # (prebuilt, numtide cache); nixpkgs' build is broken and marked unfree.
+    llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.but
+  ];
 }

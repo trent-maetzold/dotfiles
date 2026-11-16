@@ -74,6 +74,12 @@
   # Build toolchain for native dependencies
   programs.gcc.enable = true;
 
+  # Encryption and signing
+  programs.gpg.enable = true;
+
+  # Media downloads
+  programs.yt-dlp.enable = true;
+
   home.packages = with pkgs; [
     # Build toolchain for native dependencies
     gnumake
