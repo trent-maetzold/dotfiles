@@ -7,7 +7,7 @@
 }: {
   imports = [
     (inputs.import-tree ../../modules/nixos/machine)
-    ../../modules/nixos/desktop/niri.nix
+    ../../modules/nixos/desktop/niri
     ../../modules/nixos/desktop/fonts.nix
     ../../modules/nixos/services/quadlet.nix
   ];
