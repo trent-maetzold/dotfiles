@@ -13,6 +13,7 @@
     ../../modules/nixos/desktop/flatpak.nix
     ../../modules/nixos/desktop/fonts.nix
     ../../modules/nixos/hardware/intel-graphics.nix
+    ../../modules/nixos/deploy/comin.nix
   ];
 
   networking.hostName = "sif";
