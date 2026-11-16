@@ -13,16 +13,17 @@
   # as a shell command to run by hand in the chroot. The command's store paths
   # are used only inside /mnt, where nixos-install puts them, so the app itself
   # needn't depend on them.
-  hosts = builtins.mapAttrs (host: system: let
-    inherit (system) config;
-    service = config.systemd.services.userborn;
-  in {
-    disks = map (disk: disk.device) (builtins.attrValues config.disko.devices.disk);
-    userborn =
-      builtins.unsafeDiscardStringContext
-      "env ${lib.escapeShellArgs (lib.mapAttrsToList (name: value: "${name}=${value}") service.environment)} ${service.serviceConfig.ExecStart}";
-  })
-  self.nixosConfigurations;
+  hosts =
+    builtins.mapAttrs (host: system: let
+      inherit (system) config;
+      service = config.systemd.services.userborn;
+    in {
+      disks = map (disk: disk.device) (builtins.attrValues config.disko.devices.disk);
+      userborn =
+        builtins.unsafeDiscardStringContext
+        "env ${lib.escapeShellArgs (lib.mapAttrsToList (name: value: "${name}=${value}") service.environment)} ${service.serviceConfig.ExecStart}";
+    })
+    self.nixosConfigurations;
 
   script =
     builtins.replaceStrings ["@path@" "@flake@" "@hosts@"] [path "${self}" (builtins.toJSON hosts)]

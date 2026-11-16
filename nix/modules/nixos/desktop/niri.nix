@@ -30,6 +30,7 @@
   ];
   # Keyring for apps' saved logins (gh, ...), unlocked at login.
   services.gnome.gnome-keyring.enable = true;
-  # Foot comes from Home Manager; Noctalia's launcher replaces fuzzel.
-  environment.systemPackages = [pkgs.xwayland-satellite];
+  # Foot comes from Home Manager; Noctalia's launcher replaces fuzzel. The
+  # greeter package gives Noctalia its sync helper and polkit action.
+  environment.systemPackages = [pkgs.xwayland-satellite pkgs.noctalia-greeter];
 }

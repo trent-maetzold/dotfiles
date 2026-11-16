@@ -26,4 +26,13 @@ in {
     [lockscreen]
     lock_before_suspend = true
   '';
+  # Copy wallpaper and colours to the login greeter when they change. The
+  # copy needs admin approval, so Noctalia's own polkit agent asks for it.
+  xdg.configFile."noctalia/greeter.toml".text = ''
+    [shell]
+    polkit_agent = true
+
+    [shell.greeter_sync]
+    auto_sync = true
+  '';
 }
