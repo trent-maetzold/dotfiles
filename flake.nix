@@ -121,6 +121,11 @@
     };
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     llm-agents.url = "github:numtide/llm-agents.nix";
+    # Noctalia community plugins; plugins are picked in Home Manager.
+    noctalia-plugins = {
+      url = "github:noctalia-dev/community-plugins";
+      flake = false;
+    };
     bkt = {
       url = "github:avivsinai/bitbucket-cli";
       inputs.nixpkgs.follows = "nixpkgs";

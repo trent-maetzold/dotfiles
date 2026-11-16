@@ -7,7 +7,16 @@
 # Noctalia's idle behaviour: screen off at 5 min, lock at 10, suspend at 15
 # on battery only (never while plugged in). Lock before any suspend, lid
 # included. Noctalia reads every *.toml here; its Settings UI can override.
-{pkgs, ...}: let
+{
+  pkgs,
+  noctalia-plugins,
+  ...
+}: let
+  # A read-only Noctalia plugin source holding only the plugins we use.
+  plugins = pkgs.runCommand "noctalia-plugins" {} ''
+    mkdir $out
+    ln -s ${noctalia-plugins}/keybind-cheatsheet $out/
+  '';
   noctalia = title: args: {
     _props.hotkey-overlay-title = title;
     spawn = ["noctalia" "msg"] ++ args;
@@ -29,6 +38,7 @@ in {
       "Mod+Space" = noctalia "Launcher" ["panel-toggle" "launcher"];
       "Mod+S" = noctalia "Control center" ["panel-toggle" "control-center"];
       "Mod+Shift+Comma" = noctalia "Noctalia settings" ["settings-toggle"];
+      "Mod+Shift+Slash" = noctalia "Keybinds" ["panel-toggle" "kenn/keybind-cheatsheet:cheatsheet"];
       "Super+Alt+L" = noctalia "Lock screen" ["session" "lock"];
       "Alt+Tab" = noctalia "Switch windows" ["window-switcher" "hold"];
       "Alt+Shift+Tab" = noctalia "Switch windows (reverse)" ["window-switcher" "hold" "reverse"];
@@ -110,6 +120,30 @@ in {
   '';
   # Copy wallpaper and colours to the login greeter when they change. The
   # copy needs admin approval, so Noctalia's own polkit agent asks for it.
+  # Keybind cheat sheet (Mod+Shift+/), replacing Niri's hotkey overlay.
+  xdg.configFile."noctalia/plugins.toml".text = ''
+    [plugins]
+    enabled = ["kenn/keybind-cheatsheet"]
+
+    # Declaring a source replaces the defaults, so list them too.
+    [[plugins.source]]
+    name = "official"
+    kind = "git"
+    location = "https://github.com/noctalia-dev/official-plugins"
+    enabled = true
+
+    [[plugins.source]]
+    name = "community"
+    kind = "git"
+    location = "https://github.com/noctalia-dev/community-plugins"
+    enabled = true
+
+    [[plugins.source]]
+    name = "nix"
+    kind = "path"
+    location = "${plugins}"
+    enabled = true
+  '';
   xdg.configFile."noctalia/greeter.toml".text = ''
     [shell]
     polkit_agent = true
