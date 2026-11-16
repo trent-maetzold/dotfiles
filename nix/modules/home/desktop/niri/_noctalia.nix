@@ -1,7 +1,6 @@
 # Noctalia on Niri, from docs.noctalia.dev (compositor-settings/niri): its IPC
 # binds, its settings window floating, and window activation from its
-# notifications. Mod+D and Super+Alt+L replace the defaults' fuzzel and
-# swaylock. Noctalia itself starts from its systemd unit (NixOS).
+# notifications. Super+Alt+L replaces the defaults' swaylock. Noctalia itself starts from its systemd unit (NixOS).
 #
 # Noctalia's idle behaviour: screen off at 5 min, lock at 10, suspend at 15
 # on battery only (never while plugged in). Lock before any suspend, lid
@@ -16,7 +15,6 @@ in {
   wayland.windowManager.niri.settings = {
     binds = {
       "Mod+Space" = noctalia ["panel-toggle" "launcher"];
-      "Mod+D" = noctalia ["panel-toggle" "launcher"];
       "Mod+S" = noctalia ["panel-toggle" "control-center"];
       "Mod+Shift+Comma" = noctalia ["settings-toggle"];
       "Super+Alt+L" = noctalia ["session" "lock"];
