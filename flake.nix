@@ -120,6 +120,7 @@
       inputs.home-manager.follows = "home-manager";
     };
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
     llm-agents.url = "github:numtide/llm-agents.nix";
     # Noctalia community plugins; plugins are picked in Home Manager.
     noctalia-plugins = {

@@ -12,7 +12,9 @@
     ../../modules/nixos/desktop/cinnamon.nix
     ../../modules/nixos/desktop/flatpak.nix
     ../../modules/nixos/desktop/fonts.nix
-    ../../modules/nixos/hardware/intel-graphics.nix
+    "${inputs.nixos-hardware}/common/cpu/intel/kaby-lake"
+    "${inputs.nixos-hardware}/common/pc/laptop"
+    "${inputs.nixos-hardware}/common/pc/ssd"
     ../../modules/nixos/deploy/comin.nix
   ];
 

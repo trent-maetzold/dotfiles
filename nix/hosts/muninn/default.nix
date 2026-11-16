@@ -9,7 +9,10 @@
     (inputs.import-tree ../../modules/nixos/machine)
     ../../modules/nixos/desktop/niri
     ../../modules/nixos/desktop/fonts.nix
-    ../../modules/nixos/hardware/intel-graphics.nix
+    "${inputs.nixos-hardware}/common/cpu/intel/meteor-lake"
+    "${inputs.nixos-hardware}/common/gpu/nvidia/ada-lovelace"
+    "${inputs.nixos-hardware}/common/pc/laptop"
+    "${inputs.nixos-hardware}/common/pc/ssd"
     ../../modules/nixos/hardware/nvidia-prime.nix
     ../../modules/nixos/services/quadlet.nix
     ./citrix
