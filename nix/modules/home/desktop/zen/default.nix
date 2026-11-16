@@ -1,37 +1,42 @@
-# Zen with Tridactyl (vim keys), Bitwarden and Dark Reader. Pages follow the
-# system's light/dark theme (Zen's default); Dark Reader skips sites that are
-# already dark (its detectDarkTheme, on by default).
+# Zen with Vimium C (vim keys, its defaults), Bitwarden and Dark Reader. Pages
+# follow the system's light/dark theme (Zen's default); Dark Reader skips
+# sites that are already dark (its detectDarkTheme, on by default).
 #
-# Keys: Tridactyl's defaults, plus a `,` menu for Zen's own interface. Each
-# `,<letter>` is bound in Zen as Hyper+<letter> (Super+Ctrl+Alt+Shift; Niri
-# binds none of these), which Tridactyl presses with wtype through its native
-# helper. Every other Zen and Firefox shortcut is unbound except zoom, F12,
-# private window and clear history; text editing keys (copy, paste, ...) stay.
-# Bitwarden fills logins with its own Ctrl+Shift+L.
+# Keys: Zen's own actions are on Ctrl+Alt+<letter> (the floating sidebar on
+# Ctrl+S). Every other Zen and Firefox shortcut is unbound except zoom, F12,
+# private window and clear history; text editing keys (copy, paste, ...)
+# stay. Bitwarden fills logins with its own Ctrl+Shift+L.
 {
   config,
   lib,
-  pkgs,
   zen-browser,
   ...
 }: let
-  # `,<letter>` in Tridactyl -> Zen/Firefox shortcut id.
-  zenActions = {
-    s = "zen-compact-mode-show-sidebar"; # floating sidebar
-    c = "zen-compact-mode-toggle";
-    l = "zen-library-toggle"; # Zen's Library panel
-    j = "zen-workspace-forward";
-    k = "zen-workspace-backward";
-    v = "zen-split-view-vertical";
-    x = "zen-split-view-horizontal";
-    q = "zen-split-view-unsplit";
-    d = "key_openDownloads";
-    h = "showAllHistoryKb"; # Library: history
-    b = "manBookmarkKb"; # Library: bookmarks
-    a = "key_openAddons";
+  ctrlAlt = key: {
+    inherit key;
+    modifiers = {
+      accel = true;
+      alt = true;
+    };
   };
-  hyper = key: "${pkgs.wtype}/bin/wtype -M logo -M ctrl -M alt -M shift ${key} -m shift -m alt -m ctrl -m logo";
-
+  # Zen/Firefox shortcut id -> key.
+  bound = {
+    zen-compact-mode-show-sidebar = {
+      key = "s";
+      modifiers.accel = true;
+    }; # floating sidebar
+    zen-compact-mode-toggle = ctrlAlt "s";
+    zen-library-toggle = ctrlAlt "l"; # Zen's Library panel
+    zen-workspace-forward = ctrlAlt "j";
+    zen-workspace-backward = ctrlAlt "k";
+    zen-split-view-vertical = ctrlAlt "v";
+    zen-split-view-horizontal = ctrlAlt "x";
+    zen-split-view-unsplit = ctrlAlt "q";
+    key_openDownloads = ctrlAlt "d";
+    showAllHistoryKb = ctrlAlt "h"; # Library: history
+    manBookmarkKb = ctrlAlt "b"; # Library: bookmarks
+    key_openAddons = ctrlAlt "a";
+  };
   # Firefox shortcuts kept at their defaults.
   kept = [
     "key_fullZoomEnlarge"
@@ -41,39 +46,26 @@
     "key_privatebrowsing"
     "key_sanitize"
   ];
-  unbound = lib.subtractLists (kept ++ lib.attrValues zenActions) (import ./_shortcut-ids.nix);
+  unbound = lib.subtractLists (kept ++ lib.attrNames bound) (import ./_shortcut-ids.nix);
 in {
   imports = [zen-browser.homeModules.beta];
 
   # Take over the profile selector Zen created before it was managed.
   home.file."${config.programs.zen-browser.configPath}/profiles.ini".force = true;
 
-  # Read at startup through Tridactyl's native helper.
-  xdg.configFile."tridactyl/tridactylrc".text = lib.concatLines (
-    [
-      # Show pending keys (e.g. `,`) in the mode indicator.
-      "set modeindicatorshowkeys true"
-      # about: pages open through the native helper, as `zen-beta <url>`.
-      "set browser zen-beta"
-      "bind ,p tabopen about:preferences"
-    ]
-    ++ lib.mapAttrsToList (key: _: "bind ,${key} exclaim_quiet ${hyper key}") zenActions
-  );
-
   programs.zen-browser = {
     enable = true;
-    nativeMessagingHosts = [pkgs.tridactyl-native];
     policies.ExtensionSettings = {
-      "tridactyl.vim@cmcaine.co.uk" = {
+      "vimium-c@gdh1995.cn" = {
         installation_mode = "force_installed";
-        install_url = "https://addons.mozilla.org/firefox/downloads/latest/tridactyl-vim/latest.xpi";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi";
       };
+      # Tried instead of Vimium C; blocked so Zen removes the old install.
+      "tridactyl.vim@cmcaine.co.uk".installation_mode = "blocked";
       "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
         installation_mode = "force_installed";
         install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
       };
-      # Replaced by Tridactyl; blocked so Zen removes the old install.
-      "vimium-c@gdh1995.cn".installation_mode = "blocked";
       "addon@darkreader.org" = {
         installation_mode = "force_installed";
         install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
@@ -85,21 +77,12 @@ in {
       settings = {
         # Ctrl+Tab cycles tabs by recency.
         "browser.ctrlTab.sortByRecentlyUsed" = true;
-        # Home button and Tridactyl's gh: DuckDuckGo until the homepage
-        # dashboard is up. New tabs open Zen's search bar.
+        # Home button: DuckDuckGo until the homepage dashboard is up. New tabs
+        # open Zen's search bar.
         "browser.startup.homepage" = "https://duckduckgo.com";
       };
       keyboardShortcuts =
-        lib.mapAttrsToList (key: id: {
-          inherit id key;
-          modifiers = {
-            meta = true;
-            accel = true;
-            alt = true;
-            shift = true;
-          };
-        })
-        zenActions
+        lib.mapAttrsToList (id: k: k // {inherit id;}) bound
         ++ map (id: {
           inherit id;
           disabled = true;
