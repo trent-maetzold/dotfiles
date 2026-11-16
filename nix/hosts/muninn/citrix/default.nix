@@ -14,9 +14,11 @@
 }: let
   vt = 8;
   niriVt = 1;
+  # The employer's DUO_OAUTH store (reached through the cloud.citrix gateway);
+  # adding it directly skips the gateway's store picker.
   store = {
-    url = "https://cloud.citrix.options-it.com";
-    host = "cloud.citrix.options-it.com";
+    url = "https://storefront.options-it.com/citrix/duo_oauth/discovery";
+    host = "storefront.options-it.com/citrix/duo_oauth";
   };
 
   # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
