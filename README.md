@@ -33,8 +33,9 @@ trent as admin), `desktop`, `hardware`. `common`, `services` and `wsl` make up
 | `sif` | Justine's Yoga 720-13IKB | Cinnamon (X11), Flatpak apps via GNOME Software |
 
 sif runs [comin](https://github.com/nlewo/comin) (`deploy/comin.nix`): it polls
-`main` every 60 s and switches to `nixosConfigurations.sif` when it changes, so
-merging a PR updates the laptop. Push to `testing-sif` to try a config there
+`main` every 60 s and builds `nixosConfigurations.sif` when it changes, as the
+default for the next boot: merging a PR updates the laptop at its next restart.
+For an immediate change, `nixos-rebuild switch` over SSH still works. Push to `testing-sif` to try a config there
 without keeping it across reboots. `comin status` on sif shows what it deployed.
 
 From a NixOS live USB, install a host onto this machine. It offers to remove
