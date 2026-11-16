@@ -12,5 +12,4 @@
   };
 
   programs.lazydocker.enable = true;
-  home.packages = [pkgs.podman-compose];
 }

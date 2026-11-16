@@ -127,7 +127,6 @@
     # System
     lsof
     fastfetch
-    nvd # diff two system builds
 
     # Docs lookup for agents
     ctx7 # Context7: current library docs
