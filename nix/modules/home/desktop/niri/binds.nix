@@ -1,6 +1,7 @@
 # Changes to Niri's default bindings (later binds override the defaults').
-# Workspaces and windows swap keys: workspace up/down moves from U/I to
-# J/K, and window/monitor up/down from J/K to U/I.
+# J/K mirror H/L with workspaces as the vertical axis: Mod focuses, Ctrl
+# moves the column, Shift (default) focuses the monitor. Window and
+# monitor up/down move from J/K to U/I.
 {
   wayland.windowManager.niri.settings.binds = {
     "Mod+T" = {
@@ -11,8 +12,6 @@
     "Mod+K".focus-workspace-up = {};
     "Mod+Ctrl+J".move-column-to-workspace-down = {};
     "Mod+Ctrl+K".move-column-to-workspace-up = {};
-    "Mod+Shift+J".move-workspace-down = {};
-    "Mod+Shift+K".move-workspace-up = {};
     "Mod+U".focus-window-down = {};
     "Mod+I".focus-window-up = {};
     "Mod+Ctrl+U".move-window-down = {};
