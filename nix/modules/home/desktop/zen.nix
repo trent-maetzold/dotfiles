@@ -32,6 +32,40 @@
       isDefault = true;
       # Ctrl+Tab cycles tabs by recency.
       settings."browser.ctrlTab.sortByRecentlyUsed" = true;
+      # Unbind Zen and Firefox shortcuts that Tridactyl's defaults replace
+      # (same keys, or the same action): find (Ctrl+F, Tridactyl /), the
+      # bookmarks sidebar (Ctrl+B), bookmark page (Ctrl+D), search (Ctrl+E),
+      # glance and open file (Ctrl+O), page info (Ctrl+I), view source
+      # (Ctrl+U), mute (Ctrl+M, Tridactyl Alt+M) and pin (Ctrl+Shift+D,
+      # Tridactyl Alt+P). Ctrl+Alt+S shows or hides the sidebar.
+      # Bitwarden fills a login with its own Ctrl+Shift+L.
+      keyboardShortcuts =
+        map (id: {
+          inherit id;
+          disabled = true;
+        }) [
+          "key_find"
+          "viewBookmarksSidebarKb"
+          "addBookmarkAsKb"
+          "key_search2"
+          "zen-glance-expand"
+          "openFileKb"
+          "key_viewInfo"
+          "key_viewSource"
+          "key_toggleMute"
+          "zen-toggle-pin-tab"
+          "zen-compact-mode-show-sidebar"
+        ]
+        ++ [
+          {
+            id = "zen-toggle-sidebar";
+            key = "s";
+            modifiers = {
+              accel = true;
+              alt = true;
+            };
+          }
+        ];
     };
   };
 }
