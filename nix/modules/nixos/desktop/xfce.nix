@@ -63,6 +63,48 @@ in {
         </property>
       </channel>
     '';
+    # Blank after 5 min idle, lock 5 min later; screen off at 15 (AC) / 10
+    # (battery) min, sleep at 30 / 15. Lock on wake; shut down at 10% battery.
+    "xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml".text = ''
+      <?xml version="1.0" encoding="UTF-8"?>
+      <channel name="xfce4-screensaver" version="1.0">
+        <property name="saver" type="empty">
+          <property name="enabled" type="bool" value="true"/>
+          <property name="mode" type="int" value="0"/>
+          <property name="idle-activation" type="empty">
+            <property name="enabled" type="bool" value="true"/>
+            <property name="delay" type="int" value="5"/>
+          </property>
+        </property>
+        <property name="lock" type="empty">
+          <property name="enabled" type="bool" value="true"/>
+          <property name="saver-activation" type="empty">
+            <property name="enabled" type="bool" value="true"/>
+            <property name="delay" type="int" value="5"/>
+          </property>
+          <property name="sleep-activation" type="bool" value="true"/>
+        </property>
+      </channel>
+    '';
+    "xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml".text = ''
+      <?xml version="1.0" encoding="UTF-8"?>
+      <channel name="xfce4-power-manager" version="1.0">
+        <property name="xfce4-power-manager" type="empty">
+          <property name="dpms-enabled" type="bool" value="true"/>
+          <property name="dpms-on-ac-sleep" type="uint" value="0"/>
+          <property name="dpms-on-ac-off" type="uint" value="15"/>
+          <property name="dpms-on-battery-sleep" type="uint" value="0"/>
+          <property name="dpms-on-battery-off" type="uint" value="10"/>
+          <property name="inactivity-on-ac" type="uint" value="30"/>
+          <property name="inactivity-on-battery" type="uint" value="15"/>
+          <property name="inactivity-sleep-mode-on-ac" type="uint" value="1"/>
+          <property name="inactivity-sleep-mode-on-battery" type="uint" value="1"/>
+          <property name="lock-screen-suspend-hibernate" type="bool" value="true"/>
+          <property name="critical-power-level" type="uint" value="10"/>
+          <property name="critical-power-action" type="uint" value="4"/>
+        </property>
+      </channel>
+    '';
     "xdg/xfce4/panel/default.xml".text = ''
       <?xml version="1.0" encoding="UTF-8"?>
       <channel name="xfce4-panel" version="1.0">
