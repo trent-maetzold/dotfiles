@@ -15,7 +15,7 @@
       };
       # Settings after github:ryan4yin/nix-config (home/base/core/git.nix).
       init.defaultBranch = "main";
-      trim.bases = "develop,master,main"; # git-trim
+      trim.bases = "dev,develop,master,main"; # git-trim
       push.autoSetupRemote = true;
       pull.rebase = true;
       log.date = "iso";
