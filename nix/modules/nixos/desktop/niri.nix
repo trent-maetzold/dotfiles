@@ -13,5 +13,6 @@
       user = "greeter";
     };
   };
-  environment.systemPackages = with pkgs; [foot fuzzel xwayland-satellite];
+  # Foot comes from Home Manager; Noctalia's launcher replaces fuzzel.
+  environment.systemPackages = [pkgs.xwayland-satellite];
 }
