@@ -50,12 +50,25 @@
 in {
   imports = [zen-browser.homeModules.beta];
 
-  # Zen opens as a maximized column (Niri's Mod+F), not fullscreen.
+  # Zen opens as a maximized column (Niri's Mod+F), not fullscreen. Extension
+  # popups (Bitwarden's, ...) instead get the width they ask for.
   wayland.windowManager.niri.settings._children = [
     {
       window-rule._children = [
         {match._props.app-id = "^zen-beta$";}
         {open-maximized = true;}
+      ];
+    }
+    {
+      window-rule._children = [
+        {
+          match._props = {
+            app-id = "^zen-beta$";
+            title = "^Extension: \\(";
+          };
+        }
+        {open-maximized = false;}
+        {default-column-width = {};}
       ];
     }
   ];
