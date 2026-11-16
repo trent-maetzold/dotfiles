@@ -3,9 +3,10 @@
 # already dark (its detectDarkTheme, on by default).
 #
 # Keys: Tridactyl's defaults, plus a `,` menu for Zen's own interface. Each
-# menu entry gets a spare key no keyboard has (F13, F14, ...) bound in Zen;
-# Tridactyl presses it with wtype through its native helper. Zen and Firefox
-# shortcuts that Tridactyl's defaults replace are unbound.
+# `,<letter>` is bound in Zen as Hyper+<letter> (Super+Ctrl+Alt+Shift; Niri
+# binds none of these), which Tridactyl presses with wtype through its native
+# helper. Zen and Firefox shortcuts that Tridactyl's defaults replace are
+# unbound.
 {
   config,
   lib,
@@ -13,29 +14,22 @@
   zen-browser,
   ...
 }: let
-  # Tridactyl key -> Zen/Firefox shortcut id, in F13.. order.
-  zenActions = [
-    [",s" "zen-compact-mode-show-sidebar"] # floating sidebar
-    [",c" "zen-compact-mode-toggle"]
-    [",l" "zen-library-toggle"] # Zen's Library panel
-    [",j" "zen-workspace-forward"]
-    [",k" "zen-workspace-backward"]
-    [",v" "zen-split-view-vertical"]
-    [",x" "zen-split-view-horizontal"]
-    [",q" "zen-split-view-unsplit"]
-    [",d" "key_openDownloads"]
-    [",h" "showAllHistoryKb"] # Library: history
-    [",b" "manBookmarkKb"] # Library: bookmarks
-    [",a" "key_openAddons"]
-  ];
-  fkey = i: "F${toString (13 + i)}";
-  actions =
-    lib.imap0 (i: a: {
-      bind = lib.elemAt a 0;
-      id = lib.elemAt a 1;
-      key = fkey i;
-    })
-    zenActions;
+  # `,<letter>` in Tridactyl -> Zen/Firefox shortcut id.
+  zenActions = {
+    s = "zen-compact-mode-show-sidebar"; # floating sidebar
+    c = "zen-compact-mode-toggle";
+    l = "zen-library-toggle"; # Zen's Library panel
+    j = "zen-workspace-forward";
+    k = "zen-workspace-backward";
+    v = "zen-split-view-vertical";
+    x = "zen-split-view-horizontal";
+    q = "zen-split-view-unsplit";
+    d = "key_openDownloads";
+    h = "showAllHistoryKb"; # Library: history
+    b = "manBookmarkKb"; # Library: bookmarks
+    a = "key_openAddons";
+  };
+  hyper = key: "${pkgs.wtype}/bin/wtype -M logo -M ctrl -M alt -M shift ${key} -m shift -m alt -m ctrl -m logo";
 
   # Same keys (find Ctrl+F, bookmarks sidebar Ctrl+B, bookmark Ctrl+D, search
   # Ctrl+E, glance and open file Ctrl+O, page info Ctrl+I, view source Ctrl+U)
@@ -68,7 +62,7 @@ in {
       "set browser zen-beta"
       "bind ,p tabopen about:preferences"
     ]
-    ++ map (a: "bind ${a.bind} exclaim_quiet ${pkgs.wtype}/bin/wtype -k ${a.key}") actions
+    ++ lib.mapAttrsToList (key: _: "bind ,${key} exclaim_quiet ${hyper key}") zenActions
   );
 
   programs.zen-browser = {
@@ -94,11 +88,16 @@ in {
       # Ctrl+Tab cycles tabs by recency.
       settings."browser.ctrlTab.sortByRecentlyUsed" = true;
       keyboardShortcuts =
-        map (a: {
-          inherit (a) id;
-          keycode = "VK_${a.key}";
+        lib.mapAttrsToList (key: id: {
+          inherit id key;
+          modifiers = {
+            meta = true;
+            accel = true;
+            alt = true;
+            shift = true;
+          };
         })
-        actions
+        zenActions
         ++ map (id: {
           inherit id;
           disabled = true;
