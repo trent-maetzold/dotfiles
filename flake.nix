@@ -7,7 +7,6 @@
     home-manager,
     import-tree,
     bkt,
-    fnox,
     pyproject-nix,
     uv2nix,
     pyproject-build-systems,
@@ -51,7 +50,7 @@
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
     # Local packages as pkgs.<name>; hosts apply this overlay.
-    overlays.default = import ./nix/pkgs {inherit bkt fnox uv2nix pyproject-nix pyproject-build-systems;};
+    overlays.default = import ./nix/pkgs {inherit bkt uv2nix pyproject-nix pyproject-build-systems;};
 
     # The overlay's packages, buildable on their own (`nix build .#tredis`).
     packages = lib.genAttrs systems (system:
@@ -124,10 +123,6 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
     bkt = {
       url = "github:avivsinai/bitbucket-cli";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    fnox = {
-      url = "github:jdx/fnox";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
