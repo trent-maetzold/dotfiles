@@ -34,7 +34,9 @@
 
   systemd.user.startServices = "sd-switch";
 
-  # Search and navigation
+  # Command-line tools, many after github:ryan4yin/nix-config.
+
+  # Files: search, navigation, viewing
   programs.ripgrep.enable = true;
   programs.fd.enable = true;
   programs.fzf.enable = true;
@@ -42,16 +44,18 @@
     enable = true;
     options = ["--cmd cd"]; # cd learns frecent dirs; nushell's ls stays structured
   };
-  programs.bat = {
-    enable = true;
-    config.pager = "less -FR";
-  };
   programs.eza = {
     enable = true;
     enableNushellIntegration = false; # nushell's ls is better; eza aliases come from nu_scripts
     git = true;
     icons = "auto";
   };
+  programs.bat = {
+    enable = true;
+    config.pager = "less -FR";
+  };
+
+  # Help pages
   programs.tealdeer = {
     enable = true;
     enableAutoUpdates = true;
@@ -60,45 +64,51 @@
       use_pager = true;
     };
   };
+
+  # Git diffs
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
   };
-  # Native dependencies
+
+  # Build toolchain for native dependencies
   programs.gcc.enable = true;
 
   home.packages = with pkgs; [
-    tree-sitter
-
     # Build toolchain for native dependencies
     gnumake
     pkg-config
+    tree-sitter
+    just # programs.just is deprecated upstream
 
-    # General utilities (after github:ryan4yin/nix-config)
+    # Files and archives
+    file
+    tree
+    trash-cli
+    sad # find-and-replace with preview
+    ast-grep # structural search and replace
+    pv
+    unzip
+    zip
+    p7zip
+
+    # Data
+    jq
+    yq-go
+    visidata # TUI for csv/xlsx/json/sqlite
+    pgcli
+
+    # HTTP and file transfer
     curl
     xh # friendlier curl for APIs
     aria2
     croc # send files between machines
-    jq
-    yq-go
-    sad # find-and-replace with preview
-    ast-grep
-    unzip
-    zip
-    p7zip
-    file
-    tree
-    lsof
-    pv
-    trash-cli
-    fastfetch
-    visidata # TUI for csv/xlsx/json/sqlite
-    pgcli
-    nvd # diff two system builds
 
-    # Disk and network
+    # Disk
     duf
     gdu
+
+    # Network
     mtr
     gping
     doggo # dig, readable
@@ -107,7 +117,11 @@
     socat
     tcpdump
     iperf3
-    just # programs.just is deprecated upstream
+
+    # System
+    lsof
+    fastfetch
+    nvd # diff two system builds
 
     # Docs lookup for agents
     ctx7 # Context7: current library docs
