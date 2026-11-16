@@ -1,11 +1,17 @@
-# muninn's 2 GiB ESP and LUKS2-encrypted Btrfs persistent storage.
-{inputs, ...}: {
+# 2 GiB ESP and LUKS2-encrypted Btrfs persistent storage; / is tmpfs.
+# Hosts override disko.devices.disk.main.device or the tmpfs size if needed.
+{
+  config,
+  inputs,
+  lib,
+  ...
+}: {
   imports = [inputs.disko.nixosModules.disko];
 
   disko.devices = {
     disk.main = {
       type = "disk";
-      device = "/dev/nvme0n1";
+      device = lib.mkDefault "/dev/nvme0n1";
       content = {
         type = "gpt";
         partitions = {
@@ -23,7 +29,7 @@
             size = "100%";
             content = {
               type = "luks";
-              name = "muninn";
+              name = config.networking.hostName;
               settings.allowDiscards = true;
               content = {
                 type = "btrfs";
@@ -51,7 +57,7 @@
 
     nodev."/" = {
       fsType = "tmpfs";
-      mountOptions = ["size=8G" "mode=755"];
+      mountOptions = lib.mkDefault ["size=8G" "mode=755"];
     };
   };
 
