@@ -1,4 +1,4 @@
-"""Register the vendor USB and Zoom virtual channels in Citrix module.ini."""
+"""Register the Zoom virtual channel in Citrix module.ini."""
 import configparser
 import sys
 from pathlib import Path
@@ -10,7 +10,7 @@ def configure(path):
     config.read(path)
     ica = config["ICA 3.0"]
     drivers = [name.strip() for name in ica["VirtualDriver"].split(",")]
-    for name, library in [("GenericUSB", "VDGUSB.DLL"), ("ZoomMedia", "ZoomMedia.so")]:
+    for name, library in [("ZoomMedia", "ZoomMedia.so")]:
         if name not in drivers:
             drivers.append(name)
         ica[name] = "On"

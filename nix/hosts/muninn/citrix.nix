@@ -1,19 +1,27 @@
-# Citrix Workspace as a normal Niri app. Its windows open fullscreen on the
-# "citrix" workspace, and Mod+\ jumps there and back.
+# Citrix Workspace as a normal Niri app. Its session windows open
+# fullscreen on the "citrix" workspace; Mod+\ jumps there and back.
+# The downloads are manual: see `nix build nixpkgs#citrix-workspace` and
+# nix/pkgs/zoom-vdi. The Zoom plugin sends Zoom's audio and video from this
+# laptop instead of through the remote desktop.
 {pkgs, ...}: let
   zoom = import ../../pkgs/zoom-vdi {inherit pkgs;};
-  usb = pkgs.callPackage ../../pkgs/citrix-usb {};
-  client = import ../../pkgs/citrix {inherit pkgs zoom usb;};
-  icaroot = "${client}/opt/citrix-icaclient";
+  client = pkgs.citrix-workspace.overrideAttrs (old: {
+    nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pkgs.python3];
+    postInstall =
+      (old.postInstall or "")
+      + ''
+        root="$out/opt/citrix-icaclient"
+        ln -s ${zoom}/lib/libZoomPlugin.so "$root/ZoomMedia.so"
+        chmod u+w "$root/config/module.ini"
+        python3 ${../../pkgs/citrix/configure.py} "$root/config/module.ini"
+        for program in "$out/bin/"*; do
+          wrapProgramShell "$program" --set ZOOMMEDIA_INI_PATH ${zoom}/etc/zoomvdi/ZoomMedia.ini
+        done
+      '';
+  });
 in {
-  nixpkgs.config.allowUnfreePackages = [
-    "citrix-workspace"
-    "citrix-usb"
-    "zoom-vdi-universal-plugin"
-    "linuxx64"
-    "ctxusb_26.08.0.225_amd64.deb"
-    "zoomvdi-universal-plugin-ubuntu_7.0.13.deb"
-  ];
+  # The client, the Zoom plugin and their downloads.
+  nixpkgs.config.allowUnfreePackages = ["citrix-workspace" "linuxx64" "zoom-vdi-universal-plugin" "zoomvdi-universal-plugin-ubuntu_7.0.13.deb"];
   environment.systemPackages = [client];
 
   home-manager.users.trent.wayland.windowManager.niri.settings = {
@@ -32,29 +40,6 @@ in {
     binds."Mod+Backslash" = {
       _props.hotkey-overlay-title = "Citrix";
       focus-workspace = "citrix";
-    };
-  };
-
-  # USB redirection: Citrix's broker and its setuid helper.
-  security.wrappers.ctxusb = {
-    source = "${icaroot}/ctxusb.real";
-    owner = "root";
-    group = "root";
-    setuid = true;
-    permissions = "u+rx,g+rx,o+rx";
-  };
-  systemd.services.ctxusbd = {
-    description = "Citrix USB redirection broker";
-    wantedBy = ["multi-user.target"];
-    after = ["systemd-udevd.service"];
-    unitConfig.ConditionPathIsDirectory = "/dev/bus/usb";
-    environment.ICAROOT = icaroot;
-    serviceConfig = {
-      Type = "forking";
-      RuntimeDirectory = "ctxusbd";
-      RuntimeDirectoryMode = "0700";
-      ExecStart = "${icaroot}/ctxusbd";
-      Restart = "on-failure";
     };
   };
 }
