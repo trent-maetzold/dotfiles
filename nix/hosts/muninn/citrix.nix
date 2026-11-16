@@ -1,8 +1,9 @@
 # Citrix on muninn: a 1920x1200 screen (half the panel's resolution), and
 # Workspace kept from seeing the NVIDIA GPU. Workspace turns off hardware
 # decoding when it finds one, though decoding runs on the Intel GPU, so
-# wfica starts in a sandbox whose /sys/class/drm lists only non-NVIDIA
-# entries; everything else (audio, camera, USB) is the real system. bwrap
+# wfica starts in a sandbox whose /dev/dri (read by libdrm) and
+# /sys/class/drm list only non-NVIDIA GPUs; everything else (audio, camera,
+# USB) is the real system. bwrap
 # refuses to run with capabilities, so the CAP_WAKE_ALARM a tty login
 # carries is dropped first.
 {
@@ -41,7 +42,12 @@
                 args+=(--ro-bind "\$e" "\$e")
               fi
             done
-            exec ${final.util-linux}/bin/setpriv --ambient-caps -all ${lib.getExe final.bubblewrap} --dev-bind / / --tmpfs /sys/class/drm "\''${args[@]}" -- "$root/.wfica-real" "\$@"
+            for e in /dev/dri/card* /dev/dri/renderD*; do
+              real=\$(readlink -f "/sys/class/drm/\''${e##*/}")
+              for d in \$nvidia; do [[ \$real == "\$d"/* ]] && continue 2; done
+              args+=(--dev-bind "\$e" "\$e")
+            done
+            exec ${final.util-linux}/bin/setpriv --ambient-caps -all ${lib.getExe final.bubblewrap} --dev-bind / / --tmpfs /sys/class/drm --tmpfs /dev/dri "\''${args[@]}" -- "$root/.wfica-real" "\$@"
             WRAPPER
             chmod +x "$root/wfica"
           '';

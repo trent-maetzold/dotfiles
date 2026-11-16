@@ -34,6 +34,10 @@
         ln -s ${zoom}/lib/libZoomPlugin.so "$root/ZoomMedia.so"
         chmod u+w "$root/config/module.ini"
         python3 ${../../../../pkgs/citrix/configure.py} "$root/config/module.ini"
+        # No toolbar (the tab at the top): the session is switched by tty.
+        # The lockdown file overrides the server's ConnectionBar=1.
+        chmod u+w "$root/config/All_Regions.ini"
+        sed -i 's/^ConnectionBar=\*$/ConnectionBar=0/' "$root/config/All_Regions.ini"
         for program in "$out/bin/"*; do
           wrapProgramShell "$program" --set ZOOMMEDIA_INI_PATH ${zoom}/etc/zoomvdi/ZoomMedia.ini
         done
@@ -47,8 +51,6 @@
       TransparentKeyPassthrough = "Remote";
       # Windows at 100%, not scaled to the screen's DPI.
       DPIMatchingEnabled = "False";
-      # No toolbar (the tab at the top): the session is switched by tty.
-      ToolbarEnabled = "False";
     };
     # Decode on the Intel GPU (VA-API) and draw with OpenGL. AV1 is the only
     # video codec offered (the server picks from what the client offers, and
@@ -112,6 +114,7 @@ in {
     # Written over on every switch, then Workspace adds its runtime settings.
     home.activation.citrixConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
       run install -D -m 0644 ${wfclient} "$HOME/.ICAClient/wfclient.ini"
+      run install -D -m 0644 ${client}/opt/citrix-icaclient/config/All_Regions.ini "$HOME/.ICAClient/All_Regions.ini"
     '';
   };
 }
