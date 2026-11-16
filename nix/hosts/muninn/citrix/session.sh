@@ -1,4 +1,4 @@
-# Citrix's X session (run by xinit as the citrix user): Win+\ keymap, a
+# Citrix's X session (run by xinit as trent): Win+\ keymap, a
 # 1920x1200 screen scaled to the panel, a kiosk window manager, and Workspace
 # with the employer store, restarted if it exits.
 set -u
@@ -6,7 +6,9 @@ set -u
 # Look like the Niri session's GTK apps: dark Adwaita, its icons and cursor.
 export XDG_DATA_DIRS="@adwaita@/share:${XDG_DATA_DIRS:-/run/current-system/sw/share}"
 export XCURSOR_PATH="@adwaita@/share/icons"
-export XCURSOR_THEME=Adwaita XCURSOR_SIZE=24
+export XCURSOR_THEME=Adwaita XCURSOR_SIZE=24 GTK_THEME=Adwaita:dark
+# trent's user bus, for audio and the keyring.
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
 
 xkbcomp -w 0 -I"@xkbdir@" "@keymap@" "$DISPLAY"
 # For the journal: what the server now has on backslash (expect XF86Switch_VT_1).
