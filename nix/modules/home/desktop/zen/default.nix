@@ -2,8 +2,8 @@
 # follow the system's light/dark theme (Zen's default); Dark Reader skips
 # sites that are already dark (its detectDarkTheme, on by default).
 #
-# Keys: Zen's own actions are on Ctrl+Alt+<letter> (the floating sidebar on
-# Ctrl+S). Every other Zen and Firefox shortcut is unbound except zoom, F12,
+# Keys: Zen's own actions that Vimium C has no key for are on
+# Ctrl+Alt+<letter> (the floating sidebar on Ctrl+S). Every other Zen and Firefox shortcut is unbound except zoom, F12,
 # private window and clear history; text editing keys (copy, paste, ...)
 # stay. Bitwarden fills logins with its own Ctrl+Shift+L.
 {
@@ -19,7 +19,8 @@
       alt = true;
     };
   };
-  # Zen/Firefox shortcut id -> key.
+  # Zen/Firefox shortcut id -> key, for what Vimium C can't do (it has
+  # bookmarks on b/B, history in o/O, tabs on t/T/x/X/J/K, ...).
   bound = {
     zen-compact-mode-show-sidebar = {
       key = "s";
@@ -33,8 +34,6 @@
     zen-split-view-horizontal = ctrlAlt "x";
     zen-split-view-unsplit = ctrlAlt "q";
     key_openDownloads = ctrlAlt "d";
-    showAllHistoryKb = ctrlAlt "h"; # Library: history
-    manBookmarkKb = ctrlAlt "b"; # Library: bookmarks
     key_openAddons = ctrlAlt "a";
   };
   # Firefox shortcuts kept at their defaults.
