@@ -80,8 +80,12 @@ in {
     profiles.default = {
       name = "default";
       isDefault = true;
-      # Ctrl+Tab cycles tabs by recency.
-      settings."browser.ctrlTab.sortByRecentlyUsed" = true;
+      settings = {
+        # Ctrl+Tab cycles tabs by recency.
+        "browser.ctrlTab.sortByRecentlyUsed" = true;
+        # Home (Tridactyl gh): DuckDuckGo until the homepage dashboard is up.
+        "browser.startup.homepage" = "https://duckduckgo.com";
+      };
       keyboardShortcuts =
         lib.mapAttrsToList (key: id: {
           inherit id key;
