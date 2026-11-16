@@ -1,4 +1,6 @@
-# Zen with Vimium C and Bitwarden (default bindings), on graphical desktops.
+# Zen with Vimium C, Bitwarden and Dark Reader (default settings), on graphical
+# desktops. Sites are asked for their dark theme; Dark Reader darkens only those
+# without one (its detectDarkTheme, on by default).
 {
   config,
   lib,
@@ -23,12 +25,20 @@
           installation_mode = "force_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
         };
+        "addon@darkreader.org" = {
+          installation_mode = "force_installed";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+        };
       };
       profiles.default = {
         name = "default";
         isDefault = true;
-        # Ctrl+Tab cycles tabs by recency.
-        settings."browser.ctrlTab.sortByRecentlyUsed" = true;
+        settings = {
+          # Ctrl+Tab cycles tabs by recency.
+          "browser.ctrlTab.sortByRecentlyUsed" = true;
+          # Ask every site for its dark theme (prefers-color-scheme: dark).
+          "layout.css.prefers-color-scheme.content-override" = 0;
+        };
       };
     };
   };
