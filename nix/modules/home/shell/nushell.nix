@@ -36,7 +36,7 @@
         ^openssl rand -base64 $bytes | str trim | str substring 0..<$length
       }
 
-      # nu_scripts for the kubernetes aliases here and git aliases (omz-aliases.nix);
+      # nu_scripts for the kubernetes aliases here and git aliases (dev/git.nix);
       # completions come from carapace (carapace.nix).
       const NU_LIB_DIRS = $NU_LIB_DIRS ++ ['${pkgs.nu_scripts}/share/nu_scripts']
 

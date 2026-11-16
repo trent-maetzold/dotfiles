@@ -1,4 +1,5 @@
 {
+  lib,
   llm-agents,
   pkgs,
   user,
@@ -63,4 +64,10 @@
     # (prebuilt, numtide cache); nixpkgs' build is broken and marked unfree.
     llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.but
   ];
+
+  # oh-my-zsh's git plugin aliases (gst, gco, gcmsg, ...), nushell-only: nu_scripts'
+  # port, some calling nushell functions. After nushell.nix's NU_LIB_DIRS.
+  programs.nushell.extraConfig = lib.mkAfter ''
+    use aliases/git/git-aliases.nu *
+  '';
 }
