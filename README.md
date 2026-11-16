@@ -30,7 +30,7 @@ trent as admin), `desktop`, `hardware`. `common`, `services` and `wsl` make up
 | Host | Machine | Desktop |
 | --- | --- | --- |
 | `muninn` | trent's laptop | Niri + Noctalia, Home Manager for trent |
-| `sif` | Justine's Yoga 720-13IKB | XFCE (X11), Flatpak apps via GNOME Software |
+| `sif` | Justine's Yoga 720-13IKB | Cinnamon (X11), Flatpak apps via GNOME Software |
 
 From a NixOS live USB, install a host onto this machine. It offers to remove
 all UEFI boot entries (firmware re-adds its built-in ones), runs the host's disko script (which asks
@@ -49,8 +49,8 @@ Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#mun
 `nix/hosts/sif/facter.json` (`sudo nix run nixpkgs#nixos-facter -- -o facter.json`),
 then bootstrap `sif`. After install, set Justine's password with
 `sudo passwd justine`. SSH in as `ssh trent@sif.local` (keys only: the
-Bitwarden keys `tm@nixos` and `trent@huginn`). Her XFCE theme and Windows-style taskbar are first-login
-defaults; her own changes stick. Flathub is added for each user at their first login.
+Bitwarden keys `tm@nixos` and `trent@huginn`). Cinnamon's power and screensaver settings are defaults;
+her own changes stick. Flathub is added for each user at their first login.
 
 ## Rebuild
 
