@@ -171,8 +171,11 @@ rbw login
 systemctl --user start rbw-agent # it waits for that config
 ```
 
-`rbw unlock` (or the first `ssh`) asks for the master password through
-`pinentry`: graphical on desktops, in the terminal elsewhere.
+After each login, run `rbw unlock` before using SSH. It asks for the master
+password through `pinentry` (graphical on desktops, in the terminal elsewhere)
+and tells the agent where to prompt next time. Until then, SSH gets "agent
+refused". The vault relocks after rbw's lock timeout; SSH then prompts again
+where you last ran `rbw`.
 
 Tools that save their own logins (`gh auth login`, ...) use the Secret Service
 keyring: gnome-keyring on desktops, unlocked at login; elsewhere (WSL)
