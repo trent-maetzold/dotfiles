@@ -94,6 +94,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     preservation.url = "github:nix-community/preservation";
+    # GitOps: standalone hosts pull this repo and switch themselves.
+    comin = {
+      url = "github:nlewo/comin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Modules (nix/modules/{home,nixos})
     nixos-wsl = {

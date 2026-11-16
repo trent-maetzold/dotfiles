@@ -32,6 +32,12 @@ trent as admin), `desktop`, `hardware`. `common`, `services` and `wsl` make up
 | `muninn` | trent's laptop | Niri + Noctalia, Home Manager for trent |
 | `sif` | Justine's Yoga 720-13IKB | Cinnamon (X11), Flatpak apps via GNOME Software |
 
+sif runs [comin](https://github.com/nlewo/comin) (`deploy/comin.nix`): it polls
+`main` every 60 s and builds `nixosConfigurations.sif` when it changes, as the
+default for the next boot: merging a PR updates the laptop at its next restart.
+For an immediate change, `nixos-rebuild switch` over SSH still works. Push to `testing-sif` to try a config there
+without keeping it across reboots. `comin status` on sif shows what it deployed.
+
 From a NixOS live USB, install a host onto this machine. It offers to remove
 all UEFI boot entries (firmware re-adds its built-in ones), runs the host's disko script (which asks
 before wiping), asks for trent's login password and then the disk passphrase,
