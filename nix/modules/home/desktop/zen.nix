@@ -30,20 +30,58 @@
     profiles.default = {
       name = "default";
       isDefault = true;
-      # Ctrl+Tab cycles tabs by recency.
-      settings."browser.ctrlTab.sortByRecentlyUsed" = true;
-      # Unbind Zen and Firefox shortcuts that Tridactyl's defaults replace
-      # (same keys, or the same action): find (Ctrl+F, Tridactyl /), the
-      # bookmarks sidebar (Ctrl+B), bookmark page (Ctrl+D), search (Ctrl+E),
-      # glance and open file (Ctrl+O), page info (Ctrl+I), view source
-      # (Ctrl+U), mute (Ctrl+M, Tridactyl Alt+M) and pin (Ctrl+Shift+D,
-      # Tridactyl Alt+P). Ctrl+Alt+S shows or hides the sidebar.
-      # Bitwarden fills a login with its own Ctrl+Shift+L.
-      keyboardShortcuts =
-        map (id: {
+      settings = {
+        # Ctrl+Tab cycles tabs by recency.
+        "browser.ctrlTab.sortByRecentlyUsed" = true;
+        # Alt+letter is Zen's layer below, so the hidden menu bar's
+        # Alt+letter access keys are off.
+        "ui.key.menuAccessKey" = 0;
+      };
+      # Zen's own actions on Alt, with vim letters: sidebar, compact mode,
+      # workspaces (h/l), split views.
+      keyboardShortcuts = let
+        alt = id: key: {
+          inherit id key;
+          modifiers.alt = true;
+        };
+        altShift = id: key: {
+          inherit id key;
+          modifiers = {
+            alt = true;
+            shift = true;
+          };
+        };
+        off = id: {
           inherit id;
           disabled = true;
-        }) [
+        };
+      in
+        [
+          (alt "zen-toggle-sidebar" "s")
+          (alt "zen-compact-mode-toggle" "c")
+          (alt "zen-workspace-backward" "h")
+          (alt "zen-workspace-forward" "l")
+          (alt "zen-split-view-vertical" "v")
+          (altShift "zen-split-view-horizontal" "v")
+          (alt "zen-split-view-grid" "g")
+          (alt "zen-split-view-unsplit" "q")
+          # Zen moved the inspector to Ctrl+Shift+L; Firefox's Ctrl+Shift+C
+          # is free again (copy URL below), and Bitwarden fills a login with
+          # its own Ctrl+Shift+L.
+          {
+            id = "key_inspector";
+            key = "c";
+            modifiers = {
+              accel = true;
+              shift = true;
+            };
+          }
+        ]
+        # Tridactyl's defaults replace these: the same keys (find Ctrl+F,
+        # bookmarks sidebar Ctrl+B, bookmark Ctrl+D, search Ctrl+E, glance
+        # and open file Ctrl+O, page info Ctrl+I, view source Ctrl+U) or the
+        # same actions (mute Alt+M, pin Alt+P, copy URL yy).
+        ++ map off [
           "key_find"
           "viewBookmarksSidebarKb"
           "addBookmarkAsKb"
@@ -54,17 +92,8 @@
           "key_viewSource"
           "key_toggleMute"
           "zen-toggle-pin-tab"
+          "zen-copy-url"
           "zen-compact-mode-show-sidebar"
-        ]
-        ++ [
-          {
-            id = "zen-toggle-sidebar";
-            key = "s";
-            modifiers = {
-              accel = true;
-              alt = true;
-            };
-          }
         ];
     };
   };
