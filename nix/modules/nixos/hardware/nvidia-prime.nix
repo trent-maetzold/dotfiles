@@ -11,5 +11,9 @@
     finegrained = true;
   };
   services.switcherooControl.enable = true;
+  # WirePlumber's libcamera starts a GPU image processor and takes the first
+  # EGL device it finds, NVIDIA's, keeping it awake. It only sees Mesa (the
+  # integrated GPU); programs started with nvidia-offload still get NVIDIA.
+  systemd.user.services.wireplumber.environment.__EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
   nixpkgs.config.allowUnfreePackages = ["nvidia-x11" "nvidia-settings"];
 }
