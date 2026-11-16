@@ -134,8 +134,7 @@ Tmux sessions act as workspaces: `w` opens the picker, `N` creates one,
 ## Python projects
 
 Projects use direnv: an `.envrc` with `use mise` loads `mise.toml` (tools and env)
-on entering the directory. Project secrets go in a project `fnox.toml`
-(`fnox exec -- <cmd>`). Python packages with C extensions (psycopg2, gssapi) build on the
+on entering the directory. Python packages with C extensions (psycopg2, gssapi) build on the
 host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
 are on PATH. uv passes gssapi the krb5 header path it needs
 (`nix/modules/home/dev/langs/python.nix`).
@@ -156,15 +155,37 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 Otherwise install your organization's trusted CA; do not disable TLS verification.
 Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.nix`.
 
-## Secrets
+## Secrets and SSH keys
 
-Secrets live in `fnox.toml` files, age-encrypted to `~/.config/age/keys.txt`
-or as references to a remote provider (`fnox sync` caches those encrypted in
-the same file). `nix/modules/home/fnox.nix` enables `programs.fnox` with the
-age provider; the host adds its recipient and other providers. Add or change
-a secret with `fnox set NAME` or `fnox edit` in the file's directory. CLIs run
-under `fnox exec` through `pkgs.withFnox` (`nix/lib/with-fnox.nix`), so a token
-reaches only that process.
+Bitwarden, through [rbw](https://github.com/doy/rbw), on every host
+(`nix/modules/home/secrets/rbw.nix`). The `rbw-agent` user service holds the
+unlocked vault and is the SSH agent: Bitwarden SSH-key items are served from
+`$XDG_RUNTIME_DIR/rbw/ssh-agent-socket`, which `SSH_AUTH_SOCK` points at in
+every shell. Private keys are never written to disk. Once per machine:
+
+```sh
+rbw config set email YOUR_BITWARDEN_EMAIL
+rbw config set base_url https://vault.example.com # only if self-hosted
+rbw register # first time on this device
+rbw login
+systemctl --user start rbw-agent # it waits for that config
+```
+
+`rbw unlock` (or the first `ssh`) asks for the master password through
+`pinentry`: graphical on desktops, in the terminal elsewhere.
+
+Tools that save their own logins (`gh auth login`, ...) use the Secret Service
+keyring: gnome-keyring on desktops, unlocked at login; elsewhere (WSL)
+pass-secret-service over a gpg-encrypted `pass` store
+(`nix/modules/home/secrets/keyring.nix`). Set that up once:
+
+```sh
+gpg --quick-gen-key "Trent Maetzold <EMAIL>"
+pass init "<EMAIL>"
+```
+
+gpg-agent then asks for the key's passphrase in the terminal when a stored
+login is first used.
 
 The apps (`import-win-ca`) take each setting from a flag, else an env var, else
 an env file (`$ENV_FILE`, default `./.env`); with none set they exit with an error.
