@@ -1,30 +1,42 @@
 # Noctalia on Niri, from docs.noctalia.dev (compositor-settings/niri): its IPC
 # binds, its settings window floating, and window activation from its
-# notifications. Super+Alt+L replaces the defaults' swaylock. Noctalia itself starts from its systemd unit (NixOS).
+# notifications. Super+Alt+L replaces the defaults' swaylock. Each bind has
+# a title for the hotkey overlay (Mod+Shift+/). Noctalia itself starts from
+# its systemd unit (NixOS).
 #
 # Noctalia's idle behaviour: screen off at 5 min, lock at 10, suspend at 15
 # on battery only (never while plugged in). Lock before any suspend, lid
 # included. Noctalia reads every *.toml here; its Settings UI can override.
 {pkgs, ...}: let
-  noctalia = args: {spawn = ["noctalia" "msg"] ++ args;};
-  locked = args: noctalia args // {_props.allow-when-locked = true;};
+  noctalia = title: args: {
+    _props.hotkey-overlay-title = title;
+    spawn = ["noctalia" "msg"] ++ args;
+  };
+  locked = title: args:
+    noctalia title args
+    // {
+      _props = {
+        hotkey-overlay-title = title;
+        allow-when-locked = true;
+      };
+    };
   suspendOnBattery = pkgs.writeShellScript "suspend-on-battery" ''
     ${pkgs.systemd}/bin/systemd-ac-power || exec ${pkgs.systemd}/bin/systemctl suspend
   '';
 in {
   wayland.windowManager.niri.settings = {
     binds = {
-      "Mod+Space" = noctalia ["panel-toggle" "launcher"];
-      "Mod+S" = noctalia ["panel-toggle" "control-center"];
-      "Mod+Shift+Comma" = noctalia ["settings-toggle"];
-      "Super+Alt+L" = noctalia ["session" "lock"];
-      "Alt+Tab" = noctalia ["window-switcher" "hold"];
-      "Alt+Shift+Tab" = noctalia ["window-switcher" "hold" "reverse"];
-      "XF86AudioRaiseVolume" = locked ["volume-up"];
-      "XF86AudioLowerVolume" = locked ["volume-down"];
-      "XF86AudioMute" = locked ["volume-mute"];
-      "XF86MonBrightnessUp" = locked ["brightness-up"];
-      "XF86MonBrightnessDown" = locked ["brightness-down"];
+      "Mod+Space" = noctalia "Launcher" ["panel-toggle" "launcher"];
+      "Mod+S" = noctalia "Control center" ["panel-toggle" "control-center"];
+      "Mod+Shift+Comma" = noctalia "Noctalia settings" ["settings-toggle"];
+      "Super+Alt+L" = noctalia "Lock screen" ["session" "lock"];
+      "Alt+Tab" = noctalia "Switch windows" ["window-switcher" "hold"];
+      "Alt+Shift+Tab" = noctalia "Switch windows (reverse)" ["window-switcher" "hold" "reverse"];
+      "XF86AudioRaiseVolume" = locked "Volume up" ["volume-up"];
+      "XF86AudioLowerVolume" = locked "Volume down" ["volume-down"];
+      "XF86AudioMute" = locked "Mute" ["volume-mute"];
+      "XF86MonBrightnessUp" = locked "Brightness up" ["brightness-up"];
+      "XF86MonBrightnessDown" = locked "Brightness down" ["brightness-down"];
     };
     _children = [
       {
