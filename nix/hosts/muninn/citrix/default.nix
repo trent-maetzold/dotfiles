@@ -49,13 +49,14 @@
       # No Desktop Viewer bar: the session is switched by tty, not windows.
       ConnectionBar = 0;
     };
-    # Decode on the Intel GPU (VA-API) and draw with OpenGL. With hardware
-    # decoding the client also offers AV1; the server picks the codec.
+    # Decode on the Intel GPU (VA-API) and draw with OpenGL. AV1 is the only
+    # video codec offered (the server picks from what the client offers, and
+    # offers AV1 only with hardware decoding).
     "Thinwire3.0" = {
       HWAccelerationEnabled = "True";
       OpenGLEnabled = "True";
-      H264Enabled = "True";
-      H265Enabled = "True";
+      H264Enabled = "False";
+      H265Enabled = "False";
     };
   });
 
