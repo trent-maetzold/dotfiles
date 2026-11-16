@@ -1,6 +1,7 @@
-# Zen with Vimium C (vim keys, its defaults), Bitwarden and Dark Reader. Pages
-# follow the system's light/dark theme (Zen's default); Dark Reader skips
-# sites that are already dark (its detectDarkTheme, on by default).
+# Zen with Vimium C (vim keys, its defaults), Bitwarden, Dark Reader and
+# uBlock Origin, and no other extensions. Pages follow the system's
+# light/dark theme (Zen's default); Dark Reader skips sites that are already
+# dark (its detectDarkTheme, on by default).
 #
 # Keys: Zen's own actions that Vimium C has no key for are on
 # Ctrl+Alt+<letter> (the floating sidebar on Ctrl+S). Every other Zen and Firefox shortcut is unbound except zoom, F12,
@@ -54,21 +55,18 @@ in {
 
   programs.zen-browser = {
     enable = true;
-    policies.ExtensionSettings = {
-      "vimium-c@gdh1995.cn" = {
+    # Only these extensions: anything else is blocked, and Zen removes it.
+    policies.ExtensionSettings = let
+      amo = slug: {
         installation_mode = "force_installed";
-        install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/${slug}/latest.xpi";
       };
-      # Tried instead of Vimium C; blocked so Zen removes the old install.
-      "tridactyl.vim@cmcaine.co.uk".installation_mode = "blocked";
-      "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-        installation_mode = "force_installed";
-        install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-      };
-      "addon@darkreader.org" = {
-        installation_mode = "force_installed";
-        install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
-      };
+    in {
+      "*".installation_mode = "blocked";
+      "vimium-c@gdh1995.cn" = amo "vimium-c";
+      "{446900e4-71c2-419f-a6a7-df9c091e268b}" = amo "bitwarden-password-manager";
+      "addon@darkreader.org" = amo "darkreader";
+      "uBlock0@raymondhill.net" = amo "ublock-origin";
     };
     profiles.default = {
       name = "default";
