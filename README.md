@@ -121,6 +121,26 @@ Windows chain/revocation policies. This repo is public, and a corporate root CA
 names your employer: decide before committing one.
 The exporter itself does not change system trust or activate NixOS.
 
+## Citrix (muninn)
+
+Citrix Workspace runs as its own session on **tty8**: Xorg with no compositor,
+a kiosk window manager (matchbox) and Workspace, as trent, at 1920x1200 (the
+panel scales it). It shares trent's audio, so a Bluetooth headset stays
+connected across the switch. **Ctrl+Alt+F8** switches to it and
+**Ctrl+Alt+F1** back to Niri; every other key, Win and Alt included, goes to
+Windows. Niri doesn't know about it. The session starts the first time you
+switch to tty8 (after the first switch to this config, reboot once so logind
+allows tty8) and again after Workspace's X exits; it registers the employer
+store if it's missing. Logs: `journalctl -b -u autovt@tty8`.
+
+The vendor files must be in the Nix store before building (accept their
+licenses, download them, then for each):
+
+```sh
+nix-prefetch-url file://$HOME/Downloads/linuxx64-26.08.0.225.tar.gz
+nix-prefetch-url file://$HOME/Downloads/zoomvdi-universal-plugin-ubuntu_7.0.13.deb
+```
+
 ## Tmux
 
 `nix/modules/home/term/tmux.nix` uses `Ctrl-b` as the prefix and follows Herdr's common
