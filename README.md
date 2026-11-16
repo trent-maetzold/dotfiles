@@ -145,8 +145,8 @@ The exporter itself does not change system trust or activate NixOS.
 
 Niri's keymap borrows from [Ryan's Niri configuration](https://github.com/ryan4yin/nix-config/blob/1bef53bfe698a99db9298b4cdd18f212ebfc8e13/home/linux/gui/niri/conf/keybindings.kdl),
 keeping the existing Shift-to-move convention. `Mod` means Super/Windows.
-The **[keyboard reference](docs/keybindings.md)** covers Niri monitors/layouts,
-Noctalia panels and media keys.
+The **[keyboard reference](docs/keybindings.md)** covers browser defaults,
+Luakit customizations, Niri monitors/layouts, Noctalia panels and media keys.
 The table below is the short version.
 
 | Keys | Action |
@@ -177,7 +177,7 @@ all be removed this way. Noctalia's interactive settings remain yours to explore
 Super+Space and Super+D toggle its native launcher with
 `noctalia msg panel-toggle launcher`.
 
-## Foot and dropkitty (muninn)
+## Foot and browsers (muninn)
 
 Foot uses Omarchy's defaults with a larger 12-point JetBrainsMono Nerd Font,
 14-pixel padding, 10,000 scrollback lines, a non-blinking block cursor,
@@ -207,8 +207,35 @@ bar/key configuration and pi command, and exercises the wrapped helper in a
 private runtime directory without launching pi. Real dropdown focus, visibility
 and bar clearance still require an interactive check.
 
-`tests/check-keymaps.py NIRI_KDL` checks Niri, Win+K and
-Noctalia commands.
+Zen (`zen-beta`) and Luakit are configured. Luakit's restored customizations
+include Noctalia colors with a dark fallback, bundled Dark Reader (toggle with
+`,d`), AdGuard request blocking, fonts, blank new tabs and no decorations.
+`,p` opens its Fuzzel-backed rbw picker; verify the HTTPS origin before pasting.
+Qutebrowser, Vimb and Chawan remain removed. Existing profile data is not deleted.
+
+### Zen and Vimium C: default bindings
+
+Home Manager owns a fresh `default` Zen profile. Its profile selector replaces
+the initial unmanaged one; the old profile directory is left untouched but is
+not selected. Close Zen before switching, then reopen `zen-beta`.
+
+Zen's managed policy installs **Vimium C** and **Bitwarden** from their official
+Mozilla Add-ons URLs, including signed extension updates. Initial installation
+requires internet. Sign into Bitwarden interactively; vault credentials,
+unlock state and passkeys are not configured in Nix or shared with rbw.
+`about:policies` shows the active policy; `about:addons` shows installation.
+
+Zen and Vimium C use their default bindings; Nix declares none.
+
+Ctrl+L opens the native address bar; Vimium's default `o` opens its own picker.
+Press **?** on an ordinary page for Vimium help. Vimium cannot run on protected
+browser pages or menus. See the [keyboard reference](docs/keybindings.md).
+
+`tests/check-zen.py CONFIG_JSON` checks extension policies and the absence of
+custom native bindings; `tests/check-keymaps.py NIRI_KDL` checks Niri, Win+K and
+Noctalia commands. `tests/check-luakit.py` runs isolated headless browser checks
+for the restored settings, theme, Dark Reader and request blocking. Real GUI
+operation and passkey authentication still require interactive checks.
 
 ## Tmux
 
