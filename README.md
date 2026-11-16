@@ -158,24 +158,22 @@ Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.
 ## Secrets and SSH keys
 
 Bitwarden, through [rbw](https://github.com/doy/rbw), on every host
-(`nix/modules/home/secrets/rbw.nix`). The `rbw-agent` user service holds the
-unlocked vault and is the SSH agent: Bitwarden SSH-key items are served from
-`$XDG_RUNTIME_DIR/rbw/ssh-agent-socket`, which `SSH_AUTH_SOCK` points at in
-every shell. Private keys are never written to disk. Once per machine:
+(`nix/modules/home/secrets/rbw.nix`). `rbw unlock` starts `rbw-agent`, which
+holds the unlocked vault and is also the SSH agent: SSH's `IdentityAgent` points
+at `$XDG_RUNTIME_DIR/rbw/ssh-agent-socket`, which serves Bitwarden SSH-key items.
+Private keys are never written to disk. Once per machine:
 
 ```sh
 rbw config set email YOUR_BITWARDEN_EMAIL
 rbw config set base_url https://vault.example.com # only if self-hosted
 rbw register # first time on this device
 rbw login
-systemctl --user start rbw-agent # it waits for that config
 ```
 
-After each login, run `rbw unlock` before using SSH. It asks for the master
-password through `pinentry` (graphical on desktops, in the terminal elsewhere)
-and tells the agent where to prompt next time. Until then, SSH gets "agent
-refused". The vault relocks after rbw's lock timeout; SSH then prompts again
-where you last ran `rbw`.
+After each login, run `rbw unlock` before using SSH: it starts the agent and
+asks for the master password through `pinentry` (graphical on desktops, in the
+terminal elsewhere). When the vault relocks after rbw's lock timeout, SSH
+prompts again where you last ran `rbw`.
 
 Tools that save their own logins (`gh auth login`, ...) use the Secret Service
 keyring: gnome-keyring on desktops, unlocked at login; elsewhere (WSL)
