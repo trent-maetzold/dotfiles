@@ -1,4 +1,5 @@
-# Intel VA-API (Broadwell and newer): hardware video decoding for browsers.
+# Intel VA-API (Broadwell and newer): hardware video decoding for browsers
+# and Citrix.
 {pkgs, ...}: {
   hardware.graphics = {
     enable = true;

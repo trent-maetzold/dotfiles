@@ -46,6 +46,16 @@
       TransparentKeyPassthrough = "Remote";
       # Windows at 100% on the 1920x1200 screen.
       DPIMatchingEnabled = "False";
+      # No Desktop Viewer bar: the session is switched by tty, not windows.
+      ConnectionBar = 0;
+    };
+    # Decode on the Intel GPU (VA-API) and draw with OpenGL. With hardware
+    # decoding the client also offers AV1; the server picks the codec.
+    "Thinwire3.0" = {
+      HWAccelerationEnabled = "True";
+      OpenGLEnabled = "True";
+      H264Enabled = "True";
+      H265Enabled = "True";
     };
   });
 
