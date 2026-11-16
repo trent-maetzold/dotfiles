@@ -2,7 +2,9 @@
 # Workspace kept from seeing the NVIDIA GPU. Workspace turns off hardware
 # decoding when it finds one, though decoding runs on the Intel GPU, so
 # wfica starts in a sandbox whose /sys/class/drm lists only non-NVIDIA
-# entries; everything else (audio, camera, USB) is the real system.
+# entries; everything else (audio, camera, USB) is the real system. bwrap
+# refuses to run with capabilities, so the CAP_WAKE_ALARM a tty login
+# carries is dropped first.
 {
   lib,
   pkgs,
@@ -39,7 +41,7 @@
                 args+=(--ro-bind "\$e" "\$e")
               fi
             done
-            exec ${lib.getExe final.bubblewrap} --dev-bind / / --tmpfs /sys/class/drm "\''${args[@]}" -- "$root/.wfica-real" "\$@"
+            exec ${final.util-linux}/bin/setpriv --ambient-caps -all ${lib.getExe final.bubblewrap} --dev-bind / / --tmpfs /sys/class/drm "\''${args[@]}" -- "$root/.wfica-real" "\$@"
             WRAPPER
             chmod +x "$root/wfica"
           '';
