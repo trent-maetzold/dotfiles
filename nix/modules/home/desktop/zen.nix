@@ -3,6 +3,7 @@
 # dark (its detectDarkTheme, on by default).
 {
   config,
+  pkgs,
   zen-browser,
   ...
 }: {
@@ -11,8 +12,16 @@
   # Take over the profile selector Zen created before it was managed.
   home.file."${config.programs.zen-browser.configPath}/profiles.ini".force = true;
 
+  # Tridactyl's rc (read at startup through its native helper). `s` opens
+  # Zen's floating sidebar: Tridactyl can't reach Zen's interface, so it
+  # presses Zen's own shortcut (Ctrl+Alt+S) with wtype.
+  xdg.configFile."tridactyl/tridactylrc".text = ''
+    bind s exclaim_quiet ${pkgs.wtype}/bin/wtype -M ctrl -M alt s -m alt -m ctrl
+  '';
+
   programs.zen-browser = {
     enable = true;
+    nativeMessagingHosts = [pkgs.tridactyl-native];
     policies.ExtensionSettings = {
       "tridactyl.vim@cmcaine.co.uk" = {
         installation_mode = "force_installed";
@@ -93,7 +102,6 @@
           "key_toggleMute"
           "zen-toggle-pin-tab"
           "zen-copy-url"
-          "zen-compact-mode-show-sidebar"
         ];
     };
   };
