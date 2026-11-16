@@ -1,6 +1,6 @@
 # Wrap every binary of `package` to run under `fnox exec`, so the named secrets
 # from that fnox.toml reach only that process, e.g.
-#   pkgs.withFnox "/home/me/.config/nixos/fnox.toml" ["BKT_TOKEN"] pkgs.bkt
+#   pkgs.withFnox "/home/me/.config/dotfiles/fnox.toml" ["BKT_TOKEN"] pkgs.bkt
 pkgs: config: secrets: package:
 pkgs.symlinkJoin {
   name = "${package.name}-with-fnox";

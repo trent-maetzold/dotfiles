@@ -1,10 +1,10 @@
-# Tasks for this repo. Each recipe wraps a flake app (nix/apps), so host flakes
-# can run the same tasks with `nix run`.
+# Tasks for this repo. Each recipe wraps a flake app (nix/apps), also runnable
+# with `nix run .#<app>`.
 
 default:
     @just --list
 
-# Update the host flake's inputs (programs.nh.flake), then switch (args go to nh).
+# Update this flake's inputs, commit flake.lock, then switch (args go to nh).
 switch *args:
     nix run .#switch -- {{args}}
 

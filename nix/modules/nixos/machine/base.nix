@@ -36,5 +36,15 @@
   ];
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  # Weekly cleanup of every profile (system, Home Manager, user) and stale GC
+  # roots, keeping the last 5 generations and anything from the last two weeks.
+  # nh's CLI and NH_FLAKE come from Home Manager (home/system/nix.nix).
+  programs.nh = {
+    enable = true;
+    clean = {
+      enable = true;
+      extraArgs = "--keep 5 --keep-since 14d";
+    };
+  };
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

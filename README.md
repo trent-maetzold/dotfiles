@@ -1,8 +1,8 @@
-# NixOS-WSL dotfiles
+# NixOS dotfiles
 
-Host-, user-, and employer-specific settings (hostname, username, git email,
-proxy bypass, CLI server URLs) live in the private system flake at
-`~/.config/nixos`, not here. `<host>` and `<user>` below stand for them.
+Every machine is a host in this flake (`nix/hosts/<host>`, wired up in
+`flake.nix`), with this repo checked out at `~/.config/dotfiles`. `<host>` and
+`<user>` below stand for a host's name and its user.
 
 Development tools are declared in `nix/modules/home/`; language toolchains live in
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
@@ -24,8 +24,8 @@ journalctl --user -u magpie -u paseo -f
 Hosts installed straight from this flake live in `nix/hosts/<host>`, each
 wired up in `flake.nix`. They build on the grouped NixOS modules in
 `nix/modules/nixos`: `machine` (boot, locale, encrypted ephemeral-root disk,
-trent as admin), `desktop`, `hardware`. `common`, `services` and `wsl` make up
-`nixosModules.default` for downstream WSL hosts.
+trent as admin), `desktop`, `hardware`; `common`, `services` and `wsl` are for
+WSL hosts.
 
 | Host | Machine | Desktop |
 | --- | --- | --- |
@@ -49,7 +49,7 @@ there. `/` is wiped every boot; `/etc` is an overlay whose changes persist in
 nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn
 ```
 
-Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#muninn`.
+Rebuild after changes with `nh os switch` (see [Rebuild](#rebuild)).
 
 **sif:** first generate its hardware report from the live USB and commit it as
 `nix/hosts/sif/facter.json` (`sudo nix run nixpkgs#nixos-facter -- -o facter.json`),
@@ -60,33 +60,9 @@ her own changes stick. Flathub is added for each user at their first login.
 
 ## Rebuild
 
-```sh
-sudo nixos-rebuild switch --flake ~/.config/nixos#<host>
-```
-
-Both repositories keep `flake.nix` and `flake.lock` at their root.
-Dotfiles stores writable application configs in `config/` and Nix modules/packages
-in `nix/`. The system flake lives in `~/.config/nixos/flake.nix`, with its host
-configuration in `~/.config/nixos/nix/configuration.nix`.
-That flake imports this repository as a local path input and uses its
-`homeModules.default` output. `/etc/nixos/configuration.nix` is not imported.
-
-After the first rebuild, `nh` is installed and `NH_FLAKE` points to
-`~/.config/nixos`. Open a new shell, then rebuild from any directory:
-
-```sh
-nh os switch
-```
-
-After changing dotfiles, refresh the local input before switching:
-
-```sh
-nix flake update dotfiles --flake ~/.config/nixos
-nh os switch
-```
-
-On another machine, adjust the host/user settings and dotfiles input path in
-`~/.config/nixos`. Version that directory separately from this repository.
+`nh os switch` builds this checkout for the current hostname: Home Manager
+points `NH_FLAKE` at `~/.config/dotfiles`. `just switch` first updates every
+flake input and commits `flake.lock`.
 
 ## First login
 
@@ -132,19 +108,17 @@ Windows Current User and Local Machine Root and intermediate stores. It excludes
 expired/not-yet-valid and explicitly distrusted certificates, removes duplicates,
 and exports no private keys. It requires WSL with Windows interop enabled.
 
-The system flake's `.envrc` sets `IMPORT_WIN_CA_OUTPUT_FILE` to its `nix/certs/windows-ca.pem`.
-
-Then set this in `~/.config/nixos/nix/configuration.nix` and rebuild:
+Then add the bundle to the WSL host's config (`nix/hosts/<host>`) and rebuild:
 
 ```nix
-security.pki.certificateFiles = [ ./certs/windows-ca.pem ];
+security.pki.certificateFiles = [./windows-ca.pem];
 ```
 
 This is an explicit snapshot, not automatic Windows trust synchronization.
 Export again and rebuild after Windows CA changes. Review the trust scope before
 importing: the bundle includes intermediate CAs, and Linux does not reproduce
-Windows chain/revocation policies. Keep machine-specific exports outside dotfiles;
-add them to Git only if the system flake is Git-backed and your policy allows it.
+Windows chain/revocation policies. This repo is public, and a corporate root CA
+names your employer: decide before committing one.
 The exporter itself does not change system trust or activate NixOS.
 
 ## Tmux
@@ -169,15 +143,14 @@ are on PATH. uv passes gssapi the krb5 header path it needs
 ## Updating
 
 ```sh
-nix flake update --flake ~/.config/nixos
-nh os switch
+just switch # nix flake update, commit flake.lock, nh os switch
 ```
 
 The current corporate proxy causes GitHub certificate errors. Where direct
 access is allowed, fetch inputs without the proxy environment:
 
 ```sh
-env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix flake update --flake ~/.config/nixos
+env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix flake update
 ```
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.

@@ -1,5 +1,5 @@
-# Update every input of the host flake (programs.nh.flake, else pass one),
-# committing flake.lock, then switch. Args go to nh.
+# Update every input of this flake (NH_FLAKE), committing flake.lock, then
+# switch. Args go to nh.
 {
   pkgs,
   app,

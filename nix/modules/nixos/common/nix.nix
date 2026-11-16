@@ -1,8 +1,8 @@
-# Nix itself: flakes, nh, and nix-ld for unpatched binaries and Python wheels.
+# Nix itself: flakes and nix-ld for unpatched binaries and Python wheels. nh is
+# in Home Manager (home/system/nix.nix).
 {
   options,
   pkgs,
-  user,
   ...
 }: {
   nix.enable = true;
@@ -10,12 +10,6 @@
   # Binary cache for github:numtide/llm-agents.nix (home/ai).
   nix.settings.extra-substituters = ["https://cache.numtide.com"];
   nix.settings.extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
-
-  # `nh os switch` finds the host flake here; see the `switch` app.
-  programs.nh = {
-    enable = true;
-    flake = "${user.home}/.config/nixos";
-  };
 
   programs.nix-ld.enable = true;
   # Keep the NixOS defaults; add what pip/uv wheels and source builds need.
