@@ -25,7 +25,10 @@
     # Machines installed straight from this flake (`nix run .#bootstrap -- <host>`).
     nixosConfigurations = {
       muninn = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
+        specialArgs = {
+          inherit inputs;
+          user = trent;
+        };
         modules = [
           ./nix/hosts/muninn
           home-manager.nixosModules.home-manager

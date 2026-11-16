@@ -1,15 +1,16 @@
 # Citrix as its own "OS" on tty8: Xorg (no compositor), a kiosk window manager
-# and Workspace at 1920x1200. Ctrl+Alt+F8 and Ctrl+Alt+F1 switch between it
-# and Niri; every other key, Win and Alt included, goes to Citrix. Niri knows
-# nothing about it.
+# and Workspace. Ctrl+Alt+F8 and Ctrl+Alt+F1 switch between it and the desktop
+# on tty1; every other key, Win and Alt included, goes to Citrix. The desktop
+# knows nothing about it.
 #
-# It runs as trent, so it shares trent's audio: a Bluetooth headset stays
+# It runs as `user`, so it shares their audio: a Bluetooth headset stays
 # connected across the switch. logind starts autovt@tty8 the first time tty8
 # is switched to; it starts again after Workspace's X exits.
 {
   config,
   lib,
   pkgs,
+  user,
   ...
 }: let
   vt = 8;
@@ -23,7 +24,7 @@
 
   # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
   # here instead of through the remote desktop).
-  zoom = import ../../../pkgs/zoom-vdi {inherit pkgs;};
+  zoom = import ../../../../pkgs/zoom-vdi {inherit pkgs;};
   client = pkgs.citrix-workspace.overrideAttrs (old: {
     nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pkgs.python3];
     postInstall =
@@ -32,7 +33,7 @@
         root="$out/opt/citrix-icaclient"
         ln -s ${zoom}/lib/libZoomPlugin.so "$root/ZoomMedia.so"
         chmod u+w "$root/config/module.ini"
-        python3 ${../../../pkgs/citrix/configure.py} "$root/config/module.ini"
+        python3 ${../../../../pkgs/citrix/configure.py} "$root/config/module.ini"
         for program in "$out/bin/"*; do
           wrapProgramShell "$program" --set ZOOMMEDIA_INI_PATH ${zoom}/etc/zoomvdi/ZoomMedia.ini
         done
@@ -44,10 +45,10 @@
       Version = 2;
       # Win, Alt+Tab and the like go to Windows.
       TransparentKeyPassthrough = "Remote";
-      # Windows at 100% on the 1920x1200 screen.
+      # Windows at 100%, not scaled to the screen's DPI.
       DPIMatchingEnabled = "False";
-      # No Desktop Viewer bar: the session is switched by tty, not windows.
-      ConnectionBar = 0;
+      # No toolbar (the tab at the top): the session is switched by tty.
+      ToolbarEnabled = "False";
     };
     # Decode on the Intel GPU (VA-API) and draw with OpenGL. AV1 is the only
     # video codec offered (the server picks from what the client offers, and
@@ -90,7 +91,7 @@ in {
     conflicts = ["getty@tty${toString vt}.service"];
     restartIfChanged = false;
     serviceConfig = {
-      User = "trent";
+      User = user.name;
       PAMName = "login";
       TTYPath = "/dev/tty${toString vt}";
       StandardInput = "tty";
@@ -98,7 +99,7 @@ in {
       StandardError = "journal";
       UtmpIdentifier = "tty${toString vt}";
       UtmpMode = "user";
-      WorkingDirectory = "/home/trent";
+      WorkingDirectory = user.home;
     };
     script = ''
       exec ${pkgs.xinit}/bin/xinit ${session}/bin/citrix-session -- \
@@ -107,7 +108,7 @@ in {
     '';
   };
 
-  home-manager.users.trent = {lib, ...}: {
+  home-manager.users.${user.name} = {lib, ...}: {
     # Written over on every switch, then Workspace adds its runtime settings.
     home.activation.citrixConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
       run install -D -m 0644 ${wfclient} "$HOME/.ICAClient/wfclient.ini"

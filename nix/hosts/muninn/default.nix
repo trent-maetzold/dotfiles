@@ -15,7 +15,7 @@
     "${inputs.nixos-hardware}/common/pc/ssd"
     ../../modules/nixos/hardware/nvidia-prime.nix
     ../../modules/nixos/services/quadlet.nix
-    ./citrix
+    ./citrix.nix
   ];
 
   networking.hostName = "muninn";
