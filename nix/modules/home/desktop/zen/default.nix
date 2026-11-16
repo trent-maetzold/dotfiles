@@ -15,6 +15,9 @@
   zen-browser,
   ...
 }: let
+  # Home and new tabs: DuckDuckGo until the homepage dashboard is up.
+  home = "https://duckduckgo.com";
+
   # `,<letter>` in Tridactyl -> Zen/Firefox shortcut id.
   zenActions = {
     s = "zen-compact-mode-show-sidebar"; # floating sidebar
@@ -55,6 +58,8 @@ in {
       "set modeindicatorshowkeys true"
       # about: pages open through the native helper, as `zen-beta <url>`.
       "set browser zen-beta"
+      # Firefox has no new-tab URL setting; Tridactyl owns the new-tab page.
+      "set newtab ${home}"
       "bind ,p tabopen about:preferences"
     ]
     ++ lib.mapAttrsToList (key: _: "bind ,${key} exclaim_quiet ${hyper key}") zenActions
@@ -83,8 +88,8 @@ in {
       settings = {
         # Ctrl+Tab cycles tabs by recency.
         "browser.ctrlTab.sortByRecentlyUsed" = true;
-        # Home (Tridactyl gh): DuckDuckGo until the homepage dashboard is up.
-        "browser.startup.homepage" = "https://duckduckgo.com";
+        # Home button and Tridactyl's gh.
+        "browser.startup.homepage" = home;
       };
       keyboardShortcuts =
         lib.mapAttrsToList (key: id: {
