@@ -50,7 +50,7 @@ Rebuild after changes: `sudo nixos-rebuild switch --flake ~/.config/dotfiles#mun
 then bootstrap `sif`. After install, set Justine's password with
 `sudo passwd justine`. SSH in as `ssh trent@sif.local` (keys only: the
 Bitwarden keys `tm@nixos` and `trent@huginn`). Her XFCE theme and Windows-style taskbar are first-login
-defaults; her own changes stick. Flathub is added on first boot.
+defaults; her own changes stick. Flathub is added for each user at their first login.
 
 ## Rebuild
 
