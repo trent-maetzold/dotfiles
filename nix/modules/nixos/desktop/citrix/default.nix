@@ -25,6 +25,23 @@
   # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
   # here instead of through the remote desktop).
   zoom = import ../../../../pkgs/zoom-vdi {inherit pkgs;};
+
+  # Workspace's settings, locked in All_Regions.ini (its lockdown file, which
+  # overrides wfclient.ini and the server's .ica file).
+  settings = {
+    # No toolbar (the tab at the top): the session is switched by tty.
+    ConnectionBar = "0";
+    # Win, Alt+Tab and the like go to Windows.
+    TransparentKeyPassthrough = "Remote";
+    # Windows at 100%, not scaled to the screen's DPI.
+    DPIMatchingEnabled = "False";
+    # Decode on the GPU (VA-API) and draw with OpenGL. H.264 and H.265 are
+    # off, so AV1 is the only video codec left to offer.
+    HWAccelerationEnabled = "True";
+    OpenGLEnabled = "True";
+    H264Enabled = "False";
+    H265Enabled = "False";
+  };
   client = pkgs.citrix-workspace.overrideAttrs (old: {
     nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pkgs.python3];
     postInstall =
@@ -34,32 +51,16 @@
         ln -s ${zoom}/lib/libZoomPlugin.so "$root/ZoomMedia.so"
         chmod u+w "$root/config/module.ini"
         python3 ${../../../../pkgs/citrix/configure.py} "$root/config/module.ini"
-        # No toolbar (the tab at the top): the session is switched by tty.
-        # The lockdown file overrides the server's ConnectionBar=1.
         chmod u+w "$root/config/All_Regions.ini"
-        sed -i 's/^ConnectionBar=\*$/ConnectionBar=0/' "$root/config/All_Regions.ini"
+        ${lib.concatStrings (lib.mapAttrsToList (key: value: ''
+            sed -i 's/^${key}=.*/${key}=${value}/' "$root/config/All_Regions.ini"
+            grep -qx '${key}=${value}' "$root/config/All_Regions.ini"
+          '')
+          settings)}
         for program in "$out/bin/"*; do
           wrapProgramShell "$program" --set ZOOMMEDIA_INI_PATH ${zoom}/etc/zoomvdi/ZoomMedia.ini
         done
       '';
-  });
-
-  wfclient = pkgs.writeText "wfclient.ini" (lib.generators.toINI {} {
-    WFClient = {
-      Version = 2;
-      # Win, Alt+Tab and the like go to Windows.
-      TransparentKeyPassthrough = "Remote";
-      # Windows at 100%, not scaled to the screen's DPI.
-      DPIMatchingEnabled = "False";
-    };
-    # Decode on the GPU (VA-API) and draw with OpenGL. The server picks the
-    # codec from those offered; AV1 is only offered with H.264 on.
-    "Thinwire3.0" = {
-      HWAccelerationEnabled = "True";
-      OpenGLEnabled = "True";
-      H264Enabled = "True";
-      H265Enabled = "True";
-    };
   });
 
   session = pkgs.writeShellApplication {
@@ -110,9 +111,10 @@ in {
   };
 
   home-manager.users.${user.name} = {lib, ...}: {
-    # Written over on every switch, then Workspace adds its runtime settings.
+    # Written over on every switch (wfclient.ini from Workspace's template),
+    # then Workspace adds its runtime settings.
     home.activation.citrixConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      run install -D -m 0644 ${wfclient} "$HOME/.ICAClient/wfclient.ini"
+      run install -D -m 0644 ${client}/opt/citrix-icaclient/config/wfclient.template "$HOME/.ICAClient/wfclient.ini"
       run install -D -m 0644 ${client}/opt/citrix-icaclient/config/All_Regions.ini "$HOME/.ICAClient/All_Regions.ini"
     '';
   };
