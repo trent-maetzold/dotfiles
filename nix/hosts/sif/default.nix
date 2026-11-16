@@ -1,5 +1,5 @@
 # sif: Justine's Yoga 720-13IKB (i5-7200U, HD 620, 8 GB). Same encrypted
-# ephemeral root as muninn, with a light Windows-like XFCE desktop. trent
+# ephemeral root as muninn, with a Windows-like Cinnamon desktop. trent
 # manages the OS; Justine installs her own apps from Flathub (GNOME Software).
 {
   inputs,
@@ -9,7 +9,7 @@
 }: {
   imports = [
     (inputs.import-tree ../../modules/nixos/machine)
-    ../../modules/nixos/desktop/xfce.nix
+    ../../modules/nixos/desktop/cinnamon.nix
     ../../modules/nixos/desktop/flatpak.nix
     ../../modules/nixos/desktop/fonts.nix
     ../../modules/nixos/hardware/intel-graphics.nix
