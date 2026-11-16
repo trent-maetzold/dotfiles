@@ -1,4 +1,4 @@
-# SSH client with strict defaults; hosts come from the system flake.
+# SSH client with strict defaults.
 {
   programs.ssh = {
     enable = true;

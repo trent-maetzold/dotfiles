@@ -50,7 +50,7 @@
 
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
-    # Local packages as pkgs.<name>; the host flake applies this overlay.
+    # Local packages as pkgs.<name>; hosts apply this overlay.
     overlays.default = import ./nix/pkgs {inherit bkt fnox uv2nix pyproject-nix pyproject-build-systems;};
 
     # The overlay's packages, buildable on their own (`nix build .#tredis`).
@@ -66,12 +66,12 @@
         inherit self;
       });
 
-    # Modules take this flake's inputs and `user` as arguments, so the host
-    # passes them: specialArgs / home-manager.extraSpecialArgs = dotfiles.inputs // {inherit user;}.
+    # Modules take this flake's inputs and `user` as arguments:
+    # specialArgs / home-manager.extraSpecialArgs = inputs // {inherit user;}.
     homeModules.default = import-tree ./nix/modules/home;
-    # nix/modules/nixos is grouped. `default` is what downstream (WSL) hosts
-    # import; machine/desktop/hardware are for this flake's standalone hosts,
-    # which import them by path.
+    # nix/modules/nixos is grouped. Standalone hosts import machine, desktop,
+    # hardware and deploy modules by path; `default` bundles common, services
+    # and wsl for WSL hosts.
     nixosModules.default = import-tree [
       ./nix/modules/nixos/common
       ./nix/modules/nixos/services

@@ -1,4 +1,4 @@
-# The `user` account (host flake specialArgs), with nushell as login shell.
+# The `user` account (from specialArgs), with nushell as login shell.
 {
   pkgs,
   user,
