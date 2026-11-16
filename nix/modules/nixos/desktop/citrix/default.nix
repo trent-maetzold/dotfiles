@@ -52,14 +52,13 @@
       # Windows at 100%, not scaled to the screen's DPI.
       DPIMatchingEnabled = "False";
     };
-    # Decode on the Intel GPU (VA-API) and draw with OpenGL. AV1 is the only
-    # video codec offered (the server picks from what the client offers, and
-    # offers AV1 only with hardware decoding).
+    # Decode on the GPU (VA-API) and draw with OpenGL. The server picks the
+    # codec from those offered; AV1 is only offered with H.264 on.
     "Thinwire3.0" = {
       HWAccelerationEnabled = "True";
       OpenGLEnabled = "True";
-      H264Enabled = "False";
-      H265Enabled = "False";
+      H264Enabled = "True";
+      H265Enabled = "True";
     };
   });
 
