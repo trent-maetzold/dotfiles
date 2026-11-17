@@ -3,9 +3,8 @@
 # on tty1; every other key, Win and Alt included, goes to Citrix. The desktop
 # knows nothing about it.
 #
-# It runs as `user`, so it shares their audio: a Bluetooth headset stays
-# connected across the switch. logind starts autovt@tty8 the first time tty8
-# is switched to; it starts again after Workspace's X exits.
+# It runs as `user`, so it shares their audio. logind starts Xorg on the
+# first switch to tty8; systemd supervises the window manager and Workspace.
 {
   config,
   lib,
@@ -50,10 +49,32 @@
       '';
   });
 
-  session = pkgs.writeShellApplication {
-    name = "citrix-session";
-    runtimeInputs = [client pkgs.gnugrep pkgs.matchbox pkgs.xset];
-    text = lib.replaceStrings ["@storeUrl@" "@adwaita@"] [storeUrl "${pkgs.adwaita-icon-theme}"] (builtins.readFile ./session.sh);
+  xorgUnit = "autovt@tty${toString vt}.service";
+  runtimeDir = "/run/user/${toString config.users.users.${user.name}.uid}";
+  xClient = command: {
+    wantedBy = [xorgUnit];
+    after = [xorgUnit];
+    bindsTo = [xorgUnit];
+    partOf = [xorgUnit];
+    restartIfChanged = false;
+    startLimitIntervalSec = 0;
+    environment = {
+      DISPLAY = ":${toString vt}";
+      XDG_RUNTIME_DIR = runtimeDir;
+      DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
+      XDG_DATA_DIRS = "${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share";
+      XCURSOR_PATH = "${pkgs.adwaita-icon-theme}/share/icons";
+      XCURSOR_THEME = "Adwaita";
+      XCURSOR_SIZE = "24";
+      GTK_THEME = "Adwaita:dark";
+    };
+    serviceConfig = {
+      User = user.name;
+      WorkingDirectory = user.home;
+      ExecStart = command;
+      Restart = "always";
+      RestartSec = 1;
+    };
   };
 in {
   # The client, the Zoom plugin and their manual downloads.
@@ -79,7 +100,7 @@ in {
     after = ["systemd-user-sessions.service" "systemd-logind.service"];
     conflicts = ["getty@tty${toString vt}.service"];
     restartIfChanged = false;
-    environment.ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
+    startLimitIntervalSec = 0;
     serviceConfig = {
       User = user.name;
       PAMName = "login";
@@ -90,13 +111,34 @@ in {
       UtmpIdentifier = "tty${toString vt}";
       UtmpMode = "user";
       WorkingDirectory = user.home;
+      ExecStart = "${pkgs.xorg-server}/bin/Xorg :${toString vt} vt${toString vt} -keeptty -noreset ${lib.concatStringsSep " " (lib.remove "-terminate" config.services.xserver.displayManager.xserverArgs)}";
+      Restart = "on-failure";
+      RestartSec = 1;
     };
-    script = ''
-      exec ${pkgs.xinit}/bin/xinit ${session}/bin/citrix-session -- \
-        ${pkgs.xorg-server}/bin/Xorg :${toString vt} vt${toString vt} -keeptty \
-        ${lib.concatStringsSep " " config.services.xserver.displayManager.xserverArgs}
-    '';
   };
+
+  systemd.services.citrix-window-manager = lib.mkMerge [
+    (xClient "${pkgs.matchbox}/bin/matchbox-window-manager -use_titlebar no")
+    {
+      serviceConfig.ExecStartPre = "${pkgs.xset}/bin/xset s off -dpms";
+    }
+  ];
+  systemd.services.citrix-workspace = lib.mkMerge [
+    (xClient "${client}/bin/selfservice")
+    {
+      after = ["citrix-window-manager.service"];
+      environment.ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
+      serviceConfig.TimeoutStartSec = "infinity";
+      preStart = ''
+        # Fail until Xorg is ready; systemd retries startup.
+        ${pkgs.xset}/bin/xset s off -dpms
+        stores=$(${client}/bin/storebrowse --liststores)
+        if ! ${pkgs.gnugrep}/bin/grep -qF ${lib.escapeShellArg storeUrl} <<< "$stores"; then
+          ${client}/bin/storebrowse --addstore ${lib.escapeShellArg storeUrl}
+        fi
+      '';
+    }
+  ];
 
   home-manager.users.${user.name}.home.file.".ICAClient/All_Regions.ini" = {
     source = allRegions;
