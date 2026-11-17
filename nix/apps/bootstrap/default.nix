@@ -12,7 +12,8 @@
   # What bootstrap needs from each host: its disko disks, and its userborn unit
   # as a shell command to run by hand in the chroot. The command's store paths
   # are used only inside /mnt, where nixos-install puts them, so the app itself
-  # needn't depend on them.
+  # needn't depend on them. Imported infrastructure hosts keep their existing
+  # installers; not every exported configuration has disko or userborn.
   hosts =
     builtins.mapAttrs (host: system: let
       inherit (system) config;
@@ -23,7 +24,11 @@
         builtins.unsafeDiscardStringContext
         "env ${lib.escapeShellArgs (lib.mapAttrsToList (name: value: "${name}=${value}") service.environment)} ${service.serviceConfig.ExecStart}";
     })
-    self.nixosConfigurations;
+    (builtins.intersectAttrs {
+        muninn = null;
+        sif = null;
+      }
+      self.nixosConfigurations);
 
   script =
     builtins.replaceStrings ["@path@" "@flake@" "@hosts@"] [path "${self}" (builtins.toJSON hosts)]

@@ -1,8 +1,9 @@
 # NixOS dotfiles
 
 Every machine is a host in this flake (`nix/hosts/<host>`, wired up in
-`flake.nix`), with this repo checked out at `~/.config/dotfiles`. `<host>` and
-`<user>` below stand for a host's name and its user.
+`flake.nix`). Laptop/WSL examples use a checkout at `~/.config/dotfiles`;
+[imported infrastructure](#imported-infrastructure) retains its existing defaults.
+`<host>` and `<user>` below stand for a host's name and its user.
 
 Development tools are declared in `nix/modules/home/`; language toolchains live in
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
@@ -31,6 +32,9 @@ WSL hosts.
 | --- | --- | --- |
 | `muninn` | trent's laptop | Niri + Noctalia, Home Manager for trent |
 | `sif` | Justine's Yoga 720-13IKB | Cinnamon (X11), Flatpak apps via GNOME Software |
+| `heimdall` | ARM64 public-edge VM | Headscale, Headplane, Traefik; Home Manager for tm |
+| `yggdrasil` | x86_64 home server | ZFS, Hermes/Honcho, Mimir VM; Home Manager for tm |
+| `frigg` | Family PC, GTX 980 | Cinnamon (X11); existing five user profiles |
 
 sif runs [comin](https://github.com/nlewo/comin) (`deploy/comin.nix`): it polls
 `main` every 60 s and builds `nixosConfigurations.sif` when it changes, as the
@@ -38,7 +42,49 @@ default for the next boot: merging a PR updates the laptop at its next restart.
 For an immediate change, `nixos-rebuild switch` over SSH still works. Push to `testing-sif` to try a config there
 without keeping it across reboots. `comin status` on sif shows what it deployed.
 
-From a NixOS live USB, install a host onto this machine. It offers to remove
+### Imported infrastructure
+
+`heimdall`, `yggdrasil` and `frigg` come from `infra/staging` at `094c13a`.
+Their configuration registry and assets are local in `nix/infra`; there is no
+runtime dependency on the infra repository. The public entry points are
+`nix/hosts/<host>`. Existing laptop defaults are not applied to these hosts.
+
+Comin (`deploy/comin-staging.nix`) tracks this repository's `staging` branch and
+uses `switch`. Its checkout is persistent, including on frigg's tmpfs root.
+Colmena/Terraform orchestration is not imported; the existing Colmena CLI stays
+installed to preserve the package selection. Shared layouts live in
+`nix/modules/nixos/partitions`; drive identities, pools and datasets stay host-local.
+
+**These are existing installations. Do not run bootstrap or Disko to migrate them:**
+those are installation tools and can erase disks. No machine is activated by
+adding these configurations. The bootstrap app still supports only muninn and sif.
+The existing age identity at `/var/lib/age/key.txt` remains required.
+
+For parity, users, Home Manager defaults and `nh`'s old
+`/home/tm/code/asgard` flake path are unchanged. Do not use a bare `nh os switch`
+on these hosts expecting it to select this repository; use an explicit flake
+or Comin. Container `latest` tags and auto-updates also remain unchanged.
+
+Validation includes storage/Comin invariants:
+
+```sh
+nix eval --impure --json --expr 'import ./nix/tests/infra.nix { flake = builtins.getFlake (toString ./.); }'
+```
+
+Pin compatibility preserves the same effective setup: the obsolete
+`boot.initrd.systemd.enable` assignment is removed because systemd initrd is now
+mandatory; frigg excludes Cinnamon's newly added Superlight. The new pin removes
+end-of-life FUSE 2 and its setuid mount wrapper, which the old generic FUSE module
+installed automatically alongside FUSE 3. Flatpak already uses FUSE 3; the legacy
+component is not carried forward. No explicit FUSE 2 consumer is declared here;
+manually installed legacy AppImages are not covered by that check.
+Pure evaluation matters: the legacy
+LazyVim resolver scans the evaluator's live home directory under `--impure`,
+which can pull unrelated plugins into validation.
+
+### Laptop installation
+
+From a NixOS live USB, install a laptop host onto this machine. It offers to remove
 all UEFI boot entries (firmware re-adds its built-in ones), runs the host's disko script (which asks
 before wiping), asks for trent's login password and then the disk passphrase,
 runs `nixos-install`, then enters the new system and sets trent's password. Users are managed imperatively from

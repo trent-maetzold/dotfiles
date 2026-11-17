@@ -14,6 +14,7 @@
   }: let
     inherit (nixpkgs) lib;
     systems = ["x86_64-linux" "aarch64-linux"];
+    infra = import ./nix/infra {inherit inputs;};
 
     trent = {
       name = "trent";
@@ -23,32 +24,38 @@
     };
   in {
     # Machines installed straight from this flake (`nix run .#bootstrap -- <host>`).
-    nixosConfigurations = {
-      muninn = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs;
-          user = trent;
-        };
-        modules = [
-          ./nix/hosts/muninn
-          home-manager.nixosModules.home-manager
-          {
-            nixpkgs.overlays = [self.overlays.default];
+    nixosConfigurations =
+      {
+        muninn = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs;
+            user = trent;
+          };
+          modules = [
+            ./nix/hosts/muninn
+            home-manager.nixosModules.home-manager
+            {
+              nixpkgs.overlays = [self.overlays.default];
 
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = inputs // {user = trent;};
-              users.trent = import ./nix/hosts/muninn/home.nix;
-            };
-          }
-        ];
-      };
-      sif = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
-        modules = [./nix/hosts/sif];
-      };
-    };
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                extraSpecialArgs = inputs // {user = trent;};
+                users.trent = import ./nix/hosts/muninn/home.nix;
+              };
+            }
+          ];
+        };
+        sif = nixpkgs.lib.nixosSystem {
+          specialArgs = {inherit inputs;};
+          modules = [./nix/hosts/sif];
+        };
+      }
+      // lib.genAttrs ["heimdall" "yggdrasil" "frigg"] (name:
+        nixpkgs.lib.nixosSystem {
+          specialArgs = infra.hosts.${name}.specialArgs // {inherit inputs infra;};
+          modules = [./nix/hosts/${name}];
+        });
 
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
@@ -102,6 +109,64 @@
     comin = {
       url = "github:nlewo/comin";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Existing infrastructure profiles; their new dependencies retain infra's pins.
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    disko-zfs = {
+      url = "github:numtide/disko-zfs";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.disko.follows = "disko";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    NixVirt = {
+      url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    # CLI retained for package parity; no Colmena deployment output is imported.
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    lazyvim.url = "github:pfassina/lazyvim-nix";
+    revdiff = {
+      url = "github:umputun/revdiff";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    autolith.url = "github:lambda-symbolics/autolith";
+    agent-skills = {
+      url = "github:Kyure-A/agent-skills-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-webui.url = "github:nesquena/hermes-webui";
+    hermex-push = {
+      url = "github:uzairansaruzi/hermex-push";
+      flake = false;
+    };
+    honcho = {
+      url = "github:plastic-labs/honcho";
+      flake = false;
+    };
+    oh-my-hermes = {
+      url = "github:rlaope/oh-my-hermes";
+      flake = false;
+    };
+    paseo = {
+      url = "github:getpaseo/paseo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    i-have-adhd = {
+      url = "github:ayghri/i-have-adhd";
+      flake = false;
+    };
+    awesome-copilot = {
+      url = "github:github/awesome-copilot";
+      flake = false;
     };
 
     # Modules (nix/modules/{home,nixos})
