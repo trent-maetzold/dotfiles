@@ -15,6 +15,7 @@
     ]
     ++ (with llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
       beads # bd: issue tracker for agent workflows
+      cindy
       plannotator # plan and code review for agents
       ralph-tui # agent loop orchestrator
     ]);
