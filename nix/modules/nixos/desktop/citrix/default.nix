@@ -57,7 +57,6 @@
     bindsTo = [xorgUnit];
     partOf = [xorgUnit];
     restartIfChanged = false;
-    startLimitIntervalSec = 0;
     environment = {
       DISPLAY = ":${toString vt}";
       XDG_RUNTIME_DIR = runtimeDir;
@@ -100,7 +99,6 @@ in {
     after = ["systemd-user-sessions.service" "systemd-logind.service"];
     conflicts = ["getty@tty${toString vt}.service"];
     restartIfChanged = false;
-    startLimitIntervalSec = 0;
     serviceConfig = {
       User = user.name;
       PAMName = "login";
@@ -111,6 +109,7 @@ in {
       UtmpIdentifier = "tty${toString vt}";
       UtmpMode = "user";
       WorkingDirectory = user.home;
+      ExecStartPre = "+${pkgs.kbd}/bin/chvt ${toString vt}";
       ExecStart = "${pkgs.xorg-server}/bin/Xorg :${toString vt} vt${toString vt} -keeptty -noreset ${lib.concatStringsSep " " (lib.remove "-terminate" config.services.xserver.displayManager.xserverArgs)}";
       Restart = "on-failure";
       RestartSec = 1;

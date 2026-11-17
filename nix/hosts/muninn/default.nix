@@ -1,6 +1,10 @@
 # muninn: trent's encrypted ephemeral-root laptop with Niri. The flake adds
 # Home Manager and ./home.nix for trent.
-{inputs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
   imports = [
     (inputs.import-tree ../../modules/nixos/machine)
     ../../modules/nixos/desktop/niri
@@ -15,7 +19,10 @@
   ];
 
   networking.hostName = "muninn";
-  users.users.trent.uid = 1000;
+  users.users.trent = {
+    uid = 1000;
+    shell = pkgs.nushell;
+  };
   hardware.facter.reportPath = ./facter.json;
   # Intel Arc (Meteor Lake) and RTX 4050 Laptop, from facter.json.
   hardware.nvidia.prime = {
