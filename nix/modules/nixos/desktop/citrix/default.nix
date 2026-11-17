@@ -26,8 +26,8 @@
   # here instead of through the remote desktop).
   zoom = import ../../../../pkgs/zoom-vdi {inherit pkgs;};
 
-  # Workspace's settings, locked in All_Regions.ini (its lockdown file, which
-  # overrides wfclient.ini and the server's .ica file).
+  # Workspace's settings, locked in All_Regions.ini. It overrides wfclient.ini
+  # and .ica launch parameters, not the VDA's server-side policy.
   settings = {
     # No toolbar (the tab at the top): the session is switched by tty.
     ConnectionBar = "0";
@@ -35,12 +35,11 @@
     TransparentKeyPassthrough = "Remote";
     # Windows at 100%, not scaled to the screen's DPI.
     DPIMatchingEnabled = "False";
-    # Decode on the GPU (VA-API) and draw with OpenGL. H.264 and H.265 are
-    # off, so AV1 is the only video codec left to offer.
+    # Decode on the GPU (VA-API) and draw with OpenGL.
     HWAccelerationEnabled = "True";
     OpenGLEnabled = "True";
-    H264Enabled = "False";
-    H265Enabled = "False";
+    H264Enabled = "True";
+    H265Enabled = "True";
   };
   client = pkgs.citrix-workspace.overrideAttrs (old: {
     nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pkgs.python3];
