@@ -11,7 +11,7 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
 xset s off -dpms
 matchbox-window-manager -use_titlebar no &
 
-if ! storebrowse --liststores | grep -qF "@storeHost@"; then
+if ! storebrowse --liststores | grep -qF "@storeUrl@"; then
   storebrowse --addstore "@storeUrl@"
 fi
 

@@ -14,31 +14,29 @@
   ...
 }: let
   vt = 8;
-  niriVt = 1;
   # Use the public gateway; its internal StoreFront hostname is not reachable here.
-  store = {
-    url = "https://cloud.citrix.options-it.com";
-    host = "cloud.citrix.options-it.com";
-  };
+  storeUrl = "https://cloud.citrix.options-it.com";
 
   # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
   # here instead of through the remote desktop).
   zoom = import ../../../../pkgs/zoom-vdi {inherit pkgs;};
 
-  # Workspace's settings, locked in All_Regions.ini. It overrides wfclient.ini
-  # and .ica launch parameters, not the VDA's server-side policy.
-  settings = {
-    # No toolbar (the tab at the top): the session is switched by tty.
-    ConnectionBar = "0";
-    # Win, Alt+Tab and the like go to Windows.
-    TransparentKeyPassthrough = "Remote";
-    # Windows at 100%, not scaled to the screen's DPI.
-    DPIMatchingEnabled = "False";
-    # Decode on the GPU (VA-API) and draw with OpenGL.
-    HWAccelerationEnabled = "True";
-    OpenGLEnabled = "True";
-    H264Enabled = "True";
-    H265Enabled = "True";
+  allRegions = (pkgs.formats.ini {}).generate "All_Regions.ini" {
+    "Top Level" = {
+      EnableLockdown = true;
+      AllowConnection = true;
+      OverrideInvalidICAParameters = true;
+      AllowUnrecognisedICAParameters = true;
+    };
+    "Client Engine\\GUI".ConnectionBar = "0";
+    "Virtual Channels\\Keyboard".TransparentKeyPassthrough = "Remote";
+    "Virtual Channels\\Thinwire Graphics" = {
+      DPIMatchingEnabled = "False";
+      HWAccelerationEnabled = "True";
+      OpenGLEnabled = "True";
+      H264Enabled = "True";
+      H265Enabled = "True";
+    };
   };
   client = pkgs.citrix-workspace.overrideAttrs (old: {
     nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pkgs.python3];
@@ -49,22 +47,13 @@
         ln -s ${zoom}/lib/libZoomPlugin.so "$root/ZoomMedia.so"
         chmod u+w "$root/config/module.ini"
         python3 ${../../../../pkgs/citrix/configure.py} "$root/config/module.ini"
-        chmod u+w "$root/config/All_Regions.ini"
-        ${lib.concatStrings (lib.mapAttrsToList (key: value: ''
-            sed -i 's/^${key}=.*/${key}=${value}/' "$root/config/All_Regions.ini"
-            grep -qx '${key}=${value}' "$root/config/All_Regions.ini"
-          '')
-          settings)}
-        for program in "$out/bin/"*; do
-          wrapProgramShell "$program" --set ZOOMMEDIA_INI_PATH ${zoom}/etc/zoomvdi/ZoomMedia.ini
-        done
       '';
   });
 
   session = pkgs.writeShellApplication {
     name = "citrix-session";
-    runtimeInputs = [client pkgs.gnugrep pkgs.matchbox pkgs.xrandr pkgs.xset];
-    text = lib.replaceStrings ["@storeUrl@" "@storeHost@" "@adwaita@"] [store.url store.host "${pkgs.adwaita-icon-theme}"] (builtins.readFile ./session.sh);
+    runtimeInputs = [client pkgs.gnugrep pkgs.matchbox pkgs.xset];
+    text = lib.replaceStrings ["@storeUrl@" "@adwaita@"] [storeUrl "${pkgs.adwaita-icon-theme}"] (builtins.readFile ./session.sh);
   };
 in {
   # The client, the Zoom plugin and their manual downloads.
@@ -90,6 +79,7 @@ in {
     after = ["systemd-user-sessions.service" "systemd-logind.service"];
     conflicts = ["getty@tty${toString vt}.service"];
     restartIfChanged = false;
+    environment.ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
     serviceConfig = {
       User = user.name;
       PAMName = "login";
@@ -108,12 +98,8 @@ in {
     '';
   };
 
-  home-manager.users.${user.name} = {lib, ...}: {
-    # Written over on every switch (wfclient.ini from Workspace's template),
-    # then Workspace adds its runtime settings.
-    home.activation.citrixConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      run install -D -m 0644 ${client}/opt/citrix-icaclient/config/wfclient.template "$HOME/.ICAClient/wfclient.ini"
-      run install -D -m 0644 ${client}/opt/citrix-icaclient/config/All_Regions.ini "$HOME/.ICAClient/All_Regions.ini"
-    '';
+  home-manager.users.${user.name}.home.file.".ICAClient/All_Regions.ini" = {
+    source = allRegions;
+    force = true;
   };
 }
