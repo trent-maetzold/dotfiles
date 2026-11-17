@@ -1,5 +1,5 @@
 # Citrix on muninn: a 1920x1200 screen (half the panel's resolution),
-# with NVIDIA hidden so Workspace permits Intel hardware decoding.
+# with NVIDIA detection blocked so Workspace permits Intel hardware decoding.
 {
   imports = [../../modules/nixos/desktop/citrix];
 
@@ -12,8 +12,9 @@
   ];
 
   systemd.services."autovt@tty8" = {
-    # shortcut: fixed GPU/audio PCI parent; update if muninn's PCI topology changes.
-    serviceConfig.InaccessiblePaths = ["/sys/devices/pci0000:00/0000:00:1c.0"];
+    # Mask only class: Workspace skips it, while Xorg can still enumerate PCI devices.
+    # shortcut: fixed NVIDIA PCI path; update if muninn's PCI topology changes.
+    serviceConfig.InaccessiblePaths = ["/sys/devices/pci0000:00/0000:00:1c.0/0000:56:00.0/class"];
     environment.__EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
   };
 }
