@@ -2,11 +2,13 @@
 # bindings (binds.nix) and Noctalia's (_noctalia.nix) on top. NixOS's
 # programs.niri provides the session, units and portals; this writes and
 # validates ~/.config/niri/config.kdl.
-{
+{pkgs, ...}: {
   imports = [
     ./binds.nix
     ./_noctalia.nix
   ];
+
+  home.packages = [pkgs.wl-clipboard];
 
   wayland.windowManager.niri = {
     enable = true;
