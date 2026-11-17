@@ -1,6 +1,5 @@
 # Citrix's X session (run by xinit as `user`): a kiosk window manager and
 # Workspace with the employer store, restarted if it exits.
-set -u
 
 # Look like the Niri session's GTK apps: dark Adwaita, its icons and cursor.
 export XDG_DATA_DIRS="@adwaita@/share:${XDG_DATA_DIRS:-/run/current-system/sw/share}"
@@ -13,7 +12,7 @@ xset s off -dpms
 matchbox-window-manager -use_titlebar no &
 
 if ! storebrowse --liststores | grep -qF "@storeHost@"; then
-  storebrowse --addstore "@storeUrl@" || true
+  storebrowse --addstore "@storeUrl@"
 fi
 
 while true; do

@@ -15,11 +15,10 @@
 }: let
   vt = 8;
   niriVt = 1;
-  # The employer's DUO_OAUTH store (reached through the cloud.citrix gateway);
-  # adding it directly skips the gateway's store picker.
+  # Use the public gateway; its internal StoreFront hostname is not reachable here.
   store = {
-    url = "https://storefront.options-it.com/citrix/duo_oauth/discovery";
-    host = "storefront.options-it.com/citrix/duo_oauth";
+    url = "https://cloud.citrix.options-it.com";
+    host = "cloud.citrix.options-it.com";
   };
 
   # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
