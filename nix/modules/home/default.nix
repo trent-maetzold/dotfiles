@@ -98,8 +98,10 @@
     zip
     p7zip
 
-    # Diagrams
+    # Diagrams and documents
     mermaid-cli
+    ghostscript # gs
+    tectonic
 
     # Data
     jq
