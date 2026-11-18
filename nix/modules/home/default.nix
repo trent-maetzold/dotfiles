@@ -98,6 +98,14 @@
     zip
     p7zip
 
+    # Media
+    ffmpeg
+
+    # Diagrams and documents
+    mermaid-cli
+    ghostscript # gs
+    tectonic
+
     # Data
     jq
     yq-go
@@ -106,6 +114,7 @@
 
     # HTTP and file transfer
     curl
+    wget
     xh # friendlier curl for APIs
     aria2
     croc # send files between machines

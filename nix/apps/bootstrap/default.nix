@@ -23,7 +23,7 @@
         builtins.unsafeDiscardStringContext
         "env ${lib.escapeShellArgs (lib.mapAttrsToList (name: value: "${name}=${value}") service.environment)} ${service.serviceConfig.ExecStart}";
     })
-    self.nixosConfigurations;
+    (lib.getAttrs ["muninn" "sif"] self.nixosConfigurations);
 
   script =
     builtins.replaceStrings ["@path@" "@flake@" "@hosts@"] [path "${self}" (builtins.toJSON hosts)]

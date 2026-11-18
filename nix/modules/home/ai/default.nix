@@ -12,8 +12,12 @@
     [
       # openwiki CLI; its pi extension is installed by pi ("npm:openwiki" in config/pi/agent/settings.json).
       pkgs.openwiki-cli
+      pkgs.rtk
+      pkgs.agent-browser
     ]
     ++ (with llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
+      codegraph
+      qmd # local document search
       beads # bd: issue tracker for agent workflows
       plannotator # plan and code review for agents
       ralph-tui # agent loop orchestrator
