@@ -38,9 +38,10 @@ WSL hosts.
 host-local system configurations under `nix/hosts/`. Yggdrasil uses this repo's
 non-desktop Home Manager config for `tm`. Its mutable config links expect a checkout
 at `/home/tm/.config/dotfiles`. Neither host is supported by `bootstrap`.
-Reuse the existing disks and SOPS
-age keys; do not repartition. Comin tracks `staging`. Do not switch these hosts
-until `staging` contains the host-local configs: it still has the earlier import.
+Reuse the existing disks and SOPS age keys; do not repartition. After merging,
+switch Yggdrasil to `main` once to install its Comin configuration. It will
+then apply future changes from `main` automatically. Heimdall still tracks
+`staging`, which contains the earlier import; update that branch before switching it.
 
 ### Laptop installation
 
