@@ -13,7 +13,8 @@
   ];
   users.users.tm.packages = [
     pkgs.llm-agents.claude-code
-    pkgs.llm-agents.codex
+    # Use the cached build; the shared pin lacks AWS-LC's OpenSSL compatibility metadata.
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
     pkgs.llm-agents.pi
     pkgs.gh
   ];
