@@ -1,14 +1,15 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
-  # Nix manages the toolchain; rustup is not needed.
   programs.cargo = {
     enable = true;
     cargoHome = "${config.xdg.dataHome}/cargo";
   };
 
-  home.packages = with pkgs; [rustc rustfmt clippy rust-analyzer];
+  # Keep the Nix toolchain on PATH; use rustup run for alternate toolchains.
+  home.packages = with pkgs; [rustc rustfmt clippy rust-analyzer (lib.setPrio 20 rustup)];
   home.sessionPath = ["${config.programs.cargo.cargoHome}/bin"];
 }

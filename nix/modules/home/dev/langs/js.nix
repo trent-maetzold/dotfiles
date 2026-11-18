@@ -15,6 +15,7 @@
   programs.bun.enable = true;
 
   home.packages = with pkgs; [
+    mermaid-cli
     typescript
     typescript-language-server
   ];
