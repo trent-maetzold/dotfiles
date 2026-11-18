@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  user,
   ...
 }: {
   imports = [
@@ -13,6 +14,14 @@
     inputs.comin.nixosModules.comin
     inputs.sops-nix.nixosModules.sops
   ];
+
+  nixpkgs.overlays = [inputs.self.overlays.default];
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = inputs // {inherit user;};
+    users.tm = import ./home.nix;
+  };
 
   nixpkgs.hostPlatform = "x86_64-linux";
   system.stateVersion = "26.11";

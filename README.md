@@ -35,8 +35,10 @@ WSL hosts.
 ### Imported systems
 
 `heimdall` (tailnet gateway) and `yggdrasil` (services and Mimir VM) have
-host-local system configurations under `nix/hosts/`. They do not import Home
-Manager and are not supported by `bootstrap`. Reuse the existing disks and SOPS
+host-local system configurations under `nix/hosts/`. Yggdrasil uses this repo's
+non-desktop Home Manager config for `tm`. Its mutable config links expect a checkout
+at `/home/tm/.config/dotfiles`. Neither host is supported by `bootstrap`.
+Reuse the existing disks and SOPS
 age keys; do not repartition. Comin tracks `staging`. Do not switch these hosts
 until `staging` contains the host-local configs: it still has the earlier import.
 

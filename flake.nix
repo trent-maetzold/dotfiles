@@ -53,8 +53,19 @@
         modules = [./nix/hosts/heimdall];
       };
       yggdrasil = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
-        modules = [./nix/hosts/yggdrasil];
+        specialArgs = {
+          inherit inputs;
+          user =
+            trent
+            // {
+              name = "tm";
+              home = "/home/tm";
+            };
+        };
+        modules = [
+          ./nix/hosts/yggdrasil
+          home-manager.nixosModules.home-manager
+        ];
       };
     };
 
