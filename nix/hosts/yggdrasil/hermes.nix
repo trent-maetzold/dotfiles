@@ -44,6 +44,7 @@ in {
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
+    extraPackages = with pkgs; [ffmpeg nodejs ripgrep];
     # Upstream reports 0.0.0, failing plugins' requires_hermes checks.
     package = hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default.override {version = "0.22.2";};
 

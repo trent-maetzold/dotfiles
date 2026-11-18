@@ -98,6 +98,9 @@
     zip
     p7zip
 
+    # Media
+    ffmpeg
+
     # Diagrams and documents
     mermaid-cli
     ghostscript # gs
