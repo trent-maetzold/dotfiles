@@ -9,6 +9,12 @@
     sideloadInitLua = true;
   };
 
+  home.packages = with pkgs; [
+    lua51Packages.luarocks
+    ghostscript # gs
+    tectonic
+  ];
+
   # Keep LazyVim writable and versioned in this checkout.
   xdg.configFile."nvim".source =
     config.lib.file.mkOutOfStoreSymlink
