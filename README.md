@@ -134,6 +134,22 @@ bindings: `v`/`-` split, `h/j/k/l` focus panes, Tab/Shift-Tab cycle panes,
 Tmux sessions act as workspaces: `w` opens the picker, `N` creates one,
 `W` renames it, and `D` closes it. All these keys follow the prefix.
 
+## Todos and terminal dashboard
+
+`todo new "Task"`, `todo list`, and `todo done ID` manage local tasks in
+`~/.local/share/todo/tasks/` as CalDAV-compatible VTODO (`.ics`) files.
+`vdirsyncer` is installed for syncing them to a self-hosted CalDAV server;
+sync needs a VTODO-capable collection URL, username, and runtime credentials.
+Tasks work offline without configuring a server. The old WTF `todo.yml` is
+left intact; it is a separate format, not read by Todoman.
+
+`wtf` opens WTFUtil. Its grid fills the terminal; hosts can replace the default
+widgets through `programs.wtf.settings`. Command widgets support ANSI colors.
+The work host runs a five-minute Nu collector and displays its private cache;
+`r` and Ctrl-R reread cached output, while `systemctl --user start wtf-refresh`
+queries the sources immediately. Query failures keep the last successful data
+with its timestamp and an unavailable warning.
+
 ## Python projects
 
 Projects use mise: its shell hook loads `mise.toml` (tools and `[env]`) on entering

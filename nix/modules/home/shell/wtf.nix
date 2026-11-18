@@ -18,23 +18,24 @@ in {
 
     programs.wtf.settings.wtf = {
       grid = {
-        columns = [60 60];
-        rows = [12 12 12];
+        columns = [0 0];
+        rows = [0 0 0];
       };
       refreshInterval = 1;
-      mods = {
+      mods = lib.mkDefault {
         todo = {
-          type = "todo";
+          type = "cmdrunner";
           enabled = true;
           title = "Todo";
-          filename = "todo.yml"; # in ~/.config/wtf; edit in the widget (n new, space toggle)
+          cmd = "todo";
+          args = ["--color" "always" "list"]; # edit with the todo CLI
           position = {
             top = 0;
             left = 0;
             height = 1;
             width = 1;
           };
-          refreshInterval = 3600;
+          refreshInterval = 300;
         };
         resources = {
           type = "resourceusage";

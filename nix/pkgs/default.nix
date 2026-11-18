@@ -46,6 +46,7 @@
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   fnox = fnox.packages.${final.stdenv.hostPlatform.system}.default;
   magpie-cli = final.callPackage ./magpie-cli {};
+  matterhorn = final.callPackage ./matterhorn {};
   mu-coding-agent = final.callPackage ./mu-coding-agent {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};

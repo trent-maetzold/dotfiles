@@ -1,0 +1,29 @@
+--- a/mattermost-api.cabal
++++ b/mattermost-api.cabal
+@@ -51,6 +51,7 @@
+                      , stm
+                      , aeson >= 2.0.1.0 && < 2.3.0.0
+                      , crypton-connection
++                     , data-default
+                      , memory
+                      , resource-pool >= 0.2.3
+                      -- To prevent broken websockets versions from using
+--- a/src/Network/Mattermost/Util.hs
++++ b/src/Network/Mattermost/Util.hs
+@@ -15,6 +15,7 @@
+ 
+ import           Control.Exception (finally, onException)
+ import           Data.Char ( toUpper )
++import           Data.Default (def)
+ import qualified Data.ByteString.Char8 as B
+ import qualified Data.Text as T
+ import qualified Text.URI as URI
+@@ -95,7 +96,7 @@
+             -- The first argument to TLSSettingsSimple is whether to
+             -- /disable/ cert validation. If requireTrustedCert is True,
+             -- we want that argument to be False to force validation.
+-            Just (TLSSettingsSimple (not requireTrustedCert) False False)
++            Just (def { settingDisableCertificateValidation = not requireTrustedCert })
+     , connectionUseSocks  = do
+         (ty, cHost, cPort) <- proxy
+         case ty of
