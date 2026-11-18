@@ -123,7 +123,7 @@
         name = "origin";
         url = "https://github.com/trent-maetzold/dotfiles.git";
         branches.main = {
-          name = "staging";
+          name = "main";
           operation = "switch";
         };
       }
