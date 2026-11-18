@@ -19,6 +19,8 @@
   ];
 
   networking.hostName = "muninn";
+  # Cindy downloads generic Linux binaries for its managed agents.
+  programs.nix-ld.enable = true;
   users.users.trent = {
     uid = 1000;
     shell = pkgs.nushell;
