@@ -40,7 +40,7 @@ non-desktop Home Manager config for `tm`. Its mutable config links expect a chec
 at `/home/tm/.config/dotfiles`. Neither host is supported by `bootstrap`.
 Reuse the existing disks and SOPS age keys; do not repartition. After merging,
 switch each host to `main` once to install its Comin configuration. Comin will
-then apply future changes from `main` automatically.
+then stage future builds from `main` for the next reboot, without switching live.
 
 ### Laptop installation
 

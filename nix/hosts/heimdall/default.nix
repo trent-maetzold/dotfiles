@@ -8,8 +8,14 @@
     "${modulesPath}/profiles/qemu-guest.nix"
     inputs.nix-index-database.nixosModules.nix-index
     inputs.comin.nixosModules.comin
+    inputs.home-manager.nixosModules.home-manager
     ./edge.nix
   ];
+
+  home-manager = {
+    backupFileExtension = "backup";
+    overwriteBackup = true;
+  };
 
   nixpkgs.hostPlatform = "aarch64-linux";
   networking.hostName = "heimdall";
@@ -124,7 +130,7 @@
         url = "https://github.com/trent-maetzold/dotfiles.git";
         branches.main = {
           name = "main";
-          operation = "switch";
+          operation = "boot";
         };
       }
     ];

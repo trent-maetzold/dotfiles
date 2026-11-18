@@ -19,6 +19,8 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = "backup";
+    overwriteBackup = true;
     extraSpecialArgs = inputs // {inherit user;};
     users.tm = import ./home.nix;
   };
@@ -118,7 +120,7 @@
         url = "https://github.com/trent-maetzold/dotfiles.git";
         branches.main = {
           name = "main";
-          operation = "switch";
+          operation = "boot";
         };
       }
     ];
