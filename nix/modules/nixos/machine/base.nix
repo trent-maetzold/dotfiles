@@ -4,6 +4,8 @@
   pkgs,
   ...
 }: {
+  imports = [../common/nix.nix];
+
   networking.networkmanager.enable = true;
 
   boot.loader = {
@@ -35,7 +37,6 @@
     vim
   ];
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
   # Weekly cleanup of every profile (system, Home Manager, user) and stale GC
   # roots, keeping the last 5 generations and anything from the last two weeks.
   # nh's CLI and NH_FLAKE come from Home Manager (home/system/nix.nix).
