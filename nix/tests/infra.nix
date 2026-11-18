@@ -79,6 +79,17 @@
       && f.security.wrappers.fusermount3.setuid
       && !(builtins.hasAttr "fusermount" f.security.wrappers)
       && lib.any (p: lib.getName p == "superlight") f.environment.cinnamon.excludePackages;
+    standaloneNix = lib.all (name: let
+      n = flake.nixosConfigurations.${name};
+      c = n.config;
+      p = n.pkgs;
+      has = packages: package: lib.any (v: toString v == toString package) packages;
+    in
+      c.programs.nix-ld.enable
+      && lib.elem "https://cache.numtide.com" (c.nix.settings.extra-substituters or [])
+      && lib.elem "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" (c.nix.settings.extra-trusted-public-keys or [])
+      && lib.all (has c.programs.nix-ld.libraries) [p.zlib p.stdenv.cc.cc p.libpq p.krb5.lib]
+      && lib.all (has c.environment.systemPackages) [p.libpq.pg_config p.krb5.dev]) ["muninn" "sif"];
     existingHosts = lib.all builtins.isString [
       flake.nixosConfigurations.muninn.config.system.build.toplevel.drvPath
       flake.nixosConfigurations.sif.config.system.build.toplevel.drvPath
