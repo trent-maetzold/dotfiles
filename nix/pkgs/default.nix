@@ -12,10 +12,35 @@
   # Patched so `bkt pr create` always adds the repo's default reviewers.
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt.overrideAttrs (old: {
     patches = (old.patches or []) ++ [./bitbucket-cli/default-reviewers.patch];
+    postPatch =
+      (old.postPatch or "")
+      + ''
+        cp ${./bitbucket-cli/tests/default_reviewers_test.go} pkg/cmd/pr/required_defaults_test.go
+      '';
+    doCheck = true;
+    checkPhase = ''
+      runHook preCheck
+      go test ./pkg/cmd/pr -run '^TestRequiredDefaultReviewers$' -count=1
+      runHook postCheck
+    '';
   });
-  # Require an epic and assign the active Risk-YYYYMM sprint on issue creation.
+  # Require an epic, default to RD/self and assign the active Risk-YYYYMM sprint.
   jira-cli-go = prev.jira-cli-go.overrideAttrs (old: {
     patches = (old.patches or []) ++ [./jira-cli/risk-creation-defaults.patch];
+    postPatch =
+      (old.postPatch or "")
+      + ''
+          cp ${./jira-cli/tests/risk_defaults_test.go} internal/cmd/issue/create/risk_defaults_test.go
+          cp ${./jira-cli/tests/risk_command_test.go} internal/cmd/issue/create/risk_command_test.go
+        cp ${./jira-cli/tests/risk_project_test.go} internal/cmd/root/risk_project_test.go
+      '';
+    doCheck = true;
+    checkPhase = ''
+      runHook preCheck
+      go test ./internal/cmd/issue/create -count=1
+      go test ./internal/cmd/root -run '^TestRiskProject' -count=1
+      runHook postCheck
+    '';
   });
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
