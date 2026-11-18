@@ -32,6 +32,16 @@ WSL hosts.
 | `muninn` | trent's laptop | Niri + Noctalia, Home Manager for trent |
 | `sif` | Justine's Yoga 720-13IKB | Cinnamon (X11), Flatpak apps via GNOME Software |
 
+### Imported systems
+
+`heimdall` (tailnet gateway) and `yggdrasil` (services and Mimir VM) have
+host-local system configurations under `nix/hosts/`. They do not import Home
+Manager and are not supported by `bootstrap`. Reuse the existing disks and SOPS
+age keys; do not repartition. Comin tracks `staging`. Do not switch these hosts
+until `staging` contains the host-local configs: it still has the earlier import.
+
+### Laptop installation
+
 sif runs [comin](https://github.com/nlewo/comin) (`deploy/comin.nix`): it polls
 `main` every 60 s and builds `nixosConfigurations.sif` when it changes, as the
 default for the next boot: merging a PR updates the laptop at its next restart.

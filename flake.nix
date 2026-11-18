@@ -22,7 +22,7 @@
       email = "trent@maetzold.net";
     };
   in {
-    # Machines installed straight from this flake (`nix run .#bootstrap -- <host>`).
+    # Standalone NixOS configurations.
     nixosConfigurations = {
       muninn = nixpkgs.lib.nixosSystem {
         specialArgs = {
@@ -47,6 +47,14 @@
       sif = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         modules = [./nix/hosts/sif];
+      };
+      heimdall = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [./nix/hosts/heimdall];
+      };
+      yggdrasil = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [./nix/hosts/yggdrasil];
       };
     };
 
@@ -101,6 +109,40 @@
     # GitOps: standalone hosts pull this repo and switch themselves.
     comin = {
       url = "github:nlewo/comin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Imported host services and storage.
+    disko-zfs = {
+      url = "github:numtide/disko-zfs";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.disko.follows = "disko";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    NixVirt = {
+      url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    autolith.url = "github:lambda-symbolics/autolith";
+    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-webui.url = "github:nesquena/hermes-webui";
+    hermex-push = {
+      url = "github:uzairansaruzi/hermex-push";
+      flake = false;
+    };
+    honcho = {
+      url = "github:plastic-labs/honcho";
+      flake = false;
+    };
+    oh-my-hermes = {
+      url = "github:rlaope/oh-my-hermes";
+      flake = false;
+    };
+    paseo = {
+      url = "github:getpaseo/paseo";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
