@@ -5,6 +5,8 @@
   ...
 }: {
   home.preferXdgDirectories = true;
+  home.backupFileExtension = "backup";
+  home.overwriteBackup = true;
   # Shell-agnostic aliases (Home Manager writes them for every enabled shell).
   home.shellAliases = {
     dot = "nvim ${config.home.homeDirectory}/.config/dotfiles";
