@@ -56,10 +56,30 @@ jobs:
                 if [[ "$old" == "$new" ]]; then
                   echo 'No derivation changes.'
                 else
-                  echo '```diff'
-                  "$dix" --color=never diff "$old" "$new" |
-                    sed -E 's/^\[A.\] /+ /; s/^\[R.\] /- /; s/^\[U.\] /! /'
-                  echo '```'
+                  echo '```text'
+                  "$dix" --color=never diff "$old" "$new" | awk '
+                    function section(title, kind, expanded) {
+                      printf "<details%s>\n", expanded
+                      printf "<summary>%s (%d lines)</summary>\n\n", \
+                        title, count[kind]
+                      if (count[kind]) printf "```diff\n%s```\n\n", body[kind]
+                      print "</details>\n"
+                    }
+                    /^\[[ARU].\] / {
+                      kind = substr($0, 2, 1)
+                      prefix = kind == "A" ? "+ " : (kind == "R" ? "- " : "! ")
+                      body[kind] = body[kind] prefix substr($0, 6) "\n"
+                      count[kind]++
+                      next
+                    }
+                    { print }
+                    END {
+                      print "```\n"
+                      section("Changed", "U", "")
+                      section("Added", "A", "")
+                      section("Removed", "R", " open")
+                    }
+                  '
                 fi
               fi
             done <<< "$rows"
