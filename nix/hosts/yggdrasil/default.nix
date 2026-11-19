@@ -7,6 +7,8 @@
 }: {
   imports = [
     ./storage.nix
+    ./cluster-storage.nix
+    ./cluster-operators.nix
     ./mimir.nix
     ./hermes.nix
     ./containers.nix
