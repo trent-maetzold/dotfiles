@@ -110,7 +110,8 @@ in {
           asDefault = true;
           http.tls.certResolver = "cloudflare";
         };
-        paseo.address = "${tailnetAddress}:6767";
+        # Headscale HTTPS must start before Heimdall has its tailnet address.
+        paseo.address = ":6767";
       };
 
       certificatesResolvers.cloudflare.acme = {
@@ -179,7 +180,7 @@ in {
       tcp = {
         routers.paseo = {
           entryPoints = ["paseo"];
-          rule = "HostSNI(`*`)";
+          rule = "ClientIP(`100.64.0.0/10`)";
           service = "paseo";
         };
         services.paseo.loadBalancer.servers = [{address = "100.64.0.2:6767";}];
