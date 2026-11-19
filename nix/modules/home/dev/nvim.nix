@@ -5,6 +5,7 @@
 }: {
   programs.neovim = {
     enable = true;
+    extraPackages = [pkgs.marksman];
     # LazyVim owns ~/.config/nvim/init.lua (linked below).
     sideloadInitLua = true;
   };
