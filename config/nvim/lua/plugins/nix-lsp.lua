@@ -1,13 +1,6 @@
 return {
-  {
-    "neovim/nvim-lspconfig",
-    -- LazyVim passes these to vim.lsp.config and skips the Mason installs.
-    opts = {
-      servers = {
-        marksman = { mason = false },
-        omnisharp = { mason = false },
-        r_language_server = { mason = false },
-      },
-    },
-  },
+  -- LazyVim enables configured servers via vim.lsp when this bridge is disabled.
+  { "mason-org/mason-lspconfig.nvim", enabled = false },
+  -- Keep Mason for formatters/debuggers without shadowing Nix-provided servers.
+  { "mason-org/mason.nvim", opts = { PATH = "append" } },
 }
