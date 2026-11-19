@@ -7,6 +7,8 @@
 }: {
   imports = [
     ./storage.nix
+    ./cluster-storage.nix
+    ./cluster-operators.nix
     ./mimir.nix
     ./hermes.nix
     ./containers.nix
@@ -53,7 +55,11 @@
     ];
     defaultGateway = "10.10.20.1";
     nameservers = ["10.10.20.1" "1.1.1.1"];
-    firewall.trustedInterfaces = ["tailscale0"];
+    firewall = {
+      trustedInterfaces = ["tailscale0"];
+      # Allow pods to reach the API and metrics-server to scrape the kubelet.
+      interfaces.cni0.allowedTCPPorts = [6443 10250];
+    };
     nat = {
       enable = true;
       internalInterfaces = ["tailscale0"];
@@ -67,6 +73,13 @@
     useRoutingFeatures = "server";
     extraUpFlags = ["--login-server=https://hs.trkm.io"];
     extraSetFlags = ["--netfilter-mode=off" "--accept-routes" "--advertise-routes=10.10.20.154/32"];
+  };
+
+  services.k3s = {
+    enable = true;
+    role = "server";
+    clusterInit = true;
+    disable = ["traefik" "servicelb"];
   };
 
   services.openssh = {
