@@ -42,6 +42,15 @@ Reuse the existing disks and SOPS age keys; do not repartition. After merging,
 switch each host to `main` once to install its Comin configuration. Comin will
 then stage future builds from `main` for the next reboot, without switching live.
 
+Yggdrasil runs a single k3s server with embedded etcd. Traefik and ServiceLB
+are disabled, and API port 6443 is not opened on the LAN or public interfaces.
+The existing trusted tailnet interface is unchanged. To administer the cluster,
+SSH to the host and use its local kubeconfig:
+
+```sh
+ssh tm@yggdrasil 'sudo k3s kubectl get nodes'
+```
+
 ### Laptop installation
 
 sif runs [comin](https://github.com/nlewo/comin) (`deploy/comin.nix`): it polls
