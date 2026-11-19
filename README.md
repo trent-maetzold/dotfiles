@@ -94,9 +94,9 @@ her own changes stick. Flathub is added for each user at their first login.
 
 ## Rebuild
 
-`nh os switch` builds this checkout for the current hostname: Home Manager
-points `NH_FLAKE` at `~/.config/dotfiles`. `just switch` first updates every
-flake input and commits `flake.lock`.
+`nh os switch` builds `github:trent-maetzold/dotfiles/main` for the current
+hostname. Use `nh os switch .` to test a local checkout. `just switch` still
+updates the local checkout's inputs and commits `flake.lock` before switching.
 
 ## First login
 
