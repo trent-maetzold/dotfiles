@@ -56,8 +56,9 @@ jobs:
                 if [[ "$old" == "$new" ]]; then
                   echo 'No derivation changes.'
                 else
-                  echo '```text'
-                  "$dix" --color=never diff "$old" "$new"
+                  echo '```diff'
+                  "$dix" --color=never diff "$old" "$new" |
+                    sed -E 's/^\[A.\] /+ /; s/^\[R.\] /- /; s/^\[U.\] /! /'
                   echo '```'
                 fi
               fi

@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
@@ -9,8 +10,15 @@
     cargoHome = "${config.xdg.dataHome}/cargo";
   };
 
-  # Prefer the Nix server over rustup's proxy without changing the shell toolchain.
-  programs.neovim.extraWrapperArgs = ["--prefix" "PATH" ":" "${pkgs.rust-analyzer}/bin"];
+  home.activation.initRustup = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    rustup=${lib.getExe pkgs.rustup}
+    if ! "$rustup" default >/dev/null 2>&1; then
+      run "$rustup" default stable
+    fi
+    if ! RUSTUP_AUTO_INSTALL=0 "$rustup" which rust-analyzer >/dev/null 2>&1; then
+      run "$rustup" component add rust-analyzer
+    fi
+  '';
   home.packages = [pkgs.rustup];
   home.sessionPath = ["${config.programs.cargo.cargoHome}/bin"];
 }
