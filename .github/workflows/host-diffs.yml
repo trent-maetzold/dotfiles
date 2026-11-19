@@ -60,22 +60,18 @@ jobs:
                 if [[ "$old" == "$new" ]]; then
                   echo 'No derivation changes.'
                 else
-                  # ANSI colors work in step logs, not Markdown.
-                  printf '\n=== %s ===\n' "$host" >&2
-                  "$dix" --color=always diff "$old" "$new" >&2
                   echo '```text'
                   "$dix" --color=never diff "$old" "$new" | awk '
                     function section(title, kind, expanded) {
                       printf "<details%s>\n", expanded
                       printf "<summary>%s (%d lines)</summary>\n\n", \
                         title, count[kind]
-                      if (count[kind]) printf "```diff\n%s```\n\n", body[kind]
+                      if (count[kind]) printf "```text\n%s```\n\n", body[kind]
                       print "</details>\n"
                     }
                     /^\[[ARU].\] / {
                       kind = substr($0, 2, 1)
-                      prefix = kind == "A" ? "+ " : (kind == "R" ? "- " : "! ")
-                      body[kind] = body[kind] prefix substr($0, 6) "\n"
+                      body[kind] = body[kind] $0 "\n"
                       count[kind]++
                       next
                     }
