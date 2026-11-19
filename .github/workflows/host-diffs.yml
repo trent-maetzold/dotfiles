@@ -1,0 +1,103 @@
+name: NixOS host diffs
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: host-diffs-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # cachix/install-nix-action v31.11.5
+      - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086
+      - name: Compare host derivations
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          base="$RUNNER_TEMP/base"
+          git worktree add --detach "$base" "$BASE_SHA"
+          dix=$(nix build --inputs-from "$base" --no-link \
+            --print-out-paths nixpkgs#dix)/bin/dix
+          hosts() {
+            nix eval --no-update-lock-file --json "$1#nixosConfigurations" \
+              --apply builtins.attrNames
+          }
+          old_hosts=$(hosts "$base")
+          new_hosts=$(hosts .)
+          # shellcheck disable=SC2016 # jq variables, not shell variables.
+          rows=$(jq -nr --argjson old "$old_hosts" --argjson new "$new_hosts" '
+            ($old + $new | unique[]) as $host |
+            [$host, ($old | index($host)), ($new | index($host))] |
+            map(if . == null then "missing" else tostring end) | @tsv
+          ')
+          report="$RUNNER_TEMP/host-report"
+          mkdir "$report"
+          touch "$report/ready"
+          {
+            echo '## NixOS host diffs'
+            echo 'PR base vs. proposed merge. No system closures built.'
+            # shellcheck disable=SC2016 # Literal Markdown backticks.
+            while IFS=$'\t' read -r host before after; do
+              printf '\n### `%s`\n\n' "$host"
+              [[ "$host" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]*$ ]] || exit 1
+              output="$report/$host.ansi"
+              attr="nixosConfigurations.$host.config.system.build.toplevel.drvPath"
+              if [[ "$before" == missing ]]; then
+                new=$(nix eval --no-update-lock-file --raw ".#$attr")
+                printf 'Added host: `%s`\n' "$new"
+                printf 'Added host: %s\n' "$new" > "$output"
+              elif [[ "$after" == missing ]]; then
+                echo 'Removed host.'
+                echo 'Removed host.' > "$output"
+              else
+                old=$(nix eval --no-update-lock-file --raw "$base#$attr")
+                new=$(nix eval --no-update-lock-file --raw ".#$attr")
+                if [[ "$old" == "$new" ]]; then
+                  echo 'No derivation changes.'
+                else
+                  "$dix" --color=always diff "$old" "$new" > "$output"
+                  echo '```text'
+                  sed -E $'s/\x1b\\[[0-9;]*m//g' "$output" | awk '
+                    function section(title, kind, expanded) {
+                      printf "<details%s>\n", expanded
+                      printf "<summary>%s (%d lines)</summary>\n\n", \
+                        title, count[kind]
+                      if (count[kind]) printf "```text\n%s```\n\n", body[kind]
+                      print "</details>\n"
+                    }
+                    /^\[[ARU].\] / {
+                      kind = substr($0, 2, 1)
+                      body[kind] = body[kind] $0 "\n"
+                      count[kind]++
+                      next
+                    }
+                    { print }
+                    END {
+                      print "```\n"
+                      section("Changed", "U", "")
+                      section("Added", "A", "")
+                      section("Removed", "R", " open")
+                    }
+                  '
+                fi
+              fi
+            done <<< "$rows"
+          } >> "$GITHUB_STEP_SUMMARY"
+      # actions/upload-artifact v7.0.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: host-report
+          path: ${{ runner.temp }}/host-report
+          retention-days: 2
