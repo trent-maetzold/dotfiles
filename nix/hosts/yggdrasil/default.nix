@@ -80,7 +80,6 @@
     enable = true;
     role = "server";
     clusterInit = true;
-    disable = ["servicelb"];
   };
 
   services.openssh = {

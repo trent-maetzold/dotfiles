@@ -7,13 +7,10 @@
       namespace = "kube-system";
     };
     spec.valuesContent = builtins.toJSON {
-      hostNetwork = true;
-      nodeSelector."kubernetes.io/hostname" = "yggdrasil";
-      updateStrategy = {
-        type = "Recreate";
-        rollingUpdate = null;
+      service.spec = {
+        allocateLoadBalancerNodePorts = false;
+        loadBalancerSourceRanges = ["100.64.0.6/32"];
       };
-      service.enabled = false;
       ingressClass.isDefaultClass = false;
       providers = {
         kubernetesCRD.enabled = false;
@@ -22,16 +19,7 @@
           publishedService.enabled = false;
         };
       };
-      ports = {
-        web = {
-          hostIP = "100.64.0.2";
-          port = 8000;
-          forwardedHeaders.trustedIPs = ["100.64.0.6/32"];
-        };
-        websecure = null;
-        traefik.hostIP = "127.0.0.1";
-        metrics.hostIP = "127.0.0.1";
-      };
+      ports.web.expose.default = false;
     };
   };
 }

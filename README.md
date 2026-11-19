@@ -43,8 +43,8 @@ switch each host to `main` once to install its Comin configuration. Comin will
 then stage future builds from `main` for the next reboot, without switching live.
 
 Niðavellir runs on Yggdrasil as a single k3s server with embedded etcd. The
-bundled Traefik listens on Yggdrasil's tailnet address only. ServiceLB is
-disabled, and API port 6443 is not opened on the LAN or public interfaces.
+bundled Traefik uses ServiceLB for HTTPS, with Heimdall as the only allowed
+source. API port 6443 is not opened on the LAN or public interfaces.
 The existing trusted tailnet interface is unchanged. To administer the cluster,
 SSH to the host and use its local kubeconfig:
 
@@ -58,12 +58,11 @@ k3s’s default `/var/lib/rancher/k3s/storage` path. The
 tailnet. Verify the share mounts from a pod and permits the intended writes
 before using the claim. The local storage is single-node; back it up off-host.
 
-k3s installs the Flux and CloudNativePG operators. Flux reads `homelab/main`
-at `clusters/nidavellir`; merge the reconciliation root there before enabling
-workloads. Heimdall terminates public TLS for `seerr.trkm.io` and forwards
-it over the tailnet to Yggdrasil's Traefik. It still serves Headscale and
-Headplane independently of k3s. The public Seerr route needs the matching
-Homelab ingress and a running Seerr release.
+k3s installs Flux, CloudNativePG, and cert-manager. Flux reads `homelab/main`
+at `clusters/nidavellir`. Heimdall passes TLS for one-label `trkm.io` app names
+(except `hs.trkm.io`) to Yggdrasil over the tailnet. Headscale, Headplane, and
+existing private routes stay on Heimdall. App Ingresses and certificates are
+managed in Homelab; add each public DNS record manually.
 
 ### Laptop installation
 
