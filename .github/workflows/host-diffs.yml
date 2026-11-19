@@ -42,26 +42,34 @@ jobs:
             [$host, ($old | index($host)), ($new | index($host))] |
             map(if . == null then "missing" else tostring end) | @tsv
           ')
+          report="$RUNNER_TEMP/host-report"
+          mkdir "$report"
+          touch "$report/ready"
           {
             echo '## NixOS host diffs'
             echo 'PR base vs. proposed merge. No system closures built.'
             # shellcheck disable=SC2016 # Literal Markdown backticks.
             while IFS=$'\t' read -r host before after; do
               printf '\n### `%s`\n\n' "$host"
+              [[ "$host" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]*$ ]] || exit 1
+              output="$report/$host.ansi"
               attr="nixosConfigurations.$host.config.system.build.toplevel.drvPath"
               if [[ "$before" == missing ]]; then
                 new=$(nix eval --no-update-lock-file --raw ".#$attr")
                 printf 'Added host: `%s`\n' "$new"
+                printf 'Added host: %s\n' "$new" > "$output"
               elif [[ "$after" == missing ]]; then
                 echo 'Removed host.'
+                echo 'Removed host.' > "$output"
               else
                 old=$(nix eval --no-update-lock-file --raw "$base#$attr")
                 new=$(nix eval --no-update-lock-file --raw ".#$attr")
                 if [[ "$old" == "$new" ]]; then
                   echo 'No derivation changes.'
                 else
+                  "$dix" --color=always diff "$old" "$new" > "$output"
                   echo '```text'
-                  "$dix" --color=never diff "$old" "$new" | awk '
+                  sed -E $'s/\x1b\\[[0-9;]*m//g' "$output" | awk '
                     function section(title, kind, expanded) {
                       printf "<details%s>\n", expanded
                       printf "<summary>%s (%d lines)</summary>\n\n", \
@@ -87,3 +95,9 @@ jobs:
               fi
             done <<< "$rows"
           } >> "$GITHUB_STEP_SUMMARY"
+      # actions/upload-artifact v7.0.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: host-report
+          path: ${{ runner.temp }}/host-report
+          retention-days: 2
