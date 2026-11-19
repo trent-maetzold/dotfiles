@@ -13,8 +13,11 @@
   };
   programs.pnpm.enable = true;
   programs.bun.enable = true;
+  programs.neovim.extraPackages = [pkgs.vscode-langservers-extracted];
 
   home.packages = with pkgs; [
+    biome
+    prettier
     typescript
     typescript-language-server
   ];
