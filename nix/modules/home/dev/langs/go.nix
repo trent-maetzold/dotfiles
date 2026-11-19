@@ -13,5 +13,5 @@
   };
 
   home.sessionPath = ["${config.xdg.dataHome}/go/bin"];
-  home.packages = with pkgs; [gopls delve];
+  home.packages = with pkgs; [gopls delve gotools gofumpt];
 }

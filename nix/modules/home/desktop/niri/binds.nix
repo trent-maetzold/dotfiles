@@ -5,12 +5,12 @@
 {
   wayland.windowManager.niri.settings.binds = {
     "Mod+T" = {
-      _props.hotkey-overlay-title = "Open a Terminal: foot";
-      spawn = ["foot"];
+      _props.hotkey-overlay-title = "Open a Terminal: Ghostty";
+      spawn = ["ghostty"];
     };
     "Mod+Return" = {
-      _props.hotkey-overlay-title = "Open a Terminal: foot";
-      spawn = ["foot"];
+      _props.hotkey-overlay-title = "Open a Terminal: Ghostty";
+      spawn = ["ghostty"];
     };
     "Mod+B" = {
       _props.hotkey-overlay-title = "Browser: Zen";
