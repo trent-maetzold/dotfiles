@@ -6,6 +6,7 @@
 }: let
   loginHost = "hs.trkm.io";
   loginServer = "https://${loginHost}";
+  seerrHost = "seerr.trkm.io";
   tailnetDomain = "ts.trkm.io";
   tailnetAddress = "100.64.0.6";
   dashboardAddress = "127.0.0.1:8081";
@@ -149,6 +150,10 @@ in {
           })
           httpBackends
           // {
+            seerr = {
+              rule = "Host(`${seerrHost}`)";
+              service = "seerr";
+            };
             root = {
               rule = "Host(`${loginHost}`) && Path(`/`)";
               service = "noop@internal";
@@ -171,6 +176,7 @@ in {
               // lib.optionalAttrs (name == "yggdrasil-bmc") {serversTransport = name;};
           }) (httpBackends
             // {
+              seerr = "http://100.64.0.2:8000";
               headplane = "http://127.0.0.1:${toString config.services.headplane.settings.server.port}";
               headscale = "http://127.0.0.1:${toString config.services.headscale.port}";
             });

@@ -42,8 +42,9 @@ Reuse the existing disks and SOPS age keys; do not repartition. After merging,
 switch each host to `main` once to install its Comin configuration. Comin will
 then stage future builds from `main` for the next reboot, without switching live.
 
-Niðavellir runs on Yggdrasil as a single k3s server with embedded etcd. Traefik and ServiceLB
-are disabled, and API port 6443 is not opened on the LAN or public interfaces.
+Niðavellir runs on Yggdrasil as a single k3s server with embedded etcd. The
+bundled Traefik listens on Yggdrasil's tailnet address only. ServiceLB is
+disabled, and API port 6443 is not opened on the LAN or public interfaces.
 The existing trusted tailnet interface is unchanged. To administer the cluster,
 SSH to the host and use its local kubeconfig:
 
@@ -59,7 +60,10 @@ before using the claim. The local storage is single-node; back it up off-host.
 
 k3s installs the Flux and CloudNativePG operators. Flux reads `homelab/main`
 at `clusters/nidavellir`; merge the reconciliation root there before enabling
-workloads. The PostgreSQL cluster, database restores, and ingress are separate.
+workloads. Heimdall terminates public TLS for `seerr.trkm.io` and forwards
+it over the tailnet to Yggdrasil's Traefik. It still serves Headscale and
+Headplane independently of k3s. The public Seerr route needs the matching
+Homelab ingress and a running Seerr release.
 
 ### Laptop installation
 
