@@ -1,0 +1,65 @@
+name: NixOS host diffs
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # cachix/install-nix-action v31.11.5
+      - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086
+      - name: Compare host derivations
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          base="$RUNNER_TEMP/base"
+          git worktree add --detach "$base" "$BASE_SHA"
+          dix=$(nix build --inputs-from "$base" --no-link \
+            --print-out-paths nixpkgs#dix)/bin/dix
+          hosts() {
+            nix eval --no-update-lock-file --json "$1#nixosConfigurations" \
+              --apply builtins.attrNames
+          }
+          old_hosts=$(hosts "$base")
+          new_hosts=$(hosts .)
+          # shellcheck disable=SC2016 # jq variables, not shell variables.
+          rows=$(jq -nr --argjson old "$old_hosts" --argjson new "$new_hosts" '
+            ($old + $new | unique[]) as $host |
+            [$host, ($old | index($host)), ($new | index($host))] |
+            map(if . == null then "missing" else tostring end) | @tsv
+          ')
+          {
+            echo '## NixOS host diffs'
+            echo 'PR base vs. proposed merge. No system closures built.'
+            # shellcheck disable=SC2016 # Literal Markdown backticks.
+            while IFS=$'\t' read -r host before after; do
+              printf '\n### `%s`\n\n' "$host"
+              attr="nixosConfigurations.$host.config.system.build.toplevel.drvPath"
+              if [[ "$before" == missing ]]; then
+                new=$(nix eval --no-update-lock-file --raw ".#$attr")
+                printf 'Added host: `%s`\n' "$new"
+              elif [[ "$after" == missing ]]; then
+                echo 'Removed host.'
+              else
+                old=$(nix eval --no-update-lock-file --raw "$base#$attr")
+                new=$(nix eval --no-update-lock-file --raw ".#$attr")
+                if [[ "$old" == "$new" ]]; then
+                  echo 'No derivation changes.'
+                else
+                  echo '```text'
+                  "$dix" --color=never diff "$old" "$new"
+                  echo '```'
+                fi
+              fi
+            done <<< "$rows"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
