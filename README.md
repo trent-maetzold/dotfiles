@@ -51,8 +51,9 @@ SSH to the host and use its local kubeconfig:
 ssh tm@10.10.20.10 'sudo k3s kubectl get nodes'
 ```
 
-The default `local-path` StorageClass uses `tank/k3s-volumes`. The
-`media/mimir-media` claim uses Mimir's `/mnt/user/data` NFS export over the
+The default `local-path` StorageClass uses `tank/k3s-storage`, mounted at
+k3s’s default `/var/lib/rancher/k3s/storage` path. The
+`media/nas-data` claim uses Mimir's `/mnt/user/data` NFS export over the
 tailnet. Verify the share mounts from a pod and permits the intended writes
 before using the claim. The local storage is single-node; back it up off-host.
 

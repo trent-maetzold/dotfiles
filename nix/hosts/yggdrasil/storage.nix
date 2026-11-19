@@ -115,9 +115,9 @@ in {
               options.mountpoint = "legacy";
             };
 
-            k3s-volumes = {
+            k3s-storage = {
               type = "zfs_fs";
-              mountpoint = "/var/lib/k3s-volumes";
+              mountpoint = "/var/lib/rancher/k3s/storage";
               mountOptions = ["x-systemd.requires=disko-zfs.service"];
               options.mountpoint = "legacy";
             };
