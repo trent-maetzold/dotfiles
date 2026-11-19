@@ -7,10 +7,7 @@
       namespace = "kube-system";
     };
     spec.valuesContent = builtins.toJSON {
-      service.spec = {
-        allocateLoadBalancerNodePorts = false;
-        loadBalancerSourceRanges = ["100.64.0.6/32"];
-      };
+      service.spec.allocateLoadBalancerNodePorts = false;
       ingressClass.isDefaultClass = false;
       providers = {
         kubernetesCRD.enabled = false;
@@ -19,7 +16,6 @@
           publishedService.enabled = false;
         };
       };
-      ports.web.expose.default = false;
     };
   };
 }

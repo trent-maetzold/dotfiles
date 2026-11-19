@@ -178,15 +178,6 @@ in {
       };
 
       tcp = {
-        routers.cluster-apps = {
-          entryPoints = ["websecure"];
-          # Keep Headscale and the existing *.ts.trkm.io routes on this host.
-          rule = "HostSNIRegexp(`^[^.]+\\.trkm\\.io$`) && !HostSNI(`${loginHost}`)";
-          tls.passthrough = true;
-          service = "cluster-apps";
-        };
-        services.cluster-apps.loadBalancer.servers = [{address = "100.64.0.2:443";}];
-
         routers.paseo = {
           entryPoints = ["paseo"];
           rule = "ClientIP(`100.64.0.0/10`)";

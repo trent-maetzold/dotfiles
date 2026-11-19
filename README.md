@@ -43,8 +43,9 @@ switch each host to `main` once to install its Comin configuration. Comin will
 then stage future builds from `main` for the next reboot, without switching live.
 
 Niðavellir runs on Yggdrasil as a single k3s server with embedded etcd. The
-bundled Traefik uses ServiceLB for HTTPS, with Heimdall as the only allowed
-source. API port 6443 is not opened on the LAN or public interfaces.
+bundled Traefik uses ServiceLB on TCP 80 and 443. For public apps, forward
+those ports directly to Yggdrasil; this configuration does not open them in
+its host firewall. Do not forward the Kubernetes API port (6443).
 The existing trusted tailnet interface is unchanged. To administer the cluster,
 SSH to the host and use its local kubeconfig:
 
@@ -59,10 +60,9 @@ tailnet. Verify the share mounts from a pod and permits the intended writes
 before using the claim. The local storage is single-node; back it up off-host.
 
 k3s installs Flux, CloudNativePG, and cert-manager. Flux reads `homelab/main`
-at `clusters/nidavellir`. Heimdall passes TLS for one-label `trkm.io` app names
-(except `hs.trkm.io`) to Yggdrasil over the tailnet. Headscale, Headplane, and
-existing private routes stay on Heimdall. App Ingresses and certificates are
-managed in Homelab; add each public DNS record manually.
+at `clusters/nidavellir`. App Ingresses and certificates are managed in Homelab;
+add each public DNS record manually, pointing at Yggdrasil's public address
+or the router forwarding to it. Heimdall routing is unchanged.
 
 ### Laptop installation
 
