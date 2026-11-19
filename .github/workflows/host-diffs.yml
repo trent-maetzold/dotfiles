@@ -60,6 +60,9 @@ jobs:
                 if [[ "$old" == "$new" ]]; then
                   echo 'No derivation changes.'
                 else
+                  # ANSI colors work in step logs, not Markdown.
+                  printf '\n=== %s ===\n' "$host" >&2
+                  "$dix" --color=always diff "$old" "$new" >&2
                   echo '```text'
                   "$dix" --color=never diff "$old" "$new" | awk '
                     function section(title, kind, expanded) {
@@ -87,4 +90,4 @@ jobs:
                 fi
               fi
             done <<< "$rows"
-          } | tee -a "$GITHUB_STEP_SUMMARY"
+          } >> "$GITHUB_STEP_SUMMARY"
