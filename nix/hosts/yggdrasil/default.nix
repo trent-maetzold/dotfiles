@@ -9,6 +9,7 @@
     ./storage.nix
     ./cluster-storage.nix
     ./cluster-operators.nix
+    ./cluster-ingress.nix
     ./mimir.nix
     ./hermes.nix
     ./containers.nix
@@ -79,7 +80,6 @@
     enable = true;
     role = "server";
     clusterInit = true;
-    disable = ["traefik" "servicelb"];
   };
 
   services.openssh = {

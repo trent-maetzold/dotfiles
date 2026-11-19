@@ -24,6 +24,15 @@
       };
     };
 
+    cert-manager = {
+      repo = "oci://quay.io/jetstack/charts/cert-manager";
+      version = "v1.21.3";
+      hash = "sha256-nsZ5OLKYHYszOvYbP89T4mtPb13rfM2j3k6hFrs3Ohc=";
+      targetNamespace = "cert-manager";
+      createNamespace = true;
+      values.crds.enabled = true;
+    };
+
     cloudnative-pg = {
       name = "cloudnative-pg";
       repo = "https://cloudnative-pg.github.io/charts";
