@@ -5,6 +5,8 @@
 }: {
   programs.neovim = {
     enable = true;
+    # Sets EDITOR and VISUAL in the Home Manager session environment.
+    defaultEditor = true;
     extraPackages = with pkgs; [
       docker-compose-language-service
       dockerfile-language-server
