@@ -7,9 +7,12 @@
 }: {
   nix.enable = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
-  # Binary cache for github:numtide/llm-agents.nix (home/ai).
-  nix.settings.extra-substituters = ["https://cache.numtide.com"];
-  nix.settings.extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
+  # Binary caches for github:numtide/llm-agents.nix (home/ai) and Umbriel.
+  nix.settings.extra-substituters = ["https://cache.numtide.com" "https://umbriel.cachix.org"];
+  nix.settings.extra-trusted-public-keys = [
+    "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+    "umbriel.cachix.org-1:JfNq/2yg2S6D6z4Z2dVSZrZlDPQTKtexB6GAVLD98nw="
+  ];
 
   programs.nix-ld.enable = true;
   # Keep the NixOS defaults; add what pip/uv wheels and source builds need.

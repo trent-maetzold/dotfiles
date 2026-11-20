@@ -6,7 +6,6 @@
     systemd.enable = true;
     recommendedServices.enable = true;
   };
-  systemd.user.services.noctalia.environment.TERMINAL = "ghostty";
   services.displayManager.noctalia-greeter.enable = true;
   preservation.preserveAt."/persist".directories = [
     {
