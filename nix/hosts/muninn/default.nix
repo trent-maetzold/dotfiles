@@ -16,6 +16,7 @@
     ../../modules/nixos/hardware/nvidia-prime.nix
     ../../modules/nixos/services/quadlet.nix
     ./citrix.nix
+    inputs.sops-nix.nixosModules.sops
   ];
 
   networking.hostName = "muninn";
@@ -32,4 +33,21 @@
   # Match Niri's 1.5 on the internal panel; overrides the synced scale.
   services.displayManager.noctalia-greeter.settings.output.scales = "eDP-1:1.5";
   system.stateVersion = "26.11";
+
+  # Secrets decrypt into /run/secrets (tmpfs) on every boot; the age key is
+  # the ssh-ed25519 host key that the /etc overlay already persists. See
+  # .sops.yaml beside secrets.yaml for the recipients.
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age = {
+      keyFile = "/var/lib/sops-nix/key.txt";
+      sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+    };
+    gnupg.sshKeyPaths = [];
+    secrets."hermes-desktop-token" = {
+      key = "hermes/desktop-token";
+      owner = "trent";
+      mode = "0400";
+    };
+  };
 }
