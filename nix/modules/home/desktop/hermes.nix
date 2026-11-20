@@ -13,7 +13,7 @@
 }: let
   system = pkgs.stdenv.hostPlatform.system;
   tokenFile = "${config.xdg.configHome}/hermes/remote-token";
-  remoteUrl = "https://dash.hermes.ts.trkm.io";
+  remoteUrl = "https://hermes.ts.trkm.io";
 in {
   home.packages = [
     (hermes-agent.packages.${system}.desktop.override {
