@@ -2,17 +2,17 @@
 # HERMES_DESKTOP_REMOTE_URL, so the desktop never starts a local backend:
 # every session runs against the Hermes Deployment on Niðavellir.
 #
-# The token stays out of the Nix store. `extraRun` reads it at start time
-# from a file only the user can read; copy it from the hermes-secrets
-# Secret (HERMES_DASHBOARD_SESSION_TOKEN) on the cluster.
+# The token stays out of the Nix store and off disk: muninn's sops secret
+# `hermes-desktop-token` decrypts into /run/secrets at boot, and `extraRun`
+# reads it at start time.
 {
-  config,
   hermes-agent,
   pkgs,
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  tokenFile = "${config.xdg.configHome}/hermes/remote-token";
+  # Decrypted from sops on muninn; the file lives on tmpfs, never in $HOME.
+  tokenFile = "/run/secrets/hermes-desktop-token";
   remoteUrl = "https://hermes.ts.trkm.io";
 in {
   home.packages = [
@@ -25,7 +25,7 @@ in {
             export HERMES_DESKTOP_REMOTE_TOKEN
           else
             echo "hermes-desktop: no gateway token at ${tokenFile}." >&2
-            echo "hermes-desktop: copy HERMES_DASHBOARD_SESSION_TOKEN from the hermes-secrets Secret into that file (chmod 600)." >&2
+            echo "hermes-desktop: muninn decrypts it from sops to this path at boot." >&2
             echo "hermes-desktop: refusing to start a local backend." >&2
             exit 1
           fi

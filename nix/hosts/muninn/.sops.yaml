@@ -1,0 +1,9 @@
+keys:
+  - &master age1gfu7xqt5tdqmg9l6472cgumrkjgg5xk67d9wt04ug0w8zwn9edtsnfclh4
+  - &muninn age1zfde523nyuykx9q2je2rfq3wx56ux0ns7ljalp47s9553e2vkegsc0gtun
+
+# muninn has no host keys of its own on the tailnet; its age key is the
+# ssh-ed25519 host key, persisted in /.rw-etc and converted by sops-nix.
+creation_rules:
+  - path_regex: ^secrets\.yaml$
+    age: [*master, *muninn]
