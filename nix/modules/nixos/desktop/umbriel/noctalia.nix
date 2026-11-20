@@ -1,6 +1,8 @@
 # Noctalia shell and its greeter. greetd runs the greeter; its state (last
 # user, synced appearance) is preserved across the tmpfs root.
 {
+  # No settings on purpose: Noctalia always loads its built-in defaults, then
+  # GUI changes from ~/.local/state/noctalia/settings.toml.
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
