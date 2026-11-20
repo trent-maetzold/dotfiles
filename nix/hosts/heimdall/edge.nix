@@ -11,9 +11,10 @@
   dashboardAddress = "127.0.0.1:8081";
 
   # These HTTP routes are tailnet-only; Paseo is served separately over TCP.
+  # Hermes runs in k3s; its NodePorts replace the old NixOS 8787/9119 services.
   httpBackends = {
-    hermes = "http://100.64.0.2:8787";
-    "dash.hermes" = "http://100.64.0.2:9119";
+    hermes = "http://100.64.0.2:30912";
+    "dash.hermes" = "http://100.64.0.2:30911";
     "gw.hermes" = "http://100.64.0.2:8642";
     magpie = "http://100.64.0.2:3430";
     traefik = "http://${dashboardAddress}";
