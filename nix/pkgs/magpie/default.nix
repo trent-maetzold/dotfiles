@@ -15,14 +15,14 @@
   webkitgtk_4_1,
   libsoup_3,
 }: let
-  version = "0.1.3419";
+  version = "0.1.4572";
   cli = fetchurl {
     url = "https://usemagpie.ai/files/v${version}/magpie-cli-linux-amd64";
-    hash = "sha256-g/R/9Qax3bxN4tT694lzWIGiIZQKQKb7RJHk9by6F4k=";
+    hash = "sha256-WxW6O15v3D+gvbhRrlJiGqO6kzzvt6u/Y9U9NKZ2eOM=";
   };
   gui = fetchurl {
     url = "https://usemagpie.ai/files/v${version}/magpie-linux-amd64";
-    hash = "sha256-n/GhmBqUhTyV/X6QQpA+TJtN39LgPBpf0xEs5oQOM2g=";
+    hash = "sha256-uBFHkePVZ4GOnnWNISzwPmKaYtC6PEYZf1gxl/aSZ6o=";
   };
   icon = fetchurl {
     url = "https://raw.githubusercontent.com/yetone/magpie/v${version}/site/public/img/icon-256.png";
