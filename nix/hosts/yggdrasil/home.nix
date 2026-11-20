@@ -14,5 +14,5 @@
 
   # Yggdrasil already runs these daemons as system services.
   systemd.user.services.paseo.Install.WantedBy = lib.mkForce [];
-  virtualisation.quadlet.containers.magpie.autoStart = lib.mkForce false;
+  systemd.user.services.magpie.Install.WantedBy = lib.mkForce [];
 }
