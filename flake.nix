@@ -182,6 +182,11 @@
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     llm-agents.url = "github:numtide/llm-agents.nix";
+    # Noctalia community plugins, available for runtime plugin configuration.
+    noctalia-plugins = {
+      url = "github:noctalia-dev/community-plugins";
+      flake = false;
+    };
     bkt = {
       url = "github:avivsinai/bitbucket-cli";
       inputs.nixpkgs.follows = "nixpkgs";

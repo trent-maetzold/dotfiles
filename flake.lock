@@ -651,6 +651,22 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
       }
     },
+    "noctalia-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794790219,
+        "narHash": "sha256-xAAUPD0KKTrWNlMTSLjeMdMDYQQLuUALAzGYFjSC+LE=",
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "rev": "5413d9c1a390c9c5900c836f482d45d108840b80",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "type": "github"
+      }
+    },
     "npm-lockfile-fix": {
       "inputs": {
         "nixpkgs": [
@@ -853,6 +869,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_7",
+        "noctalia-plugins": "noctalia-plugins",
         "oh-my-hermes": "oh-my-hermes",
         "paseo": "paseo",
         "preservation": "preservation",
