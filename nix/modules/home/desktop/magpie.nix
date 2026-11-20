@@ -1,3 +1,3 @@
 {pkgs, ...}: {
-  home.packages = [pkgs.magpie-desktop];
+  home.packages = [pkgs.magpie.desktop];
 }

@@ -8,8 +8,7 @@
   bkt = bkt.packages.${final.stdenv.hostPlatform.system}.bkt;
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
-  magpie-cli = final.callPackage ./magpie-cli {};
-  magpie-desktop = final.callPackage ./magpie-desktop {};
+  magpie = final.callPackage ./magpie {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
   outlook-cli = final.callPackage ./outlook-cli {};

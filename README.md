@@ -206,7 +206,7 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 ```
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.
-Magpie's CLI and desktop URL/version/hash are pinned in `nix/pkgs/magpie-cli/default.nix` and `nix/pkgs/magpie-desktop/default.nix`.
+Magpie's CLI and desktop versions and hashes are pinned together in `nix/pkgs/magpie/default.nix`.
 
 ## Secrets and SSH keys
 
