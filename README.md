@@ -8,9 +8,8 @@ Development tools are declared in `nix/modules/home/`; language toolchains live 
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
 `import-tree` to import every module recursively, so new modules need no manual
 import entries. Package expressions stay outside that tree in `nix/pkgs/`.
-Magpie is a
-pinned terminal-only binary; Paseo is the daemon/CLI package, not the desktop
-app. Both run as systemd user services (`magpie.service` and `paseo.service`),
+Magpie's pinned CLI is installed everywhere, with the desktop app also available
+on Home Manager desktops; Paseo is the daemon/CLI package, not the desktop app. Both run as systemd user services (`magpie.service` and `paseo.service`),
 starting at login and restarting on failure. Magpie runs the gateway without a
 web UI; Paseo runs its foreground daemon. Inspect them with:
 
@@ -207,7 +206,7 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 ```
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.
-Magpie's URL/version/hash are pinned separately in `nix/pkgs/magpie-cli/default.nix`.
+Magpie's CLI and desktop URL/version/hash are pinned in `nix/pkgs/magpie-cli/default.nix` and `nix/pkgs/magpie-desktop/default.nix`.
 
 ## Secrets and SSH keys
 
