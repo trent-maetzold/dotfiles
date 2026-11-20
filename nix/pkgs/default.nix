@@ -9,6 +9,7 @@
   confluence-cli = final.callPackage ./confluence-cli {};
   deepwiki-cli = final.callPackage ./deepwiki-cli {};
   magpie-cli = final.callPackage ./magpie-cli {};
+  magpie-desktop = final.callPackage ./magpie-desktop {};
   openwiki-cli = final.callPackage ./openwiki-cli {};
   tredis = final.callPackage ./tredis {};
   outlook-cli = final.callPackage ./outlook-cli {};
