@@ -210,6 +210,14 @@ Magpie's CLI and desktop versions and hashes are pinned together in `nix/pkgs/ma
 
 ## Secrets and SSH keys
 
+Machine secrets are sops files encrypted to the master age key and to each
+host's key: `nix/hosts/<host>/secrets.yaml`, with the recipients in the
+`.sops.yaml` beside it. Heimdall and Yggdrasil share one file (the same one
+`infra` keeps on `staging`); muninn has its own for the Hermes Desktop token,
+since it is not yet a recipient of the shared file. sops-nix decrypts them at
+activation into `/run/secrets/<name>`, never to disk. The master key lives in
+Bitwarden, so `sops -d` on a laptop works once `rbw unlock` has run.
+
 Bitwarden, through [rbw](https://github.com/doy/rbw), on every host
 (`nix/modules/home/secrets/rbw.nix`). `rbw unlock` starts `rbw-agent`, which
 holds the unlocked vault and is also the SSH agent: SSH's `IdentityAgent` points
