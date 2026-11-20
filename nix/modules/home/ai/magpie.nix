@@ -11,7 +11,7 @@ in {
   imports = [quadlet-nix.homeManagerModules.quadlet];
 
   # CLI for `magpie provider add …` etc. on the host.
-  home.packages = [pkgs.magpie];
+  home.packages = [pkgs.magpie-cli];
 
   virtualisation.quadlet.containers.magpie = {
     autoStart = true;
