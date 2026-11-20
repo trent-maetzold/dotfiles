@@ -28,7 +28,7 @@ WSL hosts.
 
 | Host | Machine | Desktop |
 | --- | --- | --- |
-| `muninn` | trent's laptop | Niri + Noctalia, Home Manager for trent |
+| `muninn` | trent's laptop | Umbriel + Noctalia, Home Manager for trent |
 | `sif` | Justine's Yoga 720-13IKB | Cinnamon (X11), Flatpak apps via GNOME Software |
 
 ### Imported systems
@@ -160,8 +160,8 @@ Citrix Workspace runs as its own session on **tty8**: Xorg with no compositor,
 a kiosk window manager (matchbox) and Workspace, as trent, at 1920x1200 (the
 panel scales it). It shares trent's audio, so a Bluetooth headset stays
 connected across the switch. **Ctrl+Alt+F8** switches to it and
-**Ctrl+Alt+F1** back to Niri; every other key, Win and Alt included, goes to
-Windows. Niri doesn't know about it. The session starts the first time you
+**Ctrl+Alt+F1** back to Umbriel; every other key, Win and Alt included, goes to
+Windows. Umbriel doesn't know about it. The session starts the first time you
 switch to tty8 (after the first switch to this config, reboot once so logind
 allows tty8) and again after Workspace's X exits; it registers the employer
 store if it's missing. Logs: `journalctl -b -u autovt@tty8`.

@@ -1,4 +1,8 @@
 {
+  # Ghostty is the default terminal; Noctalia's terminal actions read TERMINAL.
+  home.sessionVariables.TERMINAL = "ghostty";
+  systemd.user.sessionVariables.TERMINAL = "ghostty";
+
   programs.ghostty = {
     enable = true;
     settings = {

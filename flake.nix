@@ -169,6 +169,10 @@
 
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
 
+    # Umbriel compositor; cachix tracks the latest commit CI cached, and no
+    # nixpkgs follow so those store paths match (its installation guide).
+    umbriel.url = "github:noctalia-dev/umbriel/cachix";
+
     # Packages
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
@@ -178,7 +182,7 @@
     # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     llm-agents.url = "github:numtide/llm-agents.nix";
-    # Noctalia community plugins; plugins are picked in Home Manager.
+    # Noctalia community plugins, available for runtime plugin configuration.
     noctalia-plugins = {
       url = "github:noctalia-dev/community-plugins";
       flake = false;

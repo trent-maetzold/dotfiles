@@ -51,16 +51,6 @@
 in {
   imports = [zen-browser.homeModules.beta];
 
-  # Zen opens as a maximized column (Niri's Mod+F), not fullscreen.
-  wayland.windowManager.niri.settings._children = [
-    {
-      window-rule._children = [
-        {match._props.app-id = "^zen-beta$";}
-        {open-maximized = true;}
-      ];
-    }
-  ];
-
   # Take over the profile selector Zen created before it was managed.
   home.file."${config.programs.zen-browser.configPath}/profiles.ini".force = true;
 
