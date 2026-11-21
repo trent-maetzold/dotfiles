@@ -1,9 +1,6 @@
-# Keep the packaged keybinds and defaults when layering host settings on top.
-{umbriel, osConfig, ...}: {
+# The NixOS module supplies the session; Home Manager writes host settings.
+{umbriel, ...}: {
   imports = [umbriel.homeModules.default];
 
-  programs.umbriel = {
-    enable = true;
-    settings.include.files = ["${osConfig.programs.umbriel.package}/share/umbriel/config.toml"];
-  };
+  programs.umbriel.enable = true;
 }
