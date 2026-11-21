@@ -6,9 +6,12 @@
     enable = true;
     settings = {
       include.files = ["/etc/xdg/umbriel/config.toml"];
-      keybinds."Mod+Return" = {
-        action = "spawn ghostty";
-        repeat = false;
+      keybinds = {
+        "Mod+Return" = {
+          action = "spawn ghostty";
+          repeat = false;
+        };
+        "Mod+Shift+Slash" = "cheatsheet-toggle";
       };
       input.cursor = {
         theme = config.home.pointerCursor.name;
