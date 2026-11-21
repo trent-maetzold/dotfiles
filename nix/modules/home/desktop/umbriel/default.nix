@@ -6,6 +6,10 @@
     enable = true;
     settings = {
       include.files = ["/etc/xdg/umbriel/config.toml"];
+      keybinds."Mod+Return" = {
+        action = "spawn ghostty";
+        repeat = false;
+      };
       input.cursor = {
         theme = config.home.pointerCursor.name;
         size = config.home.pointerCursor.size;
