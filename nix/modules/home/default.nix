@@ -81,6 +81,7 @@
   programs.yt-dlp.enable = true;
 
   home.packages = with pkgs; [
+    headscale-remote
     # Build toolchain for native dependencies
     gnumake
     pkg-config

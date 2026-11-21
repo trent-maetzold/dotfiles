@@ -10,6 +10,7 @@
       HashKnownHosts = false;
       ServerAliveCountMax = 3;
       ServerAliveInterval = 0;
+      SetEnv.TERM = "xterm-256color";
       UserKnownHostsFile = "~/.ssh/known_hosts";
     };
   };

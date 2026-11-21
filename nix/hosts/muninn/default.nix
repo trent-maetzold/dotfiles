@@ -19,6 +19,10 @@
   ];
 
   networking.hostName = "muninn";
+
+  # Enroll once with: sudo tailscale up --login-server=https://hs.trkm.io
+  services.tailscale.enable = true;
+  preservation.preserveAt."/persist".directories = ["/var/lib/tailscale"];
   users.users.trent = {
     uid = 1000;
     shell = pkgs.nushell;
