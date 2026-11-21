@@ -11,7 +11,7 @@
   services.displayManager.noctalia-greeter = {
     enable = true;
     # Global UI scale; per-output `scales` did not take effect here.
-    settings.output.scale = 1.5;
+    settings.output.scale = 1.4;
   };
   preservation.preserveAt."/persist".directories = [
     {

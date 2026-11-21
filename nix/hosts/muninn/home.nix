@@ -6,7 +6,7 @@
     self.homeModules.desktop
   ];
 
-  programs.umbriel.settings.output."eDP-1".scale = 1.5;
+  programs.umbriel.settings.output."eDP-1".scale = 1.4;
 
   home = {
     username = "trent";
