@@ -6,6 +6,8 @@
     self.homeModules.desktop
   ];
 
+  programs.umbriel.settings.output."eDP-1".scale = 1.5;
+
   home = {
     username = "trent";
     homeDirectory = "/home/trent";
