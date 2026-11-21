@@ -12,6 +12,7 @@
           repeat = false;
         };
         "Mod+Shift+Slash" = "cheatsheet-toggle";
+        "Mod+Ctrl+L" = "spawn noctalia msg session lock";
       };
       input.cursor = {
         theme = config.home.pointerCursor.name;
