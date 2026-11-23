@@ -80,6 +80,9 @@
     enable = true;
     role = "server";
     clusterInit = true;
+    # On an existing cluster, run `k3s secrets-encrypt enable` before
+    # switching to this configuration; then follow the rotation procedure.
+    extraFlags = ["--secrets-encryption"];
   };
 
   services.openssh = {
