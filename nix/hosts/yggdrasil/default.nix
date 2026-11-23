@@ -97,11 +97,14 @@
     isNormalUser = true;
     shell = pkgs.zsh;
     extraGroups = ["wheel"];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIb8eWQl7Ck6RqwqRWZWGWcIEoz+7RjaOaQM/h0PrM7q heeler"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZMIGNBlZ+VX528eFfwCmEuN4oQCigRA+FPwADzixds trent@muninn"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII6sEj9jzEpu4Cbko4lLq54i16hM4RyIFmaIM5uZ2RH8 trent@huginn"
-    ];
+    openssh.authorizedKeys.keys = import ../../admin-ssh-keys.nix;
+  };
+  # Transitional account: verify SSH and sudo before retiring tm.
+  users.users.trent = {
+    isNormalUser = true;
+    extraGroups = ["wheel"];
+    shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = import ../../admin-ssh-keys.nix;
   };
   security.sudo.wheelNeedsPassword = false;
 
