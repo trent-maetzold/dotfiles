@@ -1,27 +1,26 @@
-# Enable k3s Secret encryption on Nidavellir
+# k3s Secret encryption on Nidavellir
 
-Yggdrasil was created without Secret encryption. The `--secrets-encryption`
-flag in `default.nix` is only one part of the existing-cluster migration; do
-not switch to it before preparing k3s. This procedure causes k3s downtime.
-It is for the current single-server cluster only.
+Yggdrasil's k3s server starts with `--secrets-encryption` in `default.nix`.
+The former unencrypted cluster was discarded and the server initialized a
+fresh datastore with encryption enabled. Do not repeat a reset as a routine
+upgrade: deleting cluster state or persistent volumes destroys data.
 
-Before starting, confirm a restorable, protected etcd snapshot and the k3s
-server token are available outside Yggdrasil. Protect the encryption config and
-keys too; they are needed to recover encrypted data. Verify the exact procedure
-against the installed k3s version and plan recovery before continuing.
+Check the configuration and workload health without printing secrets:
 
-1. Check `sudo k3s secrets-encrypt status` reports disabled and confirm the
-   cluster has a single server.
-2. Run `sudo k3s secrets-encrypt enable` on Yggdrasil.
-3. Switch to the NixOS configuration with `--secrets-encryption`, restarting
-   k3s, and check that the status is disabled at rotation stage `start`.
-4. Run `sudo k3s secrets-encrypt rotate-keys`, restart k3s as directed by the
-   installed version's documentation, and wait for the status to report
-   `Enabled` and `reencrypt_finished`.
-5. Verify the API, Flux, and existing applications. Confirm existing Secrets
-   were re-encrypted and exercise recovery with the encrypted datastore and
-   its required keys before relying on the configuration.
+```sh
+sudo k3s secrets-encrypt status
+sudo k3s kubectl get nodes
+sudo k3s kubectl get pods -A
+sudo k3s kubectl -n flux-system get gitrepository,kustomization,fluxinstance
+```
 
-Do not print Kubernetes Secret values or encryption keys during verification.
-Use the version-matched [k3s secrets encryption documentation](https://docs.k3s.io/cli/secrets-encrypt)
-for the full procedure and any changes to the sequence.
+A fresh encrypted cluster can report `Enabled`, an active AES-CBC key and
+rotation stage `start`; this is normal and does not require a key rotation.
+Follow the version-matched [k3s secrets encryption documentation](https://docs.k3s.io/cli/secrets-encrypt)
+when rotating keys or migrating a different, existing unencrypted cluster.
+
+For recovery, protect and retain the datastore snapshots, k3s server token,
+and encryption configuration and keys outside the host; validate restoration.
+The local-path storage dataset and Mimir's NFS share have separate backup
+requirements. Encryption at rest does not prevent Kubernetes API users with
+sufficient permission from reading Secrets.
