@@ -7,7 +7,9 @@ Every machine is a host in this flake (`nix/hosts/<host>`, wired up in
 Development tools are declared in `nix/modules/home/`; language toolchains live in
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
 `import-tree` to import every module recursively, so new modules need no manual
-import entries. Package expressions stay outside that tree in `nix/pkgs/`.
+import entries. Package expressions stay outside that tree in `nix/pkgs/`. Shared user identity
+and Home Manager settings live in `nix/users/trent/`, alongside the NixOS user
+and SSH-key modules; each host adds its own machine-specific overrides.
 Magpie's pinned CLI is installed everywhere, with the desktop app also available
 on Home Manager desktops; Paseo is the daemon/CLI package, not the desktop app. Both run as systemd user services (`magpie.service` and `paseo.service`),
 starting at login and restarting on failure. Magpie runs the gateway without a

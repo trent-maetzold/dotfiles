@@ -15,12 +15,7 @@
     inherit (nixpkgs) lib;
     systems = ["x86_64-linux" "aarch64-linux"];
 
-    trent = {
-      name = "trent";
-      home = "/home/trent";
-      fullName = "Trent Maetzold";
-      email = "trent@maetzold.net";
-    };
+    trent = import ./nix/users/trent/identity.nix;
   in {
     # Standalone NixOS configurations.
     nixosConfigurations = {

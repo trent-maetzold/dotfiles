@@ -1,16 +1,5 @@
-{
-  lib,
-  self,
-  user,
-  ...
-}: {
-  imports = [self.homeModules.default];
-
-  home = {
-    username = user.name;
-    homeDirectory = user.home;
-    stateVersion = "26.11";
-  };
+{lib, ...}: {
+  imports = [../../users/trent];
 
   # Yggdrasil already runs these daemons as system services.
   systemd.user.services.paseo.Install.WantedBy = lib.mkForce [];

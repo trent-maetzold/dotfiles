@@ -14,6 +14,7 @@
     ./hermes.nix
     ./containers.nix
     ./paseo.nix
+    ../../users/trent/nixos.nix
     inputs.comin.nixosModules.comin
     inputs.sops-nix.nixosModules.sops
   ];
@@ -93,12 +94,7 @@
     };
   };
   programs.zsh.enable = true;
-  users.users.trent = {
-    isNormalUser = true;
-    extraGroups = ["wheel"];
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = import ../../admin-ssh-keys.nix;
-  };
+  users.users.trent.shell = pkgs.zsh;
   security.sudo.wheelNeedsPassword = false;
 
   time.timeZone = "America/Chicago";

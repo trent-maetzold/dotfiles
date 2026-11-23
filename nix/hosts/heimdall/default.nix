@@ -10,6 +10,7 @@
     inputs.comin.nixosModules.comin
     inputs.home-manager.nixosModules.home-manager
     ./edge.nix
+    ../../users/trent/nixos.nix
   ];
 
   home-manager = {
@@ -47,12 +48,7 @@
   };
   virtualisation.diskSize = 24 * 1024;
 
-  users.users.trent = {
-    isNormalUser = true;
-    extraGroups = ["wheel"];
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = import ../../admin-ssh-keys.nix;
-  };
+  users.users.trent.shell = pkgs.zsh;
   security.sudo.wheelNeedsPassword = false;
 
   services.openssh = {
