@@ -60,21 +60,24 @@ Yggdrasil, prepare `/home/trent/.config/dotfiles` for Home Manager's mutable
 links. Check external scripts and SSH aliases too; for example, the homelab
 media staging guide and the in-progress secrets CLI have used `tm@10.10.20.10`.
 
-Yggdrasil has run rootless Podman containers as `tm` (including n8n,
-Windmill, and Activepieces), with data and subordinate UID/GID mappings tied
-to that account. Inventory and deliberately migrate or retire these workloads
-and their data before removing `tm`; do not assume their data can be deleted or
-that changing the username migrates them. The final config also runs Paseo as
-`trent`, using `/home/trent/.paseo` rather than `/home/tm/.paseo`: arrange any
-needed state migration and verify the service after switching. Do not blindly
-change ownership of the whole old home or rootless container storage.
+On 2026-11-23 the disposable rootless n8n, Windmill, and Activepieces
+containers and their Podman volumes were removed. A stopped `kestra-demo`
+container remained; review its disposition and recheck for any other
+`tm`-owned workloads, data and subordinate UID/GID mappings before deleting the
+account. The final config runs Paseo as `trent`, using `/home/trent/.paseo`
+rather than `/home/tm/.paseo`: arrange any needed state migration and verify
+the service after switching. Do not blindly change ownership of the whole old
+home or rootless container storage. The Hermes dashboard username changes to
+`trent`; its Honcho peer also changes to `trent`, which can make existing `tm`
+peer-associated memory unavailable until it is migrated.
 
 Only after these checks, switch the final configuration on each host, keeping a
 recovery session open, and verify SSH, sudo, Paseo, and the affected workloads.
 These hosts use mutable users: removing `tm` from Nix does **not** delete an
 existing local account. Once no services, processes, scheduled jobs, or data
-still depend on it, remove or lock the old account deliberately; preserve its
-home and container data until their disposition has been verified. The
+still depend on it, end all `tm` sessions and run `sudo userdel tm` on each
+host. This does not remove its home; preserve the home and container data until
+their disposition has been verified. The
 `headscale-remote` wrapper also changes to `trent@hs.trkm.io`, so switch it
 only after the new Heimdall login has been tested.
 

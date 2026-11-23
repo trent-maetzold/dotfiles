@@ -1,5 +1,9 @@
 # The NixOS module supplies the session; Home Manager writes host settings.
-{config, umbriel, ...}: {
+{
+  config,
+  umbriel,
+  ...
+}: {
   imports = [umbriel.homeModules.default];
 
   programs.umbriel = {
@@ -9,6 +13,14 @@
       keybinds = {
         "Mod+Return" = {
           action = "spawn ghostty";
+          repeat = false;
+        };
+        "Mod+B" = {
+          action = "spawn luakit";
+          repeat = false;
+        };
+        "Mod+Shift+B" = {
+          action = "spawn zen-beta";
           repeat = false;
         };
         "Mod+Shift+Slash" = "cheatsheet-toggle";
