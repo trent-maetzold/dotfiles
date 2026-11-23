@@ -4,6 +4,7 @@
   imports = [
     self.homeModules.default
     self.homeModules.desktop
+    ./paseo-tailnet.nix
   ];
 
   programs.umbriel.settings.output."eDP-1".scale = 1.4;

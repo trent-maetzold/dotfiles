@@ -22,6 +22,8 @@
 
   # Enroll once with: sudo tailscale up --login-server=https://hs.trkm.io
   services.tailscale.enable = true;
+  # The local Paseo proxy listens only on the tailnet interface.
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [6767];
   preservation.preserveAt."/persist".directories = ["/var/lib/tailscale"];
   users.users.trent = {
     uid = 1000;
