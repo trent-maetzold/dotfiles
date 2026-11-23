@@ -25,7 +25,7 @@
     backupFileExtension = "backup";
     overwriteBackup = true;
     extraSpecialArgs = inputs // {inherit user;};
-    users.tm = import ./home.nix;
+    users.trent = import ./home.nix;
   };
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -93,13 +93,6 @@
     };
   };
   programs.zsh.enable = true;
-  users.users.tm = {
-    isNormalUser = true;
-    shell = pkgs.zsh;
-    extraGroups = ["wheel"];
-    openssh.authorizedKeys.keys = import ../../admin-ssh-keys.nix;
-  };
-  # Transitional account: verify SSH and sudo before retiring tm.
   users.users.trent = {
     isNormalUser = true;
     extraGroups = ["wheel"];

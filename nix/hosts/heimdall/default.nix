@@ -47,13 +47,6 @@
   };
   virtualisation.diskSize = 24 * 1024;
 
-  users.users.tm = {
-    isNormalUser = true;
-    extraGroups = ["wheel"];
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = import ../../admin-ssh-keys.nix;
-  };
-  # Transitional account: verify SSH and sudo before retiring tm.
   users.users.trent = {
     isNormalUser = true;
     extraGroups = ["wheel"];

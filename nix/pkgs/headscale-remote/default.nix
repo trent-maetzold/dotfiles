@@ -39,7 +39,7 @@
     for arg in "$@"; do
       cmd="$cmd $(printf '%q' "$arg")"
     done
-    exec "''${ssh[@]}" tm@hs.trkm.io "$cmd"
+    exec "''${ssh[@]}" trent@hs.trkm.io "$cmd"
     EOF
     chmod +x $out/bin/headscale
 

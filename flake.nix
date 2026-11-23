@@ -55,12 +55,7 @@
       yggdrasil = nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit inputs;
-          user =
-            trent
-            // {
-              name = "tm";
-              home = "/home/tm";
-            };
+          user = trent;
         };
         modules = [
           ./nix/hosts/yggdrasil
