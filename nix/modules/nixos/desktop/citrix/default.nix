@@ -50,54 +50,6 @@
       '';
   });
 
-  # Windows 11's cursor set, so the pointer looks the same over a remote
-  # desktop as it does in it. win2xcur turns the .cur/.ani files into Xcursors;
-  # the aliases map Windows' file names onto the names libXcursor and GTK
-  # actually ask for.
-  cursorAliases = {
-    arrow = ["left_ptr" "default" "top_left_arrow" "arrow"];
-    ibeam = ["xterm" "text"];
-    hand = ["hand2" "hand1" "pointer" "pointing_hand"];
-    crosshair = ["crosshair" "tcross" "cell"];
-    help = ["question_arrow" "help" "left_ptr_help"];
-    no = ["crossed_circle" "not-allowed" "forbidden"];
-    sizeall = ["fleur" "move" "all-scroll" "size_all"];
-    sizewe = ["sb_h_double_arrow" "ew-resize" "e-resize" "w-resize" "h_double_arrow" "col-resize"];
-    sizens = ["sb_v_double_arrow" "ns-resize" "n-resize" "s-resize" "v_double_arrow" "row-resize"];
-    sizenwse = ["top_left_corner" "bottom_right_corner" "nw-resize" "se-resize" "nwse-resize" "fd_double_arrow" "size_fdiag"];
-    sizenesw = ["top_right_corner" "bottom_left_corner" "ne-resize" "sw-resize" "nesw-resize" "bd_double_arrow" "size_bdiag"];
-    wait = ["watch" "wait"];
-    appstarting = ["left_ptr_watch" "progress" "half-busy"];
-    uparrow = ["center_ptr" "up_arrow" "sb_up_arrow"];
-  };
-
-  windowsCursors = pkgs.stdenvNoCC.mkDerivation {
-    pname = "windows11-cursors";
-    version = "unstable-2025-05-30";
-    src = pkgs.fetchFromGitHub {
-      owner = "s1rd0";
-      repo = "Win11-Cursor";
-      rev = "a1113164146cca3a96cc4fbd9d4691c3027e139a";
-      hash = "sha256-HopDFGq9mvLeAOSqhR+Gg253UxShrPK7ZmExrAKq/NA=";
-    };
-    nativeBuildInputs = [pkgs.win2xcur];
-    dontBuild = true;
-    installPhase = ''
-      runHook preInstall
-      for variant in light dark; do
-        cursors="$out/share/icons/Windows11-$([ "$variant" = light ] && echo Light || echo Dark)/cursors"
-        mkdir -p "$cursors"
-        win2xcur "Windows 11 cursor/$variant/"*.{cur,ani} -o "$cursors"
-        pushd "$cursors" >/dev/null
-        ${lib.concatStringsSep "\n        " (lib.mapAttrsToList (from: to: ''
-        for name in ${lib.escapeShellArgs to}; do [ "$name" = ${from} ] || ln -sf ${from} "$name"; done'')
-      cursorAliases)}
-        popd >/dev/null
-      done
-      runHook postInstall
-    '';
-  };
-
   # The whole session in one place: the store has to exist before the client
   # starts, the kiosk window manager keeps Workspace full-screen, and startx
   # takes Xorg down with the client.
@@ -153,8 +105,8 @@ in {
       XDG_RUNTIME_DIR = runtimeDir;
       DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
       XDG_DATA_DIRS = "${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share";
-      XCURSOR_PATH = "${windowsCursors}/share/icons:${pkgs.adwaita-icon-theme}/share/icons";
-      XCURSOR_THEME = "Windows11-Light";
+      XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons:${pkgs.adwaita-icon-theme}/share/icons";
+      XCURSOR_THEME = "Bibata-Original-Ice";
       XCURSOR_SIZE = "24";
       ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
     };
