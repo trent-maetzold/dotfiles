@@ -11,7 +11,7 @@
     }
   ];
 
-  systemd.services = lib.genAttrs ["autovt@tty8" "citrix-workspace"] (_: {
+  systemd.services = lib.genAttrs ["citrix-kiosk"] (_: {
     # Mask only class: Workspace skips it, while Xorg can still enumerate PCI devices.
     # shortcut: fixed NVIDIA PCI path; update if muninn's PCI topology changes.
     serviceConfig.InaccessiblePaths = ["/sys/devices/pci0000:00/0000:00:1c.0/0000:56:00.0/class"];
