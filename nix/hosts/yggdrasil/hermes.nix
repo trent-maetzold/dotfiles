@@ -67,7 +67,7 @@ in {
       hosts.hermes = {
         enabled = true;
         aiPeer = "hermes";
-        peerName = "tm";
+        peerName = "trent";
         workspace = "hermes";
       };
     };
@@ -83,7 +83,7 @@ in {
       approvals.deny = ["git push --force*" "*curl*|*sh*" "*wget*|*sh*"];
       checkpoints.enabled = true;
       dashboard = {
-        basic_auth.username = "tm";
+        basic_auth.username = "trent";
         public_url = dashboard;
       };
       webui.dashboard.url = dashboard;

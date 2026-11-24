@@ -7,7 +7,9 @@ Every machine is a host in this flake (`nix/hosts/<host>`, wired up in
 Development tools are declared in `nix/modules/home/`; language toolchains live in
 `nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
 `import-tree` to import every module recursively, so new modules need no manual
-import entries. Package expressions stay outside that tree in `nix/pkgs/`.
+import entries. Package expressions stay outside that tree in `nix/pkgs/`. Shared user identity
+and Home Manager settings live in `nix/users/trent/`, alongside the NixOS user
+and SSH-key modules; each host adds its own machine-specific overrides.
 Magpie's pinned CLI is installed everywhere, with the desktop app also available
 on Home Manager desktops; Paseo is the daemon/CLI package, not the desktop app. Both run as systemd user services (`magpie.service` and `paseo.service`),
 starting at login and restarting on failure. Magpie runs the gateway without a
@@ -35,11 +37,51 @@ WSL hosts.
 
 `heimdall` (tailnet gateway) and `yggdrasil` (services and Mimir VM) have
 host-local system configurations under `nix/hosts/`. Yggdrasil uses this repo's
-non-desktop Home Manager config for `tm`. Its mutable config links expect a checkout
-at `/home/tm/.config/dotfiles`. Neither host is supported by `bootstrap`.
+non-desktop Home Manager config for `trent`. Its mutable config links expect a checkout
+at `/home/trent/.config/dotfiles`. Neither host is supported by `bootstrap`.
 Reuse the existing disks and SOPS age keys; do not repartition. After merging,
 switch each host to `main` once to install its Comin configuration. Comin will
 then stage future builds from `main` for the next reboot, without switching live.
+
+#### Migrating the imported hosts from `tm`
+
+Do not merge or boot the final configuration until the new login is verified on
+**both** hosts and any `tm`-owned workloads have an explicit migration plan.
+The transitional commit `fb91a575e1d397f780947bf41e879c11dab90ac8`
+creates `trent` alongside `tm` without changing the services. From an existing
+working `tm` session on each host, switch that commit first (replace `<host>`
+with `heimdall` or `yggdrasil`):
+
+```sh
+sudo nixos-rebuild switch --flake github:trent-maetzold/dotfiles/fb91a575e1d397f780947bf41e879c11dab90ac8#<host>
+```
+
+Keep the original session open and verify a **new** `trent` SSH session, its
+key authentication, and `sudo -n true` on each host before proceeding. On
+Yggdrasil, prepare `/home/trent/.config/dotfiles` for Home Manager's mutable
+links. Check external scripts and SSH aliases too; for example, the homelab
+media staging guide and the in-progress secrets CLI have used `tm@10.10.20.10`.
+
+On 2026-11-23 the disposable rootless n8n, Windmill, and Activepieces
+containers and their Podman volumes were removed. A stopped `kestra-demo`
+container remained; review its disposition and recheck for any other
+`tm`-owned workloads, data and subordinate UID/GID mappings before deleting the
+account. The final config runs Paseo as `trent`, using `/home/trent/.paseo`
+rather than `/home/tm/.paseo`: arrange any needed state migration and verify
+the service after switching. Do not blindly change ownership of the whole old
+home or rootless container storage. The Hermes dashboard username changes to
+`trent`; its Honcho peer also changes to `trent`, which can make existing `tm`
+peer-associated memory unavailable until it is migrated.
+
+Only after these checks, switch the final configuration on each host, keeping a
+recovery session open, and verify SSH, sudo, Paseo, and the affected workloads.
+These hosts use mutable users: removing `tm` from Nix does **not** delete an
+existing local account. Once no services, processes, scheduled jobs, or data
+still depend on it, end all `tm` sessions and run `sudo userdel tm` on each
+host. This does not remove its home; preserve the home and container data until
+their disposition has been verified. The
+`headscale-remote` wrapper also changes to `trent@hs.trkm.io`, so switch it
+only after the new Heimdall login has been tested.
 
 Niðavellir runs on Yggdrasil as a single k3s server with embedded etcd. The
 bundled Traefik uses ServiceLB on TCP 80 and 443. For public apps, forward
@@ -49,7 +91,7 @@ The existing trusted tailnet interface is unchanged. To administer the cluster,
 SSH to the host and use its local kubeconfig:
 
 ```sh
-ssh tm@10.10.20.10 'sudo k3s kubectl get nodes'
+ssh trent@10.10.20.10 'sudo k3s kubectl get nodes'
 ```
 
 The default `local-path` StorageClass uses `tank/k3s-storage`, mounted at

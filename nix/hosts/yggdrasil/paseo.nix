@@ -6,12 +6,12 @@
   imports = [inputs.paseo.nixosModules.default];
   nixpkgs.overlays = [inputs.llm-agents.overlays.shared-nixpkgs];
 
-  # Paseo inherits tm's profiles; keep the enabled provider CLIs available without Home Manager.
+  # Paseo inherits trent's profiles; keep the enabled provider CLIs available without Home Manager.
   environment.systemPackages = [
     pkgs.llm-agents.prime-agent
     inputs.autolith.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
-  users.users.tm.packages = [
+  users.users.trent.packages = [
     pkgs.llm-agents.claude-code
     # Use the cached build; the shared pin lacks AWS-LC's OpenSSL compatibility metadata.
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
@@ -21,7 +21,7 @@
 
   services.paseo = {
     enable = true;
-    user = "tm";
+    user = "trent";
     group = "users";
     listenAddress = "100.64.0.2";
     port = 6767;

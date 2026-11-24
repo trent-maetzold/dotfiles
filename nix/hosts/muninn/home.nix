@@ -2,15 +2,9 @@
 # desktop ones (Umbriel, Noctalia, Zen, ...).
 {self, ...}: {
   imports = [
-    self.homeModules.default
+    ../../users/trent
     self.homeModules.desktop
   ];
 
   programs.umbriel.settings.output."eDP-1".scale = 1.4;
-
-  home = {
-    username = "trent";
-    homeDirectory = "/home/trent";
-    stateVersion = "26.11";
-  };
 }
