@@ -2,8 +2,8 @@
 {pkgs, ...}: {
   home.pointerCursor = {
     enable = true;
-    package = pkgs.bibata-cursors;
-    name = "Bibata-Original-Ice";
+    package = pkgs.vanilla-dmz;
+    name = "DMZ-White";
     size = 32;
   };
 }

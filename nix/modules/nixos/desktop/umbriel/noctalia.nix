@@ -13,8 +13,8 @@
     # The greeter runs as `greeter`, so it never sees the desktop's Home Manager
     # cursor; without this it falls back to Adwaita's black arrows.
     cursorTheme = {
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Original-Ice";
+      package = pkgs.vanilla-dmz;
+      name = "DMZ-White";
     };
     settings = {
       # Global UI scale; per-output `scales` did not take effect here.
