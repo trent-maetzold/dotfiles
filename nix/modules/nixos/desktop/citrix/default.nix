@@ -130,13 +130,15 @@ in {
   };
 
   # Keep Ctrl+Alt+F8 useful: logind starts this on a switch to the VT, and it
-  # only starts the kiosk. Stopping it does not stop the kiosk.
+  # only starts the kiosk. It must *finish* so that the next switch to the VT
+  # triggers it again (a RemainAfterExit unit stays active and never re-fires,
+  # which left tty8 blank once the kiosk had been stopped). Stopping it does not
+  # stop the kiosk.
   services.logind.settings.Login.NAutoVTs = vt;
   systemd.services."autovt@${tty}" = {
     description = "Start the Citrix kiosk on ${tty}";
     serviceConfig = {
       Type = "oneshot";
-      RemainAfterExit = true;
       ExecStart = "${pkgs.systemd}/bin/systemctl start --no-block ${service}";
     };
   };
