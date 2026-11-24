@@ -90,10 +90,13 @@ in {
   # variable of the desktop (WAYLAND_DISPLAY, XCURSOR_THEME and the rest) - they
   # override this unit's own environment. Give the kiosk a PAM service that just
   # registers the session and loads nothing from the user's session.
+  #
+  # pam_systemd ships with systemd, not linux-pam: pointing it at ${pkgs.pam}
+  # makes the dlopen fail and the unit exit 224/PAM before Xorg starts.
   security.pam.services.citrix-kiosk.text = ''
     auth required ${pkgs.pam}/lib/security/pam_permit.so
     account required ${pkgs.pam}/lib/security/pam_permit.so
-    session required ${pkgs.pam}/lib/security/pam_systemd.so
+    session required ${config.systemd.package}/lib/security/pam_systemd.so
   '';
 
   systemd.services.citrix-kiosk = {
