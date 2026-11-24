@@ -110,7 +110,7 @@ in {
     path = [
       pkgs.util-linux # mcookie/hexdump for the server cookie
       pkgs.xinit # startx execs xinit by name
-      pkgs.xorg.xauth # startx execs xauth by name
+      pkgs.xauth # startx execs xauth by name
     ];
     environment = {
       XDG_RUNTIME_DIR = runtimeDir;
