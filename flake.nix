@@ -123,9 +123,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Git-sourced k3s bootstrap manifests (homelab PR #36).
+    # Git-sourced k3s bootstrap manifests; update through the flake lock.
     homelab = {
-      url = "github:trent-maetzold/homelab/9396853a659350b19f2100947e84a329a1b6b245";
+      url = "github:trent-maetzold/homelab";
       flake = false;
     };
 

@@ -407,17 +407,16 @@
     "homelab": {
       "flake": false,
       "locked": {
-        "lastModified": 1795525080,
-        "narHash": "sha256-XrehfWkJqO8zRe5Tr1Yz+dT69RdEjBkrpK63Z00tDz8=",
+        "lastModified": 1795065474,
+        "narHash": "sha256-1DyMQGIb5zcytl0hgr8osw5kGgKRyVBmRrWIlBbLflA=",
         "owner": "trent-maetzold",
         "repo": "homelab",
-        "rev": "9396853a659350b19f2100947e84a329a1b6b245",
+        "rev": "feba98f0a7ff0906b55380727c0eedcc869d922d",
         "type": "github"
       },
       "original": {
         "owner": "trent-maetzold",
         "repo": "homelab",
-        "rev": "9396853a659350b19f2100947e84a329a1b6b245",
         "type": "github"
       }
     },
