@@ -105,8 +105,8 @@ in {
       XDG_RUNTIME_DIR = runtimeDir;
       DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
       XDG_DATA_DIRS = "${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share";
-      XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons:${pkgs.adwaita-icon-theme}/share/icons";
-      XCURSOR_THEME = "Bibata-Original-Ice";
+      XCURSOR_PATH = "${pkgs.vanilla-dmz}/share/icons:${pkgs.adwaita-icon-theme}/share/icons";
+      XCURSOR_THEME = "DMZ-White";
       XCURSOR_SIZE = "24";
       ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
     };
