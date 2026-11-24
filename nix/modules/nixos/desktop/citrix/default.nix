@@ -57,7 +57,9 @@
     set -eu
     # Nothing is scrubbed here on purpose: the kiosk gets its own PAM service,
     # so none of the desktop session's variables reach this script. If the client
-    # ever ends up back on the compositor, the PAM service is what to check.
+    # ever ends up back on the compositor, check that the unit still hides the
+    # compositor's Wayland sockets (see BindReadOnlyPaths below) - Citrix opens
+    # $XDG_RUNTIME_DIR/wayland-0 by itself, without WAYLAND_DISPLAY being set.
     ${pkgs.xset}/bin/xset s off -dpms
     stores=$(${client}/bin/storebrowse --liststores)
     if ! ${pkgs.gnugrep}/bin/grep -qF ${lib.escapeShellArg storeUrl} <<< "$stores"; then
@@ -152,6 +154,17 @@ in {
       # to tty8 while they are working on tty1.
       Restart = "on-failure";
       RestartSec = 5;
+      # Citrix looks for a compositor socket in XDG_RUNTIME_DIR on its own and
+      # takes the Wayland path when it finds one: the client then maps no X
+      # window at all, and tty8 stays black while a stray toplevel can show up
+      # in the desktop. Mask the sockets for this unit instead of pinning the
+      # toolkit backends, which only covered GTK. The '-'
+      # makes a missing socket (no compositor running) harmless.
+      PrivateMounts = true;
+      BindReadOnlyPaths = [
+        "-/dev/null:${runtimeDir}/wayland-0"
+        "-/dev/null:${runtimeDir}/wayland-1"
+      ];
     };
     startLimitBurst = 3;
     startLimitIntervalSec = 120;
@@ -180,7 +193,7 @@ in {
       ${pkgs.systemd}/bin/systemctl start ${service}
       for _ in $(${pkgs.coreutils}/bin/seq 50); do
         session=$(${pkgs.systemd}/bin/loginctl list-sessions --no-legend |
-          ${pkgs.gawk}/bin/awk -v t=${tty} '$5 == t {print $1; exit}')
+          ${pkgs.gawk}/bin/awk -v t=${tty} '$7 == t {print $1; exit}')
         if [ -n "$session" ]; then
           exec ${pkgs.systemd}/bin/loginctl activate "$session"
         fi
