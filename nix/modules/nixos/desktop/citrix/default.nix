@@ -108,7 +108,6 @@ in {
       XCURSOR_PATH = "${pkgs.adwaita-icon-theme}/share/icons";
       XCURSOR_THEME = "Adwaita";
       XCURSOR_SIZE = "24";
-      GTK_THEME = "Adwaita:dark";
       ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
     };
     serviceConfig = {
