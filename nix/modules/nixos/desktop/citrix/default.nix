@@ -55,11 +55,10 @@
   # takes Xorg down with the client.
   session = pkgs.writeShellScript "citrix-session" ''
     set -eu
-    # The unit logs in through PAMName=login, so Home Manager's session
-    # variables come along, WAYLAND_DISPLAY included. Workspace prefers Wayland
-    # when it sees it and then gets hosted by the desktop compositor on tty1
-    # instead of this X server - that is the blank white window that shows up
-    # next to the terminal. Drop it and pin every toolkit to X11.
+    # The kiosk runs on its own PAM service, so the desktop session's variables
+    # stay out of here. The Wayland ones are cleared anyway: if the client ever
+    # sees WAYLAND_DISPLAY it connects to the compositor on the desktop VT and
+    # its window lands there as a blank white column instead of on this server.
     unset WAYLAND_DISPLAY WAYLAND_SOCKET
     export GDK_BACKEND=x11
     export QT_QPA_PLATFORM=xcb
@@ -92,6 +91,17 @@ in {
     display = null;
   };
 
+  # logind only hands out usable (unpaused) DRM fds inside a PAM session, but
+  # reusing the `login` service pulls in pam_env, and with it every session
+  # variable of the desktop (WAYLAND_DISPLAY, XCURSOR_THEME and the rest) - they
+  # override this unit's own environment. Give the kiosk a PAM service that just
+  # registers the session and loads nothing from the user's session.
+  security.pam.services.citrix-kiosk.text = ''
+    auth required ${pkgs.pam}/lib/security/pam_permit.so
+    account required ${pkgs.pam}/lib/security/pam_permit.so
+    session required ${pkgs.pam}/lib/security/pam_systemd.so
+  '';
+
   systemd.services.citrix-kiosk = {
     description = "Citrix Workspace on ${tty}";
     after = ["systemd-user-sessions.service" "systemd-logind.service"];
@@ -109,7 +119,7 @@ in {
     };
     serviceConfig = {
       User = user.name;
-      PAMName = "login";
+      PAMName = "citrix-kiosk";
       TTYPath = "/dev/${tty}";
       StandardInput = "tty";
       StandardOutput = "journal";
