@@ -107,7 +107,11 @@ in {
     # startx needs mcookie (util-linux) to build the server cookie; without it
     # it falls back to hexdump, finds neither, and dies with "Couldn't create
     # cookie" before Xorg starts.
-    path = [pkgs.util-linux];
+    path = [
+      pkgs.util-linux # mcookie/hexdump for the server cookie
+      pkgs.xinit # startx execs xinit by name
+      pkgs.xorg.xauth # startx execs xauth by name
+    ];
     environment = {
       XDG_RUNTIME_DIR = runtimeDir;
       DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
