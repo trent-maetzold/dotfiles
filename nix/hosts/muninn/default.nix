@@ -16,6 +16,7 @@
     ../../modules/nixos/hardware/nvidia-prime.nix
     ../../modules/nixos/services/quadlet.nix
     ./citrix.nix
+    ./webcam.nix
   ];
 
   networking.hostName = "muninn";
