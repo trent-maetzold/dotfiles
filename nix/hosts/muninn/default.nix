@@ -26,6 +26,11 @@
   users.users.trent = {
     uid = 1000;
     shell = pkgs.nushell;
+    # Start the systemd --user manager, and so the magpie gateway service
+    # (nix/modules/home/desktop/magpie.nix), at boot rather than at the first
+    # login: agents reached over SSH need the gateway before anyone logs in.
+    # Same as `sudo loginctl enable-linger trent`.
+    linger = true;
   };
   hardware.facter.reportPath = ./facter.json;
   # Intel Arc (Meteor Lake) and RTX 4050 Laptop, from facter.json.
