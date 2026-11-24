@@ -55,15 +55,9 @@
   # takes Xorg down with the client.
   session = pkgs.writeShellScript "citrix-session" ''
     set -eu
-    # The kiosk runs on its own PAM service, so the desktop session's variables
-    # stay out of here. The Wayland ones are cleared anyway: if the client ever
-    # sees WAYLAND_DISPLAY it connects to the compositor on the desktop VT and
-    # its window lands there as a blank white column instead of on this server.
-    unset WAYLAND_DISPLAY WAYLAND_SOCKET
-    export GDK_BACKEND=x11
-    export QT_QPA_PLATFORM=xcb
-    export CLUTTER_BACKEND=x11
-    export SDL_VIDEODRIVER=x11
+    # Nothing is scrubbed here on purpose: the kiosk gets its own PAM service,
+    # so none of the desktop session's variables reach this script. If the client
+    # ever ends up back on the compositor, the PAM service is what to check.
     ${pkgs.xset}/bin/xset s off -dpms
     stores=$(${client}/bin/storebrowse --liststores)
     if ! ${pkgs.gnugrep}/bin/grep -qF ${lib.escapeShellArg storeUrl} <<< "$stores"; then
