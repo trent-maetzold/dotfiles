@@ -118,9 +118,12 @@ in {
           "-noreset"
         ]
         ++ lib.remove "-terminate" config.services.xserver.displayManager.xserverArgs);
+      # Xorg opens DRM through logind, and logind hands out a *paused* fd unless
+      # the VT is active ("Error systemd-logind returned paused fd for drm
+      # node"). So the session has to bring its own VT up before startx runs.
+      ExecStartPre = "+${pkgs.kbd}/bin/chvt ${toString vt}";
       # The kiosk is meant to be up whenever the VT is, so restart the session
-      # rather than leaving a dead VT behind. No chvt here: a restart must not
-      # yank the user off the desktop.
+      # rather than leaving a dead VT behind.
       Restart = "on-failure";
       RestartSec = 2;
     };
