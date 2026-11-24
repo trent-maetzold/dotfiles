@@ -9,7 +9,6 @@
     ./storage.nix
     ./cluster-storage.nix
     ./cluster-operators.nix
-    ./cluster-ingress.nix
     ./mimir.nix
     ./hermes.nix
     ./containers.nix

@@ -123,6 +123,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Git-sourced k3s bootstrap manifests; update through the flake lock.
+    homelab = {
+      url = "github:trent-maetzold/homelab";
+      flake = false;
+    };
+
     # Imported host services and storage.
     disko-zfs = {
       url = "github:numtide/disko-zfs";
