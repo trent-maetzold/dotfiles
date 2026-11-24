@@ -55,6 +55,16 @@
   # takes Xorg down with the client.
   session = pkgs.writeShellScript "citrix-session" ''
     set -eu
+    # The unit logs in through PAMName=login, so Home Manager's session
+    # variables come along, WAYLAND_DISPLAY included. Workspace prefers Wayland
+    # when it sees it and then gets hosted by the desktop compositor on tty1
+    # instead of this X server - that is the blank white window that shows up
+    # next to the terminal. Drop it and pin every toolkit to X11.
+    unset WAYLAND_DISPLAY WAYLAND_SOCKET
+    export GDK_BACKEND=x11
+    export QT_QPA_PLATFORM=xcb
+    export CLUTTER_BACKEND=x11
+    export SDL_VIDEODRIVER=x11
     ${pkgs.xset}/bin/xset s off -dpms
     stores=$(${client}/bin/storebrowse --liststores)
     if ! ${pkgs.gnugrep}/bin/grep -qF ${lib.escapeShellArg storeUrl} <<< "$stores"; then
