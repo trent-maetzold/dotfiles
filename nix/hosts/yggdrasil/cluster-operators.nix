@@ -1,45 +1,9 @@
-{
-  services.k3s.autoDeployCharts = {
-    flux-operator = {
-      repo = "oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator";
-      version = "0.62.1";
-      hash = "sha256-GTB1X1CTsljECKKLcCyXkJAoPgCLctQT9ukqSwl6uQg=";
-      targetNamespace = "flux-system";
-      createNamespace = true;
-    };
-
-    flux-instance = {
-      repo = "oci://ghcr.io/controlplaneio-fluxcd/charts/flux-instance";
-      version = "0.62.1";
-      hash = "sha256-HPJFm7bIm/dgsZgWYasBDjI9mIM3o59myUhCOQZRasE=";
-      targetNamespace = "flux-system";
-      createNamespace = true;
-      # HelmChart has no dependency field; retry if the operator's CRD isn't ready yet.
-      extraFieldDefinitions.spec.failurePolicy = "retry";
-      values.instance.sync = {
-        kind = "GitRepository";
-        url = "https://github.com/trent-maetzold/homelab.git";
-        ref = "refs/heads/main";
-        path = "clusters/nidavellir";
-      };
-    };
-
-    cert-manager = {
-      repo = "oci://quay.io/jetstack/charts/cert-manager";
-      version = "v1.21.3";
-      hash = "sha256-nsZ5OLKYHYszOvYbP89T4mtPb13rfM2j3k6hFrs3Ohc=";
-      targetNamespace = "cert-manager";
-      createNamespace = true;
-      values.crds.enabled = true;
-    };
-
-    cloudnative-pg = {
-      name = "cloudnative-pg";
-      repo = "https://cloudnative-pg.github.io/charts";
-      version = "0.29.2";
-      hash = "sha256-nfPwdOyqivECd60VWJlHBhjqmlZdfHxIGHvceIdlWWA=";
-      targetNamespace = "cnpg-system";
-      createNamespace = true;
-    };
+{inputs, ...}: {
+  # K3s needs these two files to bootstrap Flux before Git reconciliation exists.
+  # Their definitions live in the homelab repository; all other cluster
+  # resources are reconciled by Flux after the staged handoff.
+  services.k3s.manifests = {
+    flux-operator.source = "${inputs.homelab}/bootstrap/nidavellir/flux-operator.yaml";
+    flux-instance.source = "${inputs.homelab}/bootstrap/nidavellir/flux-instance.yaml";
   };
 }

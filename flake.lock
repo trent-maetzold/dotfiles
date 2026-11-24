@@ -404,6 +404,23 @@
         "type": "github"
       }
     },
+    "homelab": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795525080,
+        "narHash": "sha256-XrehfWkJqO8zRe5Tr1Yz+dT69RdEjBkrpK63Z00tDz8=",
+        "owner": "trent-maetzold",
+        "repo": "homelab",
+        "rev": "9396853a659350b19f2100947e84a329a1b6b245",
+        "type": "github"
+      },
+      "original": {
+        "owner": "trent-maetzold",
+        "repo": "homelab",
+        "rev": "9396853a659350b19f2100947e84a329a1b6b245",
+        "type": "github"
+      }
+    },
     "honcho": {
       "flake": false,
       "locked": {
@@ -840,6 +857,7 @@
         "hermes-webui": "hermes-webui",
         "hermex-push": "hermex-push",
         "home-manager": "home-manager_2",
+        "homelab": "homelab",
         "honcho": "honcho",
         "import-tree": "import-tree",
         "llm-agents": "llm-agents",
