@@ -66,7 +66,10 @@
       ${client}/bin/storebrowse --addstore ${lib.escapeShellArg storeUrl}
     fi
     ${pkgs.matchbox}/bin/matchbox-window-manager -use_titlebar no &
-    exec ${client}/bin/selfservice
+    # Name the store explicitly: the client otherwise opens whichever store it
+    # remembers (a stale StoreFront record that no longer resolves leaves the
+    # kiosk on a blank screen).
+    exec ${client}/bin/selfservice ${lib.escapeShellArg storeUrl}
   '';
 
   runtimeDir = "/run/user/${toString config.users.users.${user.name}.uid}";
