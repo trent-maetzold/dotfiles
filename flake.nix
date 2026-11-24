@@ -158,6 +158,11 @@
     };
 
     # Modules (nix/modules/{home,nixos})
+    # Rex's Linux release currently provides the server and CLI, not the GUI.
+    rex = {
+      url = "https://pkgs.superlogical.com/rex/nix/preview.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
