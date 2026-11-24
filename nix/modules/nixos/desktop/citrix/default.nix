@@ -104,6 +104,10 @@ in {
     after = ["systemd-user-sessions.service" "systemd-logind.service"];
     conflicts = ["getty@${tty}.service"];
     restartIfChanged = false;
+    # startx needs mcookie (util-linux) to build the server cookie; without it
+    # it falls back to hexdump, finds neither, and dies with "Couldn't create
+    # cookie" before Xorg starts.
+    path = [pkgs.util-linux];
     environment = {
       XDG_RUNTIME_DIR = runtimeDir;
       DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
@@ -139,10 +143,14 @@ in {
       # node"). So the session has to bring its own VT up before startx runs.
       ExecStartPre = "+${pkgs.kbd}/bin/chvt ${toString vt}";
       # The kiosk is meant to be up whenever the VT is, so restart the session
-      # rather than leaving a dead VT behind.
+      # rather than leaving a dead VT behind - but only a few times: every
+      # restart runs `chvt`, which would otherwise keep dragging the user back
+      # to tty8 while they are working on tty1.
       Restart = "on-failure";
-      RestartSec = 2;
+      RestartSec = 5;
     };
+    startLimitBurst = 3;
+    startLimitIntervalSec = 120;
   };
 
   # Keep Ctrl+Alt+F8 useful: logind starts this on a switch to the VT, and it
