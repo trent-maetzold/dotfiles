@@ -16,6 +16,7 @@
     "dash.hermes" = "http://100.64.0.2:9119";
     "gw.hermes" = "http://100.64.0.2:8642";
     magpie = "http://100.64.0.2:3430";
+    headlamp = "http://100.64.0.2:31946";
     traefik = "http://${dashboardAddress}";
     "yggdrasil-bmc" = "https://10.10.20.154:443";
   };
