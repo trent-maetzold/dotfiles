@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8"/>
+<title>Host diffs — PR #55</title>
+</head>
+<body style="color:white; background-color:black">
+<pre>
+PR #55 at ddce200b51552bc4334559403c35244aa6e270fa
+
+
+=== nidavellir ===
+
+Added host: /nix/store/hf9accqg32klf5f2bjcmq2mnl3q502gs-nixos-system-nidavellir-26.11.20261121.2786a2a.drv
+
+=== yggdrasil ===
+
+<span style="font-weight:bold;">&lt;&lt;&lt;</span> /nix/store/m77z8p6kab0f7sqclm1mdw32d32v5414-nixos-system-yggdrasil-26.11.20261121.2786a2a.drv
+<span style="font-weight:bold;">&gt;&gt;&gt;</span> /nix/store/h26dx5jsasplfk2wwxgjs3hn64ib0fhx-nixos-system-yggdrasil-26.11.20261121.2786a2a.drv
+
+<span style="font-weight:bold;">CHANGED</span> (1)
+[<span style="font-weight:bold;filter: contrast(70%) brightness(190%);color:aqua;">U</span>.] unit                                               <span style="font-style:italic;color:#3333FF;">&lt;unchanged&gt;</span> -&gt; <span style="color:lime;">50</span>-<span style="color:lime;">tailscale</span>.<span style="color:lime;">network</span>, <span style="color:lime;">99</span>-<span style="color:lime;">ethernet</span>-<span style="color:lime;">default</span>-<span style="color:lime;">dhcp</span>.<span style="color:lime;">network</span>, <span style="color:lime;">99</span>-<span style="color:lime;">wireless</span>-<span style="color:lime;">client</span>-<span style="color:lime;">dhcp</span>.<span style="color:lime;">network</span>, <span style="font-style:italic;color:#3333FF;">&lt;unchanged&gt;</span>
+
+<span style="font-weight:bold;">ADDED</span> (48)
+[<span style="font-weight:bold;color:lime;">A</span>.] 10-microvm.conf                                    <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] X-Reload-Triggers-systemd-networkd                 <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] X-Reload-Triggers-systemd-resolved                 <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] X-Restart-Triggers-microvm-nidavellir              <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] X-Restart-Triggers-systemd-networkd                <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] erofs-utils                                        <span style="color:lime;">1</span>.<span style="color:lime;">9</span>.<span style="color:lime;">4</span>, <span style="color:lime;">1</span>.<span style="color:lime;">9</span>.<span style="color:lime;">4</span>.<span style="color:lime;">tar</span>.<span style="color:lime;">gz</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] etc-machine-id                                     <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] etc-systemd-networkd.conf                          <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] etc-systemd-resolved.conf                          <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] limits.conf                                        <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] microvm                                            <span style="color:lime;">&lt;none&gt;</span>, <span style="filter: contrast(70%) brightness(190%);color:aqua;">+10.5 KiB</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] microvm-nidavellir-microvm-balloon                 <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] microvm-nidavellir-microvm-run                     <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] microvm-nidavellir-microvm-shutdown                <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] microvm-qemu-nidavellir                            <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] microvm-store-disk.erofs                           <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] nixos-system-nidavellir                            <span style="color:lime;">26</span>.<span style="color:lime;">11</span>.<span style="color:lime;">20261121</span>.<span style="color:lime;">2786a2a</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] no-bootloader                                      <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] qemu-host-cpu-only                                 <span style="color:lime;">11</span>.<span style="color:lime;">1</span>.<span style="color:lime;">2</span>, <span style="filter: contrast(70%) brightness(190%);color:aqua;">+14.0 KiB</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] runtime-deps                                       <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] stub-ld-x86_64-unknown-linux-musl                  <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-enable-ksm.service                            <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-install-microvm-nidavellir.service            <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-.service                              <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-macvtap-interfaces-.service           <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-nidavellir.service                    <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-pci-devices-.service                  <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-pci-devices-nidavellir.service        <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-set-booted-.service                   <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-tap-interfaces-.service               <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-tap-interfaces-nidavellir.service     <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-virtiofsd-.service                    <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvm-virtiofsd-nidavellir.service          <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-microvms.target                               <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-mount-pstore.service-disabled                 <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-network-local-commands.service-disabled       <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-nix-daemon.service-disabled                   <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-nix-daemon.socket-disabled                    <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-script-enable-ksm-start                       <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-script-install-microvm-nidavellir-start       <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-script-k3s-pre-start                          <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-script-microvm-set-booted_-start              <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-systemd-networkd-varlink-metrics.socket       <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-systemd-networkd-wait-online-.service         <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-systemd-networkd-wait-online.service-disabled <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-systemd-networkd.service                      <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-systemd-networkd.socket                       <span style="color:lime;">&lt;none&gt;</span>
+[<span style="font-weight:bold;color:lime;">A</span>.] unit-systemd-resolved.service                      <span style="color:lime;">&lt;none&gt;</span>
+
+<span style="font-weight:bold;">PATHS</span>: <span style="color:red;">20525</span> -&gt; <span style="color:lime;">20671</span> (<span style="color:lime;">+167</span>, <span style="color:red;">-21</span>)
+<span style="font-weight:bold;">SIZE</span>: <span style="color:red;">895 MiB</span> -&gt; <span style="color:lime;">896 MiB</span> (+<span style="color:lime;">613 KiB</span>)
+
+<span style="font-weight:bold;">NOTE</span>: <span style="color:yellow;">92</span> hidden (--full to show)
+</pre>
+</body>
+</html>
