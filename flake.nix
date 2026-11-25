@@ -39,6 +39,12 @@
           }
         ];
       };
+      nidavellir = nixpkgs.lib.nixosSystem {
+        modules = [
+          inputs.microvm.nixosModules.microvm
+          ./nix/hosts/nidavellir
+        ];
+      };
       sif = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         modules = [./nix/hosts/sif];
@@ -98,6 +104,10 @@
     import-tree.url = "github:denful/import-tree";
 
     # Hosts (nix/hosts)
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";

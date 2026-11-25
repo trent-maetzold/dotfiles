@@ -15,6 +15,7 @@
     ./paseo.nix
     ../../users/trent/nixos.nix
     inputs.comin.nixosModules.comin
+    inputs.microvm.nixosModules.host
     inputs.sops-nix.nixosModules.sops
   ];
 
@@ -74,6 +75,13 @@
     useRoutingFeatures = "server";
     extraUpFlags = ["--login-server=https://hs.trkm.io"];
     extraSetFlags = ["--netfilter-mode=off" "--accept-routes" "--advertise-routes=10.10.20.154/32"];
+  };
+
+  microvm.vms.nidavellir = {
+    evaluatedConfig = inputs.self.nixosConfigurations.nidavellir;
+    autostart = true;
+    # Keep the guest running across host switches; restart explicitly for guest updates.
+    restartIfChanged = false;
   };
 
   services.k3s = {
