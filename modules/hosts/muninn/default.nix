@@ -1,3 +1,4 @@
+{nixos}:
 # muninn: trent's encrypted ephemeral-root laptop with Umbriel. The flake adds
 # Home Manager and ./home.nix for trent.
 {
@@ -6,15 +7,16 @@
   ...
 }: {
   imports = [
-    (inputs.import-tree ../../modules/nixos/machine)
-    ../../modules/nixos/desktop/umbriel
-    ../../modules/nixos/desktop/fonts.nix
+    nixos.machineProfile
+    nixos.umbriel
+    nixos.os-desktop-fonts
     "${inputs.nixos-hardware}/common/cpu/intel/meteor-lake"
     "${inputs.nixos-hardware}/common/gpu/nvidia/ada-lovelace"
     "${inputs.nixos-hardware}/common/pc/laptop"
     "${inputs.nixos-hardware}/common/pc/ssd"
-    ../../modules/nixos/hardware/nvidia-prime.nix
-    ../../modules/nixos/services/quadlet.nix
+    nixos.os-hardware-nvidia-prime
+    nixos.os-services-quadlet
+    nixos.os-desktop-citrix
     ./citrix.nix
   ];
 

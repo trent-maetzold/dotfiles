@@ -1,9 +1,7 @@
 # Shared Home Manager configuration for Trent on every managed home.
-{self, ...}: let
+{...}: let
   user = import ./identity.nix;
 in {
-  imports = [self.homeModules.default];
-
   home = {
     username = user.name;
     homeDirectory = user.home;

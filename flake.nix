@@ -5,6 +5,7 @@
     self,
     nixpkgs,
     home-manager,
+    flake-parts,
     import-tree,
     bkt,
     pyproject-nix,
@@ -14,86 +15,33 @@
   }: let
     inherit (nixpkgs) lib;
     systems = ["x86_64-linux" "aarch64-linux"];
+  in
+    flake-parts.lib.mkFlake {inherit inputs;} ({config, ...}: {
+      imports = [flake-parts.flakeModules.modules ./modules/hosts/heimdall ./modules/hosts/yggdrasil/flake.nix ./modules/hosts/muninn/flake.nix ./modules/hosts/sif/flake.nix (import-tree ./modules/profiles) (import-tree ./modules/features)];
+      flake = {
+        formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
-    trent = import ./nix/users/trent/identity.nix;
-  in {
-    # Standalone NixOS configurations.
-    nixosConfigurations = {
-      muninn = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs;
-          user = trent;
-        };
-        modules = [
-          ./nix/hosts/muninn
-          home-manager.nixosModules.home-manager
-          {
-            nixpkgs.overlays = [self.overlays.default];
+        # Local packages as pkgs.<name>; hosts apply this overlay.
+        overlays.default = import ./modules/overlays {inherit bkt uv2nix pyproject-nix pyproject-build-systems;};
 
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = inputs // {user = trent;};
-              users.trent = import ./nix/hosts/muninn/home.nix;
-            };
-          }
-        ];
+        # The overlay's packages, buildable on their own (`nix build .#tredis`).
+        packages = lib.genAttrs systems (system:
+          lib.filterAttrs (_: lib.isDerivation)
+          (builtins.intersectAttrs (self.overlays.default null null)
+            (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
+
+        # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
+        apps = lib.genAttrs systems (system:
+          import ./modules/apps {
+            pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.default;
+            inherit self;
+          });
       };
-      sif = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
-        modules = [./nix/hosts/sif];
-      };
-      heimdall = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
-        modules = [./nix/hosts/heimdall];
-      };
-      yggdrasil = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs;
-          user = trent;
-        };
-        modules = [
-          ./nix/hosts/yggdrasil
-          home-manager.nixosModules.home-manager
-        ];
-      };
-    };
-
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-
-    # Local packages as pkgs.<name>; hosts apply this overlay.
-    overlays.default = import ./nix/pkgs {inherit bkt uv2nix pyproject-nix pyproject-build-systems;};
-
-    # The overlay's packages, buildable on their own (`nix build .#tredis`).
-    packages = lib.genAttrs systems (system:
-      lib.filterAttrs (_: lib.isDerivation)
-      (builtins.intersectAttrs (self.overlays.default null null)
-        (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
-
-    # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
-    apps = lib.genAttrs systems (system:
-      import ./nix/apps {
-        pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.default;
-        inherit self;
-      });
-
-    # Modules take this flake's inputs and `user` as arguments:
-    # specialArgs / home-manager.extraSpecialArgs = inputs // {inherit user;}.
-    # Every home module except desktop/, which only desktop hosts import.
-    homeModules.default = import-tree.filterNot (lib.hasInfix "/desktop/") ./nix/modules/home;
-    homeModules.desktop = import-tree ./nix/modules/home/desktop;
-    # nix/modules/nixos is grouped. Standalone hosts import machine, desktop,
-    # hardware and deploy modules by path; `default` bundles common, services
-    # and wsl for WSL hosts.
-    nixosModules.default = import-tree [
-      ./nix/modules/nixos/common
-      ./nix/modules/nixos/services
-      ./nix/modules/nixos/wsl
-    ];
-  };
+    });
 
   inputs = {
     # Core
+    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     import-tree.url = "github:denful/import-tree";
 

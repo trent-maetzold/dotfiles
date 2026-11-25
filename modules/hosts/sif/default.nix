@@ -1,3 +1,4 @@
+{nixos}:
 # sif: Justine's Yoga 720-13IKB (i5-7200U, HD 620, 8 GB). Same encrypted
 # ephemeral root as muninn, with a Windows-like Cinnamon desktop. trent
 # manages the OS; Justine installs her own apps from Flathub (GNOME Software).
@@ -8,14 +9,14 @@
   ...
 }: {
   imports = [
-    (inputs.import-tree ../../modules/nixos/machine)
-    ../../modules/nixos/desktop/cinnamon.nix
-    ../../modules/nixos/desktop/flatpak.nix
-    ../../modules/nixos/desktop/fonts.nix
+    nixos.machineProfile
+    nixos.os-desktop-cinnamon
+    nixos.os-desktop-flatpak
+    nixos.os-desktop-fonts
     "${inputs.nixos-hardware}/common/cpu/intel/kaby-lake"
     "${inputs.nixos-hardware}/common/pc/laptop"
     "${inputs.nixos-hardware}/common/pc/ssd"
-    ../../modules/nixos/deploy/comin.nix
+    nixos.os-deploy-comin
   ];
 
   networking.hostName = "sif";

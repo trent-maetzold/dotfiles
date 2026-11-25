@@ -1,0 +1,47 @@
+{
+  config,
+  inputs,
+  lib,
+  ...
+}: {
+  flake.modules.homeManager.defaultProfile = {
+    imports = [
+      config.flake.modules.homeManager.ai-claude
+      config.flake.modules.homeManager.ai-default
+      config.flake.modules.homeManager.ai-magpie
+      config.flake.modules.homeManager.ai-paseo
+      config.flake.modules.homeManager.ai-pi
+      config.flake.modules.homeManager.default
+      config.flake.modules.homeManager.dev-data
+      config.flake.modules.homeManager.dev-git
+      config.flake.modules.homeManager.dev-langs-bash
+      config.flake.modules.homeManager.dev-langs-dotnet
+      config.flake.modules.homeManager.dev-langs-go
+      config.flake.modules.homeManager.dev-langs-js
+      config.flake.modules.homeManager.dev-langs-lisp
+      config.flake.modules.homeManager.dev-langs-nix
+      config.flake.modules.homeManager.dev-langs-python
+      config.flake.modules.homeManager.dev-langs-r
+      config.flake.modules.homeManager.dev-langs-rust
+      config.flake.modules.homeManager.dev-langs-sql
+      config.flake.modules.homeManager.dev-nvim
+      config.flake.modules.homeManager.secrets-keyring
+      config.flake.modules.homeManager.secrets-rbw
+      config.flake.modules.homeManager.system-monitoring
+      config.flake.modules.homeManager.system-nix
+      config.flake.modules.homeManager.term-tuios
+      config.flake.modules.homeManager.virt-kubernetes
+      config.flake.modules.homeManager.virt-podman
+      config.flake.modules.homeManager.shell-atuin
+      config.flake.modules.homeManager.shell-btop
+      config.flake.modules.homeManager.shell-carapace
+      config.flake.modules.homeManager.shell-direnv
+      config.flake.modules.homeManager.shell-nushell
+      config.flake.modules.homeManager.shell-ssh
+      config.flake.modules.homeManager.shell-starship
+      config.flake.modules.homeManager.shell-yazi
+      config.flake.modules.homeManager.term-herdr
+      config.flake.modules.homeManager.term-tmux
+    ];
+  };
+}

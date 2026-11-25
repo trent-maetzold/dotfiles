@@ -1,8 +1,6 @@
 # Citrix on muninn: a 1920x1200 screen (half the panel's resolution),
 # with NVIDIA detection blocked so Workspace permits Intel hardware decoding.
 {lib, ...}: {
-  imports = [../../modules/nixos/desktop/citrix];
-
   services.xserver.xrandrHeads = [
     {
       output = "eDP-1";
