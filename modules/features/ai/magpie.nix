@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.ai-magpie =
+  flake.modules.homeManager.magpie-cli =
     # Magpie gateway on 127.0.0.1:3425, from the pinned CLI in nix/pkgs/magpie.
     # A user unit starts it at login and keeps it running after failures.
     #

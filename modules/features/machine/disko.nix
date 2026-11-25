@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-machine-disko =
+  flake.modules.nixos.disko =
     # 2 GiB ESP and LUKS2-encrypted Btrfs persistent storage; / is tmpfs.
     # Hosts override disko.devices.disk.main.device or the tmpfs size if needed.
     {

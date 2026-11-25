@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.ai-default =
+  flake.modules.homeManager.ai =
     # Shared agent config and agent tools.
     {
       config,

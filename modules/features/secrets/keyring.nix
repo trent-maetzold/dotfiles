@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.secrets-keyring =
+  flake.modules.homeManager.keyring =
     # The Secret Service keyring, and the `pinentry` that rbw and gpg prompt with.
     # With gnome-keyring (desktops): a graphical pinentry. Without (WSL):
     # pass-secret-service over a gpg-encrypted pass store, unlocked by gpg-agent,

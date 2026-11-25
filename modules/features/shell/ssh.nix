@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.shell-ssh =
+  flake.modules.homeManager.ssh =
     # SSH client with strict defaults.
     {
       programs.ssh = {

@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.ai-pi =
+  flake.modules.homeManager.pi =
     # pi plus config dirs for pi addons, all linked in place so they stay writable.
     # Addons that read ~/.pi/agent/<name>.json are covered by the ~/.pi link; the
     # rest live under config/pi/packages/<name>, each with a .gitignore that keeps

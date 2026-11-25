@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-desktop-xfce =
+  flake.modules.nixos.xfce =
     # XFCE on X11, laid out like Windows: one bottom taskbar with a start menu,
     # icon-only task buttons, tray and clock. Fluent theme, Papirus icons.
     # These are first-login defaults (/etc/xdg); users' own changes win.

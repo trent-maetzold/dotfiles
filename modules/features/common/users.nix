@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-common-users =
+  flake.modules.nixos.users =
     # The `user` account (from specialArgs), with nushell as login shell.
     {
       pkgs,

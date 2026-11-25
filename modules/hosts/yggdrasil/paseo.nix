@@ -1,5 +1,6 @@
-{
+{flake.modules.nixos.yggdrasil = {
   inputs,
+  lib,
   pkgs,
   ...
 }: {
@@ -11,7 +12,7 @@
     pkgs.llm-agents.prime-agent
     inputs.autolith.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
-  users.users.trent.packages = [
+  users.users.trent.packages = lib.mkBefore [
     pkgs.llm-agents.claude-code
     # Use the cached build; the shared pin lacks AWS-LC's OpenSSL compatibility metadata.
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
@@ -64,4 +65,4 @@
       };
     };
   };
-}
+};}

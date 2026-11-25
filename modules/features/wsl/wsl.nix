@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-wsl-wsl =
+  flake.modules.nixos.wsl =
     # NixOS-WSL: on when the host sets wsl.enable.
     {
       config,

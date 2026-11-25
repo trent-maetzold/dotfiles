@@ -1,4 +1,4 @@
-{inputs, ...}: let
+{flake.modules.nixos.yggdrasil = {inputs, ...}: let
   inherit (inputs) disko disko-zfs;
   makeDisk = {
     n,
@@ -132,4 +132,4 @@ in {
       };
     };
   };
-}
+};}

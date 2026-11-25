@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-machine-preservation =
+  flake.modules.nixos.preservation =
     # / is tmpfs: what survives a reboot lives on /persist.
     #
     # /etc is an overlay (base.nix): Nix's read-only build at the bottom,

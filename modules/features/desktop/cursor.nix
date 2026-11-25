@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.desktop-cursor =
+  flake.modules.homeManager.cursor =
     # A shared cursor theme for desktop applications.
     {pkgs, ...}: {
       home.pointerCursor = {

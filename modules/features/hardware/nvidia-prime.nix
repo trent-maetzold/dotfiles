@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-hardware-nvidia-prime =
+  flake.modules.nixos.nvidia-prime =
     # NVIDIA as a PRIME offload GPU, on nixos-hardware's prime profile: the
     # integrated GPU drives the displays, and the NVIDIA one powers off when idle
     # (RTD3, Turing and newer) until a program asks for it: `nvidia-offload

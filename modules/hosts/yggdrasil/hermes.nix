@@ -1,4 +1,4 @@
-{
+{flake.modules.nixos.yggdrasil = {
   config,
   inputs,
   lib,
@@ -8,7 +8,7 @@
   inherit (inputs) hermes-agent hermes-webui;
   cfg = config.services.hermes-agent;
   inherit (config.sops.secrets) deepseek-api-key opencode-api-key hermes-api-server-key hermes-dashboard-password;
-  secretEnv = import ./secret-env.nix {inherit lib pkgs;};
+  secretEnv = import ./_secret-env.nix {inherit lib pkgs;};
   gateway = secretEnv "hermes-agent" {
     DEEPSEEK_API_KEY = deepseek-api-key.path;
     OPENCODE_GO_API_KEY = opencode-api-key.path;
@@ -60,7 +60,7 @@ in {
       (plugin "hermex-push" "${inputs.hermex-push}/plugin")
     ];
     extraPythonPackages = [
-      (cfg.package.python.pkgs.callPackage ./honcho-ai.nix {inherit (pkgs) fetchPypi;})
+      (cfg.package.python.pkgs.callPackage ./_honcho-ai.nix {inherit (pkgs) fetchPypi;})
     ];
     hermesHomeFiles."honcho.json" = builtins.toJSON {
       baseUrl = "http://127.0.0.1:8000";
@@ -110,4 +110,4 @@ in {
     stateDir = "${cfg.stateDir}/.hermes-webui";
     agent.package = cfg.package;
   };
-}
+};}

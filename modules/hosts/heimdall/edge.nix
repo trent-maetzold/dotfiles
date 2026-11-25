@@ -1,4 +1,4 @@
-{
+{flake.modules.nixos.heimdall = {
   config,
   inputs,
   lib,
@@ -188,4 +188,4 @@ in {
       };
     };
   };
-}
+};}

@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-machine-audio =
+  flake.modules.nixos.audio =
     # PipeWire for ALSA and PulseAudio clients.
     {
       services.pipewire = {

@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-desktop-flatpak =
+  flake.modules.nixos.flatpak =
     # Flatpak with a per-user Flathub remote, and GNOME Software as the app store:
     # users without admin rights install their own apps into ~/.local/share/flatpak
     # (on /home, so they persist). No system-wide remote, so nothing asks for an

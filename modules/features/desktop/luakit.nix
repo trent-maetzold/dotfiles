@@ -1,3 +1,5 @@
-{flake.modules.homeManager.desktop-luakit = {pkgs, ...}: {
-  home.packages = [pkgs.luakit];
-};}
+{
+  flake.modules.homeManager.luakit = {pkgs, ...}: {
+    home.packages = [pkgs.luakit];
+  };
+}

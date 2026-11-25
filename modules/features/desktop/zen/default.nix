@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.desktop-zen-default =
+  flake.modules.homeManager.zen =
     # Zen with Vimium C (vim keys, its defaults), Bitwarden, Dark Reader and
     # uBlock Origin, and no other extensions. Pages follow the system's
     # light/dark theme (Zen's default); Dark Reader skips sites that are already

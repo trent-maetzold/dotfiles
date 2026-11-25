@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-machine-locale =
+  flake.modules.nixos.locale =
     # Central time, US English, US keyboard.
     {
       time.timeZone = "America/Chicago";

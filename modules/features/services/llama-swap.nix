@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-services-llama-swap =
+  flake.modules.nixos.llama-swap =
     # llama-swap, with no models yet: add them under services.llama-swap.settings.models.
     {
       services.llama-swap.enable = true;

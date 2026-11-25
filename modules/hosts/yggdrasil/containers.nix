@@ -1,4 +1,4 @@
-{
+{flake.modules.nixos.yggdrasil = {
   config,
   inputs,
   lib,
@@ -7,7 +7,7 @@
 }: let
   inherit (config.virtualisation.quadlet) networks volumes;
   inherit (config.sops) secrets;
-  secretEnv = import ./secret-env.nix {inherit lib pkgs;};
+  secretEnv = import ./_secret-env.nix {inherit lib pkgs;};
   db = secretEnv "honcho-db" {POSTGRES_PASSWORD = secrets.honcho-db-password.path;};
   apiEnv = secretEnv "honcho-api" {PGPASSWORD = secrets.honcho-db-password.path;};
   keys = secretEnv "honcho-models" {
@@ -144,4 +144,4 @@ in {
       })
     containers;
   };
-}
+};}

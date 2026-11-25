@@ -1,43 +1,10 @@
 {
   description = "Home Manager dotfiles";
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    home-manager,
-    flake-parts,
-    import-tree,
-    bkt,
-    pyproject-nix,
-    uv2nix,
-    pyproject-build-systems,
-    ...
-  }: let
-    inherit (nixpkgs) lib;
-    systems = ["x86_64-linux" "aarch64-linux"];
-  in
-    flake-parts.lib.mkFlake {inherit inputs;} ({config, ...}: {
-      imports = [flake-parts.flakeModules.modules ./modules/hosts/heimdall ./modules/hosts/yggdrasil/flake.nix ./modules/hosts/muninn/flake.nix ./modules/hosts/sif/flake.nix (import-tree ./modules/profiles) (import-tree ./modules/features)];
-      flake = {
-        formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-
-        # Local packages as pkgs.<name>; hosts apply this overlay.
-        overlays.default = import ./modules/overlays {inherit bkt uv2nix pyproject-nix pyproject-build-systems;};
-
-        # The overlay's packages, buildable on their own (`nix build .#tredis`).
-        packages = lib.genAttrs systems (system:
-          lib.filterAttrs (_: lib.isDerivation)
-          (builtins.intersectAttrs (self.overlays.default null null)
-            (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
-
-        # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
-        apps = lib.genAttrs systems (system:
-          import ./modules/apps {
-            pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.default;
-            inherit self;
-          });
-      };
-    });
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake
+    {inherit inputs;}
+    (inputs.import-tree ./modules);
 
   inputs = {
     # Core

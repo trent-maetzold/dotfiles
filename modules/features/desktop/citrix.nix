@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-desktop-citrix =
+  flake.modules.nixos.citrix =
     # Citrix as its own "OS" on tty8: Xorg (no compositor), a kiosk window manager
     # and Workspace. Ctrl+Alt+F8 and Ctrl+Alt+F1 switch between it and the desktop
     # on tty1; every other key, Win and Alt included, goes to Citrix. The desktop
@@ -20,7 +20,7 @@
 
       # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
       # here instead of through the remote desktop).
-      zoom = import ../../overlays/zoom-vdi {inherit pkgs;};
+      zoom = import ../../overlays/zoom-vdi/_package.nix {inherit pkgs;};
 
       allRegions = (pkgs.formats.ini {}).generate "All_Regions.ini" {
         "Top Level" = {

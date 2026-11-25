@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.system-monitoring =
+  flake.modules.homeManager.monitoring =
     # Watching GPUs, power and temperature on any machine (laptops, WSL with
     # NVIDIA, servers): nvtop (Intel, NVIDIA, AMD), nvitop (NVIDIA), intel_gpu_top, powertop,
     # turbostat, sensors, vainfo (video decoding) and

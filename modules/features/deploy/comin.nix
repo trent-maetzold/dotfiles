@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-deploy-comin =
+  flake.modules.nixos.comin =
     # comin: poll this repo's main branch, build nixosConfigurations.<hostName>
     # when it changes, and make it the default for the next boot (not switched
     # under a running session). A testing-<hostName> branch is tried with `test`

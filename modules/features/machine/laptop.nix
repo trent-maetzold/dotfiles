@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-machine-laptop =
+  flake.modules.nixos.laptop =
     # Suspend on lid close, whatever the power source; idle sleep is left to the
     # desktop. Power modes (power-profiles-daemon) and Intel thermal management.
     {

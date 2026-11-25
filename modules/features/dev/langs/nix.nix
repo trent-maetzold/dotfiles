@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.dev-langs-nix =
+  flake.modules.homeManager.nix-language =
     # Writing Nix: nix-init/nurl/nix-update for packages, statix/deadnix for
     # linting; Alejandra for formatting. Admin tools: system/nix.nix.
     {pkgs, ...}: {

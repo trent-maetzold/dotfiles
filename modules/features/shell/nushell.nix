@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.shell-nushell =
+  flake.modules.homeManager.nushell =
     # Settings and nu_scripts setup after github:ryan4yin/nix-config (home/base/core/shells, home/base/tui/shell).
     {pkgs, ...}: {
       programs.nushell = {

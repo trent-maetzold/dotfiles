@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.desktop-clipboard =
+  flake.modules.homeManager.clipboard =
     # Wayland clipboard command-line utilities, independent of the compositor.
     {pkgs, ...}: {
       home.packages = [pkgs.wl-clipboard];

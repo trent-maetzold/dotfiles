@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-services-quadlet =
+  flake.modules.nixos.quadlet =
     # Rootless quadlets (Home Manager units) need podman's user generator, and only
     # NixOS can install generators. No system podman or root containers.
     {pkgs, ...}: {

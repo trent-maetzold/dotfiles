@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.shell-atuin =
+  flake.modules.homeManager.atuin =
     # Shell history in sqlite, owns Ctrl-R.
     {
       programs.atuin.enable = true;

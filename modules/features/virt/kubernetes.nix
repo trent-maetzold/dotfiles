@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.virt-kubernetes =
+  flake.modules.homeManager.kubernetes =
     # Kubernetes client tools, after github:ryan4yin/nix-config (home/base/tui/container.nix).
     {pkgs, ...}: {
       home.packages = with pkgs; [

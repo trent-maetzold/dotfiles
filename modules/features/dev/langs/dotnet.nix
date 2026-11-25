@@ -1,4 +1,6 @@
-{flake.modules.homeManager.dev-langs-dotnet = {pkgs, ...}: {
-  home.packages = with pkgs; [dotnetCorePackages.sdk_10_0 csharpier fantomas];
-  programs.neovim.extraPackages = with pkgs; [fsautocomplete omnisharp-roslyn];
-};}
+{
+  flake.modules.homeManager.dotnet = {pkgs, ...}: {
+    home.packages = with pkgs; [dotnetCorePackages.sdk_10_0 csharpier fantomas];
+    programs.neovim.extraPackages = with pkgs; [fsautocomplete omnisharp-roslyn];
+  };
+}

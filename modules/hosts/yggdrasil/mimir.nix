@@ -1,4 +1,4 @@
-{inputs, ...}: let
+{flake.modules.nixos.yggdrasil = {inputs, ...}: let
   inherit (inputs) NixVirt;
 in {
   imports = [NixVirt.nixosModules.default];
@@ -195,4 +195,4 @@ in {
       ];
     };
   };
-}
+};}

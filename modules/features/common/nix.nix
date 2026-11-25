@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-common-nix =
+  flake.modules.nixos.nix =
     # Nix itself: flakes and nix-ld for unpatched binaries and Python wheels. nh is
     # in Home Manager (home/system/nix.nix).
     {

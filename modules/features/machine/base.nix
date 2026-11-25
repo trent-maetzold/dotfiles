@@ -1,7 +1,7 @@
 {config, ...}: let
-  commonNix = config.flake.modules.nixos.os-common-nix;
+  commonNix = config.flake.modules.nixos.nix;
 in {
-  flake.modules.nixos.os-machine-base =
+  flake.modules.nixos.machine-base =
     # Standalone (non-WSL) machines: boot, network, nix.
     {
       lib,

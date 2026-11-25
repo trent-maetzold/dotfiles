@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.os-desktop-cinnamon =
+  flake.modules.nixos.cinnamon =
     # Cinnamon on X11: Windows-like out of the box (bottom panel, start menu).
     # Power and screensaver defaults below; users' own settings win.
     {

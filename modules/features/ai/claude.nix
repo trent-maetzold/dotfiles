@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.ai-claude =
+  flake.modules.homeManager.claude =
     # Claude Code, from llm-agents.nix (prebuilt binary; numtide cache).
     #
     # mutableSettings keeps ~/.claude/settings.json a writable file: anything

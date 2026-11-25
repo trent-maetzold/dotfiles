@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.system-nix =
+  flake.modules.homeManager.nix =
     # Nix administration: nh for switching from dotfiles main,
     # comma to run anything via nix-index, nix-search-tv to find packages, and
     # nom, nvd, nix-tree and nix-diff for inspecting builds.
