@@ -1,1 +1,8 @@
-{perSystem = {final, ...}: {overlayAttrs.confluence-cli = final.callPackage ./_package.nix {};};}
+{
+  perSystem = {final, ...}: let
+    confluence-cli = final.callPackage ./_package.nix {};
+  in {
+    packages = {inherit confluence-cli;};
+    overlayAttrs = {inherit confluence-cli;};
+  };
+}

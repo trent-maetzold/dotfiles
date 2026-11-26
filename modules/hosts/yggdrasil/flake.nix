@@ -11,7 +11,6 @@
       config,
       inputs,
       pkgs,
-      user,
       ...
     }: {
       imports = [
@@ -26,8 +25,8 @@
         useUserPackages = true;
         backupFileExtension = "backup";
         overwriteBackup = true;
-        extraSpecialArgs = inputs // {inherit user;};
-        users.trent.imports = [homeManager.yggdrasil homeManager.trent homeManager.defaultProfile];
+        extraSpecialArgs = inputs;
+        users.trent.imports = [homeManager.yggdrasil homeManager.trent homeManager.defaultProfile homeManager.magpie-cli];
       };
 
       nixpkgs.hostPlatform = "x86_64-linux";
@@ -139,7 +138,6 @@
   flake.nixosConfigurations.yggdrasil = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = {
       inherit inputs;
-      user = import ../../users/trent/_identity.nix;
     };
     modules = [
       config.flake.modules.nixos.yggdrasil

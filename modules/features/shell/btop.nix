@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.shell-btop = {
+  flake.modules.homeManager.btop = {
     programs.btop = {
       enable = true;
       settings.vim_keys = true;

@@ -1,14 +1,8 @@
-{
-  config,
-  inputs,
-  lib,
-  ...
-}: {
+{config, ...}: {
   flake.modules.homeManager.defaultProfile = {
     imports = [
       config.flake.modules.homeManager.claude
       config.flake.modules.homeManager.ai
-      config.flake.modules.homeManager.magpie-cli
       config.flake.modules.homeManager.paseo
       config.flake.modules.homeManager.pi
       config.flake.modules.homeManager.default
@@ -29,11 +23,11 @@
       config.flake.modules.homeManager.rbw
       config.flake.modules.homeManager.monitoring
       config.flake.modules.homeManager.nix
-      config.flake.modules.homeManager.term-tuios
+      config.flake.modules.homeManager.tuios
       config.flake.modules.homeManager.kubernetes
       config.flake.modules.homeManager.podman
       config.flake.modules.homeManager.atuin
-      config.flake.modules.homeManager.shell-btop
+      config.flake.modules.homeManager.btop
       config.flake.modules.homeManager.carapace
       config.flake.modules.homeManager.direnv
       config.flake.modules.homeManager.nushell

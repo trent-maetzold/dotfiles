@@ -1,4 +1,4 @@
-# Tasks for this repo. Each recipe wraps a flake app (nix/apps), also runnable
+# Tasks for this repo. Each recipe wraps a flake app (modules/apps), also runnable
 # with `nix run .#<app>`.
 
 default:

@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.umbriel-idle =
+  flake.modules.homeManager.noctalia =
     # Noctalia's default idle timings, enabled for the desktop session. GUI
     # overrides remain possible in ~/.local/state/noctalia/settings.toml.
     {...}: {

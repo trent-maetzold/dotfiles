@@ -16,6 +16,7 @@
       ...
     }: {
       imports = [
+        nixos.trent
         nixos.machineProfile
         nixos.cinnamon
         nixos.flatpak
@@ -34,7 +35,9 @@
       disko.devices.nodev."/".mountOptions = ["size=2G" "mode=755"];
       zramSwap.enable = true;
 
-      # trent logs in over SSH with his keys only (machine/admin.nix).
+      users.users.trent.extraGroups = ["networkmanager"];
+
+      # Trent logs in over SSH with his keys only.
       services.openssh.settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;

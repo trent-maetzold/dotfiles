@@ -1,8 +1,7 @@
 {
   flake.modules.homeManager.desktop-magpie =
     # Magpie's desktop app: it *is* the gateway (the app runs `magpie serve`'s
-    # engine itself), so no CLI package or second gateway runs beside it — see
-    # nix/modules/home/ai/magpie.nix, whose CLI unit is off unless a host opts in.
+    # engine itself). Select this or the headless magpie-cli aspect for a home.
     #
     # The unit below is what `magpie daemon install` writes (docs/reference.md,
     # "As a background service"), mirrored directive for directive so magpie's own
@@ -20,7 +19,11 @@
     # opened by hand afterwards *uses* this service's gateway, so there is no port
     # fight. Don't run `magpie autostart on` here: its `~/.config/autostart/
     # magpie.desktop` hard-codes a store path and races this unit for the port.
-    {pkgs, ...}: {
+    {
+      config,
+      pkgs,
+      ...
+    }: {
       home.packages = [pkgs.magpie-desktop];
 
       systemd.user.services.magpie = {
@@ -38,7 +41,7 @@
             # `magpie daemon install` records the PATH it was installed from; on
             # Nix the profile directories are the equivalent, and through them the
             # agents and MCP servers it starts find node, bun and the agent CLIs.
-            "PATH=/run/wrappers/bin:/etc/profiles/per-user/trent/bin:/run/current-system/sw/bin"
+            "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin"
           ];
         };
         Install.WantedBy = ["default.target"];

@@ -1,1 +1,8 @@
-{perSystem = {final, ...}: {overlayAttrs.outlook-cli = final.callPackage ./_package.nix {};};}
+{
+  perSystem = {final, ...}: let
+    outlook-cli = final.callPackage ./_package.nix {};
+  in {
+    packages = {inherit outlook-cli;};
+    overlayAttrs = {inherit outlook-cli;};
+  };
+}

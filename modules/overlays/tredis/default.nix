@@ -1,1 +1,8 @@
-{perSystem = {final, ...}: {overlayAttrs.tredis = final.callPackage ./_package.nix {};};}
+{
+  perSystem = {final, ...}: let
+    tredis = final.callPackage ./_package.nix {};
+  in {
+    packages = {inherit tredis;};
+    overlayAttrs = {inherit tredis;};
+  };
+}

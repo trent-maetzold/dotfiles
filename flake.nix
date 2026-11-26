@@ -12,7 +12,7 @@
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     import-tree.url = "github:denful/import-tree";
 
-    # Hosts (nix/hosts)
+    # Hosts and system services
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,7 +68,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Modules (nix/modules/{home,nixos})
+    # Shared module inputs
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -103,7 +103,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Python apps from uv.lock (nix/pkgs/keeper-cli)
+    # Python apps from uv.lock (modules/overlays/keeper-cli)
     pyproject-nix = {
       url = "github:pyproject-nix/pyproject.nix";
       inputs.nixpkgs.follows = "nixpkgs";

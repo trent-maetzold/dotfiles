@@ -1,19 +1,24 @@
 # NixOS dotfiles
 
-Every machine is a host in this flake (`nix/hosts/<host>`, wired up in
-`flake.nix`), with this repo checked out at `~/.config/dotfiles`. `<host>` and
-`<user>` below stand for a host's name and its user.
+Each machine registers its NixOS configuration under `modules/hosts/<host>/`.
+The configuration expects this repository at `~/.config/dotfiles`. In the
+commands below, `<host>` and `<user>` stand for a host name and its user.
 
-Development tools are declared in `nix/modules/home/`; language toolchains live in
-`nix/modules/home/dev/langs/` with XDG data/cache/state paths. The dotfiles flake uses
-`import-tree` to import every module recursively, so new modules need no manual
-import entries. Package expressions stay outside that tree in `nix/pkgs/`. Shared user identity
-and Home Manager settings live in `nix/users/trent/`, alongside the NixOS user
-and SSH-key modules; each host adds its own machine-specific overrides.
-Magpie's pinned CLI is installed everywhere, with the desktop app also available
-on Home Manager desktops; Paseo is the daemon/CLI package, not the desktop app. Both run as systemd user services (`magpie.service` and `paseo.service`),
-starting at login and restarting on failure. Magpie runs the gateway without a
-web UI; Paseo runs its foreground daemon. Inspect them with:
+The root flake uses flake-parts and `import-tree` to discover modules.
+Reusable features live in `modules/features/`, with language toolchains under
+`modules/features/dev/langs/`. Define Home Manager and NixOS aspects there,
+then import them explicitly from their consuming host, user, or profile.
+Trent's account and Home Manager identity live in `modules/users/trent.nix`.
+Apps register in `modules/apps/`. Package modules in `modules/overlays/` declare
+standalone packages and contribute to the default overlay. Prefix helper Nix
+files with an underscore to keep them out of discovery. The original
+`homeModules.default`, `homeModules.desktop`, and `nixosModules.default`
+exports remain available to downstream flakes.
+
+Muninn selects the Magpie desktop build, which supplies its gateway. Yggdrasil
+selects the Magpie CLI. Muninn starts Magpie and Paseo through systemd user
+units. Yggdrasil runs their daemons as system services. On Muninn, inspect the
+user units with:
 
 ```sh
 systemctl --user status magpie paseo
@@ -22,11 +27,10 @@ journalctl --user -u magpie -u paseo -f
 
 ## Bootstrap a machine
 
-Hosts installed straight from this flake live in `nix/hosts/<host>`, each
-wired up in `flake.nix`. They build on the grouped NixOS modules in
-`nix/modules/nixos`: `machine` (boot, locale, encrypted ephemeral-root disk,
-trent as admin), `desktop`, `hardware`; `common`, `services` and `wsl` are for
-WSL hosts.
+Hosts installed straight from this flake live in `modules/hosts/<host>/`.
+They compose the machine profile for boot, locale, and encrypted ephemeral-root
+storage, then select their desktop, hardware, and users. The WSL profile lives
+in `modules/profiles/wsl.nix`.
 
 | Host | Machine | Desktop |
 | --- | --- | --- |
@@ -36,7 +40,7 @@ WSL hosts.
 ### Imported systems
 
 `heimdall` (tailnet gateway) and `yggdrasil` (services and Mimir VM) have
-host-local system configurations under `nix/hosts/`. Yggdrasil uses this repo's
+host-local system configurations under `modules/hosts/`. Yggdrasil uses this repo's
 non-desktop Home Manager config for `trent`. Its mutable config links expect a checkout
 at `/home/trent/.config/dotfiles`. Neither host is supported by `bootstrap`.
 Reuse the existing disks and SOPS age keys; do not repartition. After merging,
@@ -127,7 +131,7 @@ nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold
 Rebuild after changes with `nh os switch` (see [Rebuild](#rebuild)).
 
 **sif:** first generate its hardware report from the live USB and commit it as
-`nix/hosts/sif/facter.json` (`sudo nix run nixpkgs#nixos-facter -- -o facter.json`),
+`modules/hosts/sif/facter.json` (`sudo nix run nixpkgs#nixos-facter -- -o facter.json`),
 then bootstrap `sif`. After install, set Justine's password with
 `sudo passwd justine`. SSH in as `ssh trent@sif.local` (keys only: the
 Bitwarden keys `tm@nixos` and `trent@huginn`). Cinnamon's power and screensaver settings are defaults;
@@ -183,7 +187,7 @@ Windows Current User and Local Machine Root and intermediate stores. It excludes
 expired/not-yet-valid and explicitly distrusted certificates, removes duplicates,
 and exports no private keys. It requires WSL with Windows interop enabled.
 
-Then add the bundle to the WSL host's config (`nix/hosts/<host>`) and rebuild:
+Then add the bundle to the WSL host's config (`modules/hosts/<host>`) and rebuild:
 
 ```nix
 security.pki.certificateFiles = [./windows-ca.pem];
@@ -218,7 +222,7 @@ nix-prefetch-url file://$HOME/Downloads/zoomvdi-universal-plugin-ubuntu_7.0.13.d
 
 ## Tmux
 
-`nix/modules/home/term/tmux.nix` uses `Ctrl-b` as the prefix and follows Herdr's common
+`modules/features/term/tmux.nix` uses `Ctrl-b` as the prefix and follows Herdr's common
 bindings: `v`/`-` split, `h/j/k/l` focus panes, Tab/Shift-Tab cycle panes,
 `c` creates a tab, `n`/`p` switch tabs, `T` renames a tab, `X` closes a tab,
 `x` closes a pane, `z` zooms, and `q` detaches. `r` enters resize mode
@@ -232,7 +236,7 @@ Projects use direnv: an `.envrc` with `use mise` loads `mise.toml` (tools and en
 on entering the directory. Python packages with C extensions (psycopg2, gssapi) build on the
 host: NixOS's nix-ld supplies their runtime libraries, and `pg_config`/`krb5-config`
 are on PATH. uv passes gssapi the krb5 header path it needs
-(`nix/modules/home/dev/langs/python.nix`).
+(`modules/features/dev/langs/python.nix`).
 
 ## Updating
 
@@ -248,12 +252,12 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 ```
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.
-Magpie's CLI and desktop versions and hashes are pinned together in `nix/pkgs/magpie/hashes.json`.
+Magpie's CLI and desktop versions and hashes are pinned together in `modules/overlays/magpie/hashes.json`.
 
 ## Secrets and SSH keys
 
 Bitwarden, through [rbw](https://github.com/doy/rbw), on every host
-(`nix/modules/home/secrets/rbw.nix`). `rbw unlock` starts `rbw-agent`, which
+(`modules/features/secrets/rbw.nix`). `rbw unlock` starts `rbw-agent`, which
 holds the unlocked vault and is also the SSH agent: SSH's `IdentityAgent` points
 at `$XDG_RUNTIME_DIR/rbw/ssh-agent-socket`, which serves Bitwarden SSH-key items.
 Private keys are never written to disk. Once per machine:
@@ -273,7 +277,7 @@ prompts again where you last ran `rbw`.
 Tools that save their own logins (`gh auth login`, ...) use the Secret Service
 keyring: gnome-keyring on desktops, unlocked at login; elsewhere (WSL)
 pass-secret-service over a gpg-encrypted `pass` store
-(`nix/modules/home/secrets/keyring.nix`). Set that up once:
+(`modules/features/secrets/keyring.nix`). Set that up once:
 
 ```sh
 gpg --quick-gen-key "Trent Maetzold <EMAIL>"

@@ -3,17 +3,12 @@
     lib,
     llm-agents,
     pkgs,
-    user,
     ...
   }: {
     programs.git = {
       enable = true;
       lfs.enable = true;
       settings = {
-        user = {
-          name = user.fullName;
-          inherit (user) email;
-        };
         # Settings after github:ryan4yin/nix-config (home/base/core/git.nix).
         init.defaultBranch = "main";
         trim.bases = "dev,develop,master,main"; # git-trim
@@ -29,13 +24,7 @@
       true-color = "always";
     };
 
-    programs.jujutsu = {
-      enable = true;
-      settings.user = {
-        name = user.fullName;
-        inherit (user) email;
-      };
-    };
+    programs.jujutsu.enable = true;
 
     programs.gh.enable = true;
     programs.lazygit.enable = true;
