@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (inputs) hermes-agent hermes-webui;
+  inherit (inputs) hermes-agent;
   cfg = config.services.hermes-agent;
   inherit (config.sops.secrets) deepseek-api-key opencode-api-key hermes-api-server-key hermes-dashboard-password;
   secretEnv = import ./secret-env.nix {inherit lib pkgs;};
@@ -19,9 +19,9 @@
   };
   # plugin.yaml must sit at the package root.
   plugin = name: src: pkgs.runCommand name {} "cp -r ${src} $out";
-  dashboard = "https://dash.hermes.ts.trkm.io";
+  dashboard = "https://hermes.ts.trkm.io";
 in {
-  imports = [hermes-agent.nixosModules.default hermes-webui.nixosModules.default];
+  imports = [hermes-agent.nixosModules.default];
 
   sops.secrets = {
     deepseek-api-key.key = "shared/deepseek-api-key";
@@ -86,7 +86,6 @@ in {
         basic_auth.username = "trent";
         public_url = dashboard;
       };
-      webui.dashboard.url = dashboard;
       memory = {
         write_approval = true;
         # extraPlugins are linked as nix-managed-<name>.
@@ -99,15 +98,5 @@ in {
         write_approval = true;
       };
     };
-  };
-
-  services.hermes-webui = {
-    enable = true;
-    host = "100.64.0.2";
-    port = 8787;
-    inherit (cfg) user group;
-    hermesHome = "${cfg.stateDir}/.hermes";
-    stateDir = "${cfg.stateDir}/.hermes-webui";
-    agent.package = cfg.package;
   };
 }

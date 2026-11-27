@@ -10,15 +10,18 @@
   tailnetAddress = "100.64.0.6";
   dashboardAddress = "127.0.0.1:8081";
 
-  # These HTTP routes are tailnet-only; Paseo is served separately over TCP.
+  # These HTTP routes terminate here; Paseo is served separately over TCP.
   httpBackends = {
-    hermes = "http://100.64.0.2:8787";
-    "dash.hermes" = "http://100.64.0.2:9119";
     "gw.hermes" = "http://100.64.0.2:8642";
     magpie = "http://100.64.0.2:3430";
     headlamp = "http://100.64.0.2:31946";
     traefik = "http://${dashboardAddress}";
     "yggdrasil-bmc" = "https://10.10.20.154:443";
+  };
+  # Hosts whose ingress is the k3s Traefik on Yggdrasil, not this one. The
+  # MagicDNS record points at Yggdrasil so TLS terminates in the cluster.
+  clusterBackends = {
+    hermes = "100.64.0.2";
   };
   routeHost = name:
     if name == "yggdrasil-bmc"
@@ -68,11 +71,17 @@ in {
         magic_dns = true;
         base_domain = tailnetDomain;
         nameservers.global = ["1.1.1.1" "9.9.9.9"];
-        extra_records = map (name: {
-          name = routeHost name;
-          type = "A";
-          value = tailnetAddress;
-        }) (builtins.attrNames (httpBackends // {paseo = null;}));
+        extra_records =
+          map (name: {
+            name = routeHost name;
+            type = "A";
+            value = tailnetAddress;
+          }) (builtins.attrNames (httpBackends // {paseo = null;}))
+          ++ map (name: {
+            name = routeHost name;
+            type = "A";
+            value = clusterBackends.${name};
+          }) (builtins.attrNames clusterBackends);
       };
     };
   };
