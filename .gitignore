@@ -5,10 +5,3 @@ config/pi-lens/
 
 # Work-only agent skill, versioned in the private host repo.
 config/agents/skills/dockyard/
-
-# Beads / Dolt files (added by bd init)
-.dolt/
-*.db
-.beads-credential-key
-.beads/proxieddb/
-*.gate.lock*
