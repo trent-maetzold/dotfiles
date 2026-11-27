@@ -12,7 +12,7 @@
 
       programs.nh = {
         enable = true;
-        flake = "github:trent-maetzold/dotfiles/main";
+        flake = "github:zoldt/config.nix/main";
       };
       programs.nix-index-database.comma.enable = true;
       programs.nix-search-tv.enable = true;

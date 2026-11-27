@@ -27,7 +27,7 @@
 
     # Git-sourced k3s bootstrap manifests; update through the flake lock.
     homelab = {
-      url = "github:trent-maetzold/homelab";
+      url = "github:zoldt/.lab";
       flake = false;
     };
 
