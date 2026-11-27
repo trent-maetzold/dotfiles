@@ -63,7 +63,7 @@ sudo nixos-rebuild switch --flake github:zoldt/config.nix/fb91a575e1d397f780947b
 Keep the original session open and verify a **new** `trent` SSH session, its
 key authentication, and `sudo -n true` on each host before proceeding. On
 Yggdrasil, prepare `/home/trent/.config/dotfiles` for Home Manager's mutable
-links. Check external scripts and SSH aliases too; for example, the `.lab`
+links. Check external scripts and SSH aliases too; for example, the `.infra.nix`
 media staging guide and the in-progress secrets CLI have used `tm@10.10.20.10`.
 
 On 2026-11-23 the disposable rootless n8n, Windmill, and Activepieces
@@ -104,10 +104,10 @@ k3s’s default `/var/lib/rancher/k3s/storage` path. The
 tailnet. Verify the share mounts from a pod and permits the intended writes
 before using the claim. The local storage is single-node; back it up off-host.
 
-k3s installs Flux, CloudNativePG, and cert-manager. Flux reads the `main` branch of `zoldt/.lab`
-at `clusters/nidavellir`. App Ingresses and certificates are managed there;
-add each public DNS record manually, pointing at Yggdrasil's public address
-or the router forwarding to it. Heimdall routing is unchanged.
+k3s installs Flux, CloudNativePG, and cert-manager. Flux reads the `main` branch
+of `zoldt/.infra.nix` at `clusters/nidavellir`. App Ingresses and certificates
+are managed there. Add each public DNS record manually, pointing at Yggdrasil's
+public address or the router forwarding to it. Heimdall routing is unchanged.
 
 ### Laptop installation
 

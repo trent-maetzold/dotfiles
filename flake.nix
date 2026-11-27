@@ -25,9 +25,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Git-sourced k3s bootstrap manifests; update through the flake lock.
-    homelab = {
-      url = "github:zoldt/.lab";
+    # Infrastructure source for the k3s bootstrap manifests.
+    infra = {
+      url = "github:zoldt/.infra.nix";
       flake = false;
     };
 

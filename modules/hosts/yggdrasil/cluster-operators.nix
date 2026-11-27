@@ -1,11 +1,11 @@
 {
   flake.modules.nixos.yggdrasil = {inputs, ...}: {
     # K3s needs these two files to bootstrap Flux before Git reconciliation exists.
-    # Their definitions live in the zoldt/.lab repository; all other cluster
+    # Their definitions live in zoldt/.infra.nix; all other cluster
     # resources are reconciled by Flux after the staged handoff.
     services.k3s.manifests = {
-      flux-operator.source = "${inputs.homelab}/bootstrap/nidavellir/flux-operator.yaml";
-      flux-instance.source = "${inputs.homelab}/bootstrap/nidavellir/flux-instance.yaml";
+      flux-operator.source = "${inputs.infra}/bootstrap/nidavellir/flux-operator.yaml";
+      flux-instance.source = "${inputs.infra}/bootstrap/nidavellir/flux-instance.yaml";
     };
   };
 }
