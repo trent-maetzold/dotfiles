@@ -138,10 +138,6 @@
       # System
       lsof
       fastfetch
-
-      # Docs lookup for agents
-      ctx7 # Context7: current library docs
-      deepwiki-cli # DeepWiki docs for public GitHub repos
     ];
   };
 }

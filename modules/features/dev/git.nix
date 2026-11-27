@@ -1,7 +1,6 @@
-{
+{inputs, ...}: {
   flake.modules.homeManager.git = {
     lib,
-    llm-agents,
     pkgs,
     ...
   }: {
@@ -33,7 +32,7 @@
       pkgs.gitleaks
       # GitButler CLI: virtual branches and stacked diffs. From llm-agents.nix
       # (prebuilt, numtide cache); nixpkgs' build is broken and marked unfree.
-      llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.but
+      inputs.zoldt-agents.inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.but
     ];
 
     # oh-my-zsh's git plugin aliases (gst, gco, gcmsg, ...), nushell-only: nu_scripts'

@@ -25,9 +25,23 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Infrastructure source for the k3s bootstrap manifests.
-    infra = {
-      url = "github:zoldt/.infra.nix";
+    zoldt-pkgs = {
+      url = "github:zoldt/packages.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    zoldt-infra.url = "git+ssh://git@github.com/zoldt/.infra.nix.git";
+    zoldt-agents = {
+      url = "github:zoldt/agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.zoldt-pkgs.follows = "zoldt-pkgs";
+    };
+    zoldt-secrets = {
+      url = "github:zoldt/secrets.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    zoldt-dotfiles.url = "github:zoldt/dotfiles.nix";
+    secrets = {
+      url = "git+ssh://git@github.com/zoldt/.secrets.git?exportIgnore=1";
       flake = false;
     };
 
@@ -37,34 +51,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.disko.follows = "disko";
     };
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     NixVirt = {
       url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    autolith.url = "github:lambda-symbolics/autolith";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
-    hermes-webui.url = "github:nesquena/hermes-webui";
-    hermex-push = {
-      url = "github:uzairansaruzi/hermex-push";
-      flake = false;
-    };
-    honcho = {
-      url = "github:plastic-labs/honcho";
-      flake = false;
-    };
-    oh-my-hermes = {
-      url = "github:rlaope/oh-my-hermes";
-      flake = false;
-    };
-    paseo = {
-      url = "github:getpaseo/paseo";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Shared module inputs
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
@@ -74,8 +64,6 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
 
     # Umbriel compositor; cachix tracks the latest commit CI cached, and no
     # nixpkgs follow so those store paths match (its installation guide).
@@ -87,34 +75,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
-    # Own nixpkgs (no follows) so packages hit the numtide binary cache.
     nixos-hardware.url = "github:NixOS/nixos-hardware";
-    llm-agents.url = "github:numtide/llm-agents.nix";
     # Noctalia community plugins, available for runtime plugin configuration.
     noctalia-plugins = {
       url = "github:noctalia-dev/community-plugins";
       flake = false;
-    };
-    bkt = {
-      url = "github:avivsinai/bitbucket-cli";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Python apps from uv.lock (modules/overlays/keeper-cli)
-    pyproject-nix = {
-      url = "github:pyproject-nix/pyproject.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    uv2nix = {
-      url = "github:pyproject-nix/uv2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pyproject-nix.follows = "pyproject-nix";
-    };
-    pyproject-build-systems = {
-      url = "github:pyproject-nix/build-system-pkgs";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pyproject-nix.follows = "pyproject-nix";
-      inputs.uv2nix.follows = "uv2nix";
     };
   };
 }
