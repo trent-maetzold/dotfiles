@@ -20,7 +20,7 @@
 
       # nixpkgs' client plus the Zoom VDI plugin (Zoom's audio and video run
       # here instead of through the remote desktop).
-      zoom = import ../../overlays/zoom-vdi/_package.nix {inherit pkgs;};
+      zoom = pkgs.zoom-vdi;
 
       allRegions = (pkgs.formats.ini {}).generate "All_Regions.ini" {
         "Top Level" = {
@@ -39,17 +39,7 @@
           H265Enabled = "True";
         };
       };
-      client = pkgs.citrix-workspace.overrideAttrs (old: {
-        nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pkgs.python3];
-        postInstall =
-          (old.postInstall or "")
-          + ''
-            root="$out/opt/citrix-icaclient"
-            ln -s ${zoom}/lib/libZoomPlugin.so "$root/ZoomMedia.so"
-            chmod u+w "$root/config/module.ini"
-            python3 ${../../overlays/citrix/configure.py} "$root/config/module.ini"
-          '';
-      });
+      client = pkgs.citrix-workspace-vdi;
 
       xorgUnit = "autovt@tty${toString vt}.service";
       runtimeDir = "/run/user/${toString config.users.users.${user.name}.uid}";

@@ -1,17 +1,17 @@
 # NixOS dotfiles
 
 Each machine registers its NixOS configuration under `modules/hosts/<host>/`.
-The configuration expects this repository at `~/.config/dotfiles`. In the
-commands below, `<host>` and `<user>` stand for a host name and its user.
+In the commands below, `<host>` and `<user>` stand for a host name and its user.
 
 The root flake uses flake-parts and `import-tree` to discover modules.
 Reusable features live in `modules/features/`, with language toolchains under
 `modules/features/dev/langs/`. Define Home Manager and NixOS aspects there,
 then import them explicitly from their consuming host, user, or profile.
 Trent's account and Home Manager identity live in `modules/users/trent.nix`.
-Apps register in `modules/apps/`. Package modules in `modules/overlays/` declare
-standalone packages and contribute to the default overlay. Prefix helper Nix
-files with an underscore to keep them out of discovery. The original
+Apps and packages come from `zoldt/packages.nix`. Agent tools and services come
+from `zoldt/agents.nix`. The K3s module and its Flux bootstrap manifests live in
+`zoldt/.infra.nix`. Prefix helper Nix files with an underscore to keep them out of
+discovery. The original
 `homeModules.default`, `homeModules.desktop`, and `nixosModules.default`
 exports remain available to downstream flakes.
 
@@ -41,8 +41,9 @@ in `modules/profiles/wsl.nix`.
 
 `heimdall` (tailnet gateway) and `yggdrasil` (services and Mimir VM) have
 host-local system configurations under `modules/hosts/`. Yggdrasil uses this repo's
-non-desktop Home Manager config for `trent`. Its mutable config links expect a checkout
-at `/home/trent/.config/dotfiles`. Neither host is supported by `bootstrap`.
+non-desktop Home Manager config for `trent`. Its mutable config links expect
+`/home/trent/.config/dotfiles` to point to the `config/` directory of a
+`dotfiles.nix` checkout. Neither host is supported by `bootstrap`.
 Reuse the existing disks and SOPS age keys; do not repartition. After merging,
 switch each host to `main` once to install its Comin configuration. Comin will
 then stage future builds from `main` for the next reboot, without switching live.
@@ -105,7 +106,8 @@ tailnet. Verify the share mounts from a pod and permits the intended writes
 before using the claim. The local storage is single-node; back it up off-host.
 
 k3s installs Flux, CloudNativePG, and cert-manager. Flux reads the `main` branch
-of `zoldt/.infra.nix` at `clusters/nidavellir`. App Ingresses and certificates
+of `zoldt/.infra.nix` at `clusters/nidavellir`, using the `flux-system` Git
+credential Secret in the `flux-system` namespace. App Ingresses and certificates
 are managed there. Add each public DNS record manually, pointing at Yggdrasil's
 public address or the router forwarding to it. Heimdall routing is unchanged.
 
@@ -163,13 +165,16 @@ start a new login session after rebuilding to use it.
 
 ## Neovim / LazyVim
 
-`config/nvim/` contains the [LazyVim starter](https://github.com/LazyVim/starter).
-Home Manager creates an out-of-store symlink from `~/.config/nvim` to
-`~/.config/dotfiles/config/nvim`, so editor changes and `lazy-lock.json` live in this
-repository. Keep the checkout at that path. Add new files to Git before rebuilding.
+The [LazyVim starter](https://github.com/LazyVim/starter) lives in `zoldt/dotfiles.nix`.
+Home Manager links `~/.config/nvim` to `~/.config/dotfiles/nvim`. Point
+`~/.config/dotfiles` at the checkout's `config/` directory before switching.
+If that path already holds your old checkout, move it aside first to preserve
+local edits. You can also enable `zoldt.dotfiles.sync.enable` to clone the new
+checkout, create the link, and pull updates periodically.
 
-After rebuilding, run `nvim`; lazy.nvim installs LazyVim and its plugins on
-first launch. Customize `config/nvim/lua/config/` and `config/nvim/lua/plugins/` directly.
+After rebuilding, run `nvim` to install LazyVim and its plugins. Edit
+`~/.config/dotfiles/nvim/lua/config/` and `~/.config/dotfiles/nvim/lua/plugins/`
+directly.
 Use a Nerd Font in your terminal for icons.
 
 If the corporate proxy blocks plugin downloads, launch with direct access where
@@ -252,12 +257,16 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy -u ALL_PROXY nix f
 ```
 
 Otherwise install your organization's trusted CA; do not disable TLS verification.
-Magpie's CLI and desktop versions and hashes are pinned together in `modules/overlays/magpie/hashes.json`.
+Magpie's CLI and desktop versions and hashes are pinned together in `modules/pkgs/magpie/hashes.json` in `zoldt/packages.nix`.
 
 ## Secrets and SSH keys
 
+SOPS wiring comes from `zoldt/secrets.nix`. The private `zoldt/.secrets` Git input
+supplies the encrypted host files. Nix needs SSH read access to the private inputs
+when evaluating hosts that import them, including evaluations run by Comin.
+
 Bitwarden, through [rbw](https://github.com/doy/rbw), on every host
-(`modules/features/secrets/rbw.nix`). `rbw unlock` starts `rbw-agent`, which
+(`zoldt/secrets.nix`, `modules/rbw.nix`). `rbw unlock` starts `rbw-agent`, which
 holds the unlocked vault and is also the SSH agent: SSH's `IdentityAgent` points
 at `$XDG_RUNTIME_DIR/rbw/ssh-agent-socket`, which serves Bitwarden SSH-key items.
 Private keys are never written to disk. Once per machine:
@@ -277,7 +286,7 @@ prompts again where you last ran `rbw`.
 Tools that save their own logins (`gh auth login`, ...) use the Secret Service
 keyring: gnome-keyring on desktops, unlocked at login; elsewhere (WSL)
 pass-secret-service over a gpg-encrypted `pass` store
-(`modules/features/secrets/keyring.nix`). Set that up once:
+(`zoldt/secrets.nix`, `modules/keyring.nix`). Set that up once:
 
 ```sh
 gpg --quick-gen-key "Trent Maetzold <EMAIL>"

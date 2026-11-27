@@ -6,6 +6,7 @@
       config.flake.modules.homeManager.paseo
       config.flake.modules.homeManager.pi
       config.flake.modules.homeManager.default
+      config.flake.modules.homeManager.dotfiles
       config.flake.modules.homeManager.data
       config.flake.modules.homeManager.git
       config.flake.modules.homeManager.bash

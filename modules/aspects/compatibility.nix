@@ -25,7 +25,7 @@ in {
             programs.git.settings.user = identity;
             programs.jujutsu.settings.user = identity;
           }
-          (lib.mkIf config.services.magpie.enable (import ../features/ai/_magpie-cli.nix {inherit config pkgs;}))
+          (lib.mkIf config.services.magpie.enable (homeManager.magpie-cli {inherit config pkgs;}))
         ];
       })
     ];

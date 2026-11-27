@@ -3,7 +3,7 @@
   config,
   ...
 }: let
-  inherit (inputs) self nixpkgs home-manager;
+  inherit (inputs) nixpkgs home-manager;
   identity = import ../../users/trent/_identity.nix;
 in {
   flake.modules.nixos.muninn = let
@@ -75,7 +75,7 @@ in {
       config.flake.modules.nixos.muninn
       home-manager.nixosModules.home-manager
       {
-        nixpkgs.overlays = [self.overlays.default];
+        nixpkgs.overlays = [inputs.zoldt-pkgs.modules.overlays.default];
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;

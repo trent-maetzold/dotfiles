@@ -27,27 +27,8 @@
       else "${name}.${tailnetDomain}";
     inherit (config.sops) secrets;
   in {
-    imports = [inputs.sops-nix.nixosModules.sops];
-
-    sops = {
-      defaultSopsFile = ./secrets.yaml;
-      age = {
-        keyFile = "/var/lib/age/key.txt";
-        sshKeyPaths = [];
-      };
-      gnupg.sshKeyPaths = [];
-      secrets = {
-        ts-authkey.key = "tailscale/ts-authkey";
-        headplane-cookie-secret = {
-          key = "headscale/headplane-cookie-secret";
-          owner = "headscale";
-        };
-        cf-dns-api-token = {
-          key = "traefik/cf-dns-api-token";
-          owner = "traefik";
-        };
-      };
-    };
+    imports = [inputs.zoldt-secrets.modules.nixos.headscale];
+    sops.defaultSopsFile = inputs.secrets + "/nixos/heimdall/secrets.yaml";
 
     networking.firewall = {
       allowedTCPPorts = [80 443];
