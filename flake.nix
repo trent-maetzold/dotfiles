@@ -1,10 +1,7 @@
 {
-  description = "Home Manager dotfiles";
+  description = "Zoldt's NixOS and Home Manager Flake";
 
-  outputs = inputs:
-    inputs.flake-parts.lib.mkFlake
-    {inherit inputs;}
-    (inputs.import-tree ./modules);
+  outputs = inputs: import ./outputs inputs;
 
   inputs = {
     # Core
