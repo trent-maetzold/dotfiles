@@ -1,10 +1,9 @@
-# Citrix as its own "OS" on tty8: Xorg (no compositor), a kiosk window manager
-# and Workspace. Ctrl+Alt+F8 and Ctrl+Alt+F1 switch between it and the desktop
-# on tty1; every other key, Win and Alt included, goes to Citrix. The desktop
-# knows nothing about it.
+# Citrix as its own "OS" on tty8: a single systemd unit runs Xorg, a kiosk
+# window manager and Workspace under the user's account. `citrix` in the
+# desktop's launcher, or Ctrl+Alt+F8, starts that unit and switches to it; the
+# desktop on tty1 is a separate VT and knows nothing about it.
 #
-# It runs as `user`, so it shares their audio. logind starts Xorg on the
-# first switch to tty8; systemd supervises the window manager and Workspace.
+# It runs as `user`, so it shares their audio.
 {
   config,
   lib,
@@ -13,6 +12,8 @@
   ...
 }: let
   vt = 8;
+  tty = "tty${toString vt}";
+  service = "citrix-kiosk.service";
   # Use the public gateway; its internal StoreFront hostname is not reachable here.
   storeUrl = "https://cloud.citrix.options-it.com";
 
@@ -49,32 +50,29 @@
       '';
   });
 
-  xorgUnit = "autovt@tty${toString vt}.service";
+  # The whole session in one place: the store has to exist before the client
+  # starts, the kiosk window manager keeps Workspace full-screen, and startx
+  # takes Xorg down with the client.
+  session = pkgs.writeShellScript "citrix-session" ''
+    set -eu
+    # Nothing is scrubbed here on purpose: the kiosk gets its own PAM service,
+    # so none of the desktop session's variables reach this script. If the client
+    # ever ends up back on the compositor, check that the unit still hides the
+    # compositor's Wayland sockets (see BindReadOnlyPaths below) - Citrix opens
+    # $XDG_RUNTIME_DIR/wayland-0 by itself, without WAYLAND_DISPLAY being set.
+    ${pkgs.xset}/bin/xset s off -dpms
+    stores=$(${client}/bin/storebrowse --liststores)
+    if ! ${pkgs.gnugrep}/bin/grep -qF ${lib.escapeShellArg storeUrl} <<< "$stores"; then
+      ${client}/bin/storebrowse --addstore ${lib.escapeShellArg storeUrl}
+    fi
+    ${pkgs.matchbox}/bin/matchbox-window-manager -use_titlebar no &
+    # Name the store explicitly: the client otherwise opens whichever store it
+    # remembers (a stale StoreFront record that no longer resolves leaves the
+    # kiosk on a blank screen).
+    exec ${client}/bin/selfservice ${lib.escapeShellArg storeUrl}
+  '';
+
   runtimeDir = "/run/user/${toString config.users.users.${user.name}.uid}";
-  xClient = command: {
-    wantedBy = [xorgUnit];
-    after = [xorgUnit];
-    bindsTo = [xorgUnit];
-    partOf = [xorgUnit];
-    restartIfChanged = false;
-    environment = {
-      DISPLAY = ":${toString vt}";
-      XDG_RUNTIME_DIR = runtimeDir;
-      DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
-      XDG_DATA_DIRS = "${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share";
-      XCURSOR_PATH = "${pkgs.adwaita-icon-theme}/share/icons";
-      XCURSOR_THEME = "Adwaita";
-      XCURSOR_SIZE = "24";
-      GTK_THEME = "Adwaita:dark";
-    };
-    serviceConfig = {
-      User = user.name;
-      WorkingDirectory = user.home;
-      ExecStart = command;
-      Restart = "always";
-      RestartSec = 1;
-    };
-  };
 in {
   # The client, the Zoom plugin and their manual downloads.
   nixpkgs.config.allowUnfreePackages = [
@@ -92,52 +90,142 @@ in {
     display = null;
   };
 
-  # logind starts autovt@ttyN on first switch only for N <= NAutoVTs.
-  services.logind.settings.Login.NAutoVTs = vt;
-  systemd.services."autovt@tty${toString vt}" = {
-    description = "Citrix Workspace on tty${toString vt}";
+  # logind only hands out usable (unpaused) DRM fds inside a PAM session, but
+  # reusing the `login` service pulls in pam_env, and with it every session
+  # variable of the desktop (WAYLAND_DISPLAY, XCURSOR_THEME and the rest) - they
+  # override this unit's own environment. Give the kiosk a PAM service that just
+  # registers the session and loads nothing from the user's session.
+  #
+  # pam_systemd ships with systemd, not linux-pam: pointing it at ${pkgs.pam}
+  # makes the dlopen fail and the unit exit 224/PAM before Xorg starts.
+  security.pam.services.citrix-kiosk.text = ''
+    auth required ${pkgs.pam}/lib/security/pam_permit.so
+    account required ${pkgs.pam}/lib/security/pam_permit.so
+    session required ${config.systemd.package}/lib/security/pam_systemd.so
+  '';
+
+  systemd.services.citrix-kiosk = {
+    description = "Citrix Workspace on ${tty}";
     after = ["systemd-user-sessions.service" "systemd-logind.service"];
-    conflicts = ["getty@tty${toString vt}.service"];
+    conflicts = ["getty@${tty}.service"];
     restartIfChanged = false;
+    # startx needs mcookie (util-linux) to build the server cookie; without it
+    # it falls back to hexdump, finds neither, and dies with "Couldn't create
+    # cookie" before Xorg starts.
+    path = [
+      pkgs.util-linux # mcookie/hexdump for the server cookie
+      pkgs.xinit # startx execs xinit by name
+      pkgs.xauth # startx execs xauth by name
+    ];
+    environment = {
+      XDG_RUNTIME_DIR = runtimeDir;
+      DBUS_SESSION_BUS_ADDRESS = "unix:path=${runtimeDir}/bus";
+      XDG_DATA_DIRS = "${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share";
+      XCURSOR_PATH = "${pkgs.vanilla-dmz}/share/icons:${pkgs.adwaita-icon-theme}/share/icons";
+      XCURSOR_THEME = "DMZ-White";
+      XCURSOR_SIZE = "24";
+      ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
+    };
     serviceConfig = {
       User = user.name;
-      PAMName = "login";
-      TTYPath = "/dev/tty${toString vt}";
+      PAMName = "citrix-kiosk";
+      TTYPath = "/dev/${tty}";
       StandardInput = "tty";
       StandardOutput = "journal";
       StandardError = "journal";
-      UtmpIdentifier = "tty${toString vt}";
+      UtmpIdentifier = tty;
       UtmpMode = "user";
       WorkingDirectory = user.home;
+      # DISPLAY must stay unset: startx sets it and refuses to run otherwise.
+      ExecStart = lib.concatStringsSep " " ([
+          "${pkgs.xinit}/bin/startx"
+          "${session}"
+          "--"
+          ":${toString vt}"
+          "vt${toString vt}"
+          "-keeptty"
+          "-noreset"
+        ]
+        ++ lib.remove "-terminate" config.services.xserver.displayManager.xserverArgs);
+      # Xorg opens DRM through logind, and logind hands out a *paused* fd unless
+      # the VT is active ("Error systemd-logind returned paused fd for drm
+      # node"). So the session has to bring its own VT up before startx runs.
       ExecStartPre = "+${pkgs.kbd}/bin/chvt ${toString vt}";
-      ExecStart = "${pkgs.xorg-server}/bin/Xorg :${toString vt} vt${toString vt} -keeptty -noreset ${lib.concatStringsSep " " (lib.remove "-terminate" config.services.xserver.displayManager.xserverArgs)}";
+      # The kiosk is meant to be up whenever the VT is, so restart the session
+      # rather than leaving a dead VT behind - but only a few times: every
+      # restart runs `chvt`, which would otherwise keep dragging the user back
+      # to tty8 while they are working on tty1.
       Restart = "on-failure";
-      RestartSec = 1;
+      RestartSec = 5;
+      # Citrix looks for a compositor socket in XDG_RUNTIME_DIR on its own and
+      # takes the Wayland path when it finds one: the client then maps no X
+      # window at all, and tty8 stays black while a stray toplevel can show up
+      # in the desktop. Mask the sockets for this unit instead of pinning the
+      # toolkit backends, which only covered GTK. The '-'
+      # makes a missing socket (no compositor running) harmless.
+      PrivateMounts = true;
+      BindReadOnlyPaths = [
+        "-/dev/null:${runtimeDir}/wayland-0"
+        "-/dev/null:${runtimeDir}/wayland-1"
+      ];
+    };
+    startLimitBurst = 3;
+    startLimitIntervalSec = 120;
+  };
+
+  # Keep Ctrl+Alt+F8 useful: logind starts this on a switch to the VT, and it
+  # only starts the kiosk. It must *finish* so that the next switch to the VT
+  # triggers it again (a RemainAfterExit unit stays active and never re-fires,
+  # which left tty8 blank once the kiosk had been stopped). Stopping it does not
+  # stop the kiosk.
+  services.logind.settings.Login.NAutoVTs = vt;
+  systemd.services."autovt@${tty}" = {
+    description = "Start the Citrix kiosk on ${tty}";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.systemd}/bin/systemctl start --no-block ${service}";
     };
   };
 
-  systemd.services.citrix-window-manager = lib.mkMerge [
-    (xClient "${pkgs.matchbox}/bin/matchbox-window-manager -use_titlebar no")
-    {
-      serviceConfig.ExecStartPre = "${pkgs.xset}/bin/xset s off -dpms";
-    }
-  ];
-  systemd.services.citrix-workspace = lib.mkMerge [
-    (xClient "${client}/bin/selfservice")
-    {
-      after = ["citrix-window-manager.service"];
-      environment.ZOOMMEDIA_INI_PATH = "${zoom}/etc/zoomvdi/ZoomMedia.ini";
-      serviceConfig.TimeoutStartSec = "infinity";
-      preStart = ''
-        # Fail until Xorg is ready; systemd retries startup.
-        ${pkgs.xset}/bin/xset s off -dpms
-        stores=$(${client}/bin/storebrowse --liststores)
-        if ! ${pkgs.gnugrep}/bin/grep -qF ${lib.escapeShellArg storeUrl} <<< "$stores"; then
-          ${client}/bin/storebrowse --addstore ${lib.escapeShellArg storeUrl}
+  # Launching the client — from the desktop's launcher or a terminal — brings
+  # the kiosk up if it is not running and switches to it. The switch goes
+  # through logind, which is allowed to activate the session it already owns.
+  environment.systemPackages = [
+    (pkgs.writeShellScriptBin "citrix" ''
+      set -eu
+      ${pkgs.systemd}/bin/systemctl start ${service}
+      for _ in $(${pkgs.coreutils}/bin/seq 50); do
+        session=$(${pkgs.systemd}/bin/loginctl list-sessions --no-legend |
+          ${pkgs.gawk}/bin/awk -v t=${tty} '$7 == t {print $1; exit}')
+        if [ -n "$session" ]; then
+          exec ${pkgs.systemd}/bin/loginctl activate "$session"
         fi
-      '';
-    }
+        ${pkgs.coreutils}/bin/sleep 0.2
+      done
+      echo "citrix: no session appeared on ${tty}" >&2
+      exit 1
+    '')
+    (pkgs.makeDesktopItem {
+      name = "citrix";
+      desktopName = "Citrix Workspace";
+      comment = "Open Citrix Workspace on ${tty}";
+      exec = "citrix";
+      icon = "applications-internet";
+      categories = ["Network"];
+      terminal = false;
+    })
   ];
+
+  # The launcher above starts the kiosk; ask polkit to allow that one unit
+  # without a password prompt.
+  security.polkit.extraConfig = ''
+    polkit.addRule(function (action, subject) {
+      if (action.id == "org.freedesktop.systemd1.manage-units" &&
+          subject.user == "${user.name}" &&
+          action.lookup("unit") == "${service}")
+        return polkit.Result.YES;
+    });
+  '';
 
   home-manager.users.${user.name}.home.file.".ICAClient/All_Regions.ini" = {
     source = allRegions;
