@@ -1,0 +1,41 @@
+{config, ...}: {
+  flake.modules.homeManager.defaultProfile = {
+    imports = [
+      config.flake.modules.homeManager.claude
+      config.flake.modules.homeManager.ai
+      config.flake.modules.homeManager.paseo
+      config.flake.modules.homeManager.pi
+      config.flake.modules.homeManager.default
+      config.flake.modules.homeManager.data
+      config.flake.modules.homeManager.git
+      config.flake.modules.homeManager.bash
+      config.flake.modules.homeManager.dotnet
+      config.flake.modules.homeManager.go
+      config.flake.modules.homeManager.js
+      config.flake.modules.homeManager.lisp
+      config.flake.modules.homeManager.nix-language
+      config.flake.modules.homeManager.python
+      config.flake.modules.homeManager.r
+      config.flake.modules.homeManager.rust
+      config.flake.modules.homeManager.sql
+      config.flake.modules.homeManager.neovim
+      config.flake.modules.homeManager.keyring
+      config.flake.modules.homeManager.rbw
+      config.flake.modules.homeManager.monitoring
+      config.flake.modules.homeManager.nix
+      config.flake.modules.homeManager.tuios
+      config.flake.modules.homeManager.kubernetes
+      config.flake.modules.homeManager.podman
+      config.flake.modules.homeManager.atuin
+      config.flake.modules.homeManager.btop
+      config.flake.modules.homeManager.carapace
+      config.flake.modules.homeManager.direnv
+      config.flake.modules.homeManager.nushell
+      config.flake.modules.homeManager.ssh
+      config.flake.modules.homeManager.starship
+      config.flake.modules.homeManager.yazi
+      config.flake.modules.homeManager.herdr
+      config.flake.modules.homeManager.tmux
+    ];
+  };
+}

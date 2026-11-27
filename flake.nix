@@ -1,103 +1,18 @@
 {
   description = "Home Manager dotfiles";
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    home-manager,
-    import-tree,
-    bkt,
-    pyproject-nix,
-    uv2nix,
-    pyproject-build-systems,
-    ...
-  }: let
-    inherit (nixpkgs) lib;
-    systems = ["x86_64-linux" "aarch64-linux"];
-
-    trent = import ./nix/users/trent/identity.nix;
-  in {
-    # Standalone NixOS configurations.
-    nixosConfigurations = {
-      muninn = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs;
-          user = trent;
-        };
-        modules = [
-          ./nix/hosts/muninn
-          home-manager.nixosModules.home-manager
-          {
-            nixpkgs.overlays = [self.overlays.default];
-
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = inputs // {user = trent;};
-              users.trent = import ./nix/hosts/muninn/home.nix;
-            };
-          }
-        ];
-      };
-      sif = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
-        modules = [./nix/hosts/sif];
-      };
-      heimdall = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs;};
-        modules = [./nix/hosts/heimdall];
-      };
-      yggdrasil = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs;
-          user = trent;
-        };
-        modules = [
-          ./nix/hosts/yggdrasil
-          home-manager.nixosModules.home-manager
-        ];
-      };
-    };
-
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-
-    # Local packages as pkgs.<name>; hosts apply this overlay.
-    overlays.default = import ./nix/pkgs {inherit bkt uv2nix pyproject-nix pyproject-build-systems;};
-
-    # The overlay's packages, buildable on their own (`nix build .#tredis`).
-    packages = lib.genAttrs systems (system:
-      lib.filterAttrs (_: lib.isDerivation)
-      (builtins.intersectAttrs (self.overlays.default null null)
-        (nixpkgs.legacyPackages.${system}.extend self.overlays.default)));
-
-    # Deployment admin tasks (`nix run .#switch`); the justfile wraps each.
-    apps = lib.genAttrs systems (system:
-      import ./nix/apps {
-        pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.default;
-        inherit self;
-      });
-
-    # Modules take this flake's inputs and `user` as arguments:
-    # specialArgs / home-manager.extraSpecialArgs = inputs // {inherit user;}.
-    # Every home module except desktop/, which only desktop hosts import.
-    homeModules.default = import-tree.filterNot (lib.hasInfix "/desktop/") ./nix/modules/home;
-    homeModules.desktop = import-tree ./nix/modules/home/desktop;
-    # nix/modules/nixos is grouped. Standalone hosts import machine, desktop,
-    # hardware and deploy modules by path; `default` bundles common, services
-    # and wsl for WSL hosts.
-    nixosModules.default = import-tree [
-      ./nix/modules/nixos/common
-      ./nix/modules/nixos/services
-      ./nix/modules/nixos/wsl
-    ];
-  };
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake
+    {inherit inputs;}
+    (inputs.import-tree ./modules);
 
   inputs = {
     # Core
+    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     import-tree.url = "github:denful/import-tree";
 
-    # Hosts (nix/hosts)
+    # Hosts and system services
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -153,7 +68,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Modules (nix/modules/{home,nixos})
+    # Shared module inputs
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -188,7 +103,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Python apps from uv.lock (nix/pkgs/keeper-cli)
+    # Python apps from uv.lock (modules/overlays/keeper-cli)
     pyproject-nix = {
       url = "github:pyproject-nix/pyproject.nix";
       inputs.nixpkgs.follows = "nixpkgs";

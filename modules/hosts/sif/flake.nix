@@ -1,0 +1,63 @@
+{
+  inputs,
+  config,
+  ...
+}: {
+  flake.modules.nixos.sif = let
+    nixos = config.flake.modules.nixos;
+  in
+    # sif: Justine's Yoga 720-13IKB (i5-7200U, HD 620, 8 GB). Same encrypted
+    # ephemeral root as muninn, with a Windows-like Cinnamon desktop. trent
+    # manages the OS; Justine installs her own apps from Flathub (GNOME Software).
+    {
+      inputs,
+      lib,
+      pkgs,
+      ...
+    }: {
+      imports = [
+        nixos.trent
+        nixos.machineProfile
+        nixos.cinnamon
+        nixos.flatpak
+        nixos.fonts
+        "${inputs.nixos-hardware}/common/cpu/intel/kaby-lake"
+        "${inputs.nixos-hardware}/common/pc/laptop"
+        "${inputs.nixos-hardware}/common/pc/ssd"
+        nixos.comin
+      ];
+
+      networking.hostName = "sif";
+      # Generate on the laptop before installing (see README); until then, no report.
+      hardware.facter.reportPath = lib.mkIf (builtins.pathExists ./facter.json) ./facter.json;
+
+      # 8 GB of RAM: keep tmpfs / small and compress swap in RAM.
+      disko.devices.nodev."/".mountOptions = ["size=2G" "mode=755"];
+      zramSwap.enable = true;
+
+      users.users.trent.extraGroups = ["networkmanager"];
+
+      # Trent logs in over SSH with his keys only.
+      services.openssh.settings = {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+      };
+
+      # Set her password once with `sudo passwd justine`.
+      users.users.justine = {
+        isNormalUser = true;
+        description = "Justine Maetzold";
+        extraGroups = ["networkmanager"];
+      };
+
+      # Chrome from Nix, not Flathub: one managed copy with the Intel video driver.
+      environment.systemPackages = [pkgs.google-chrome];
+      nixpkgs.config.allowUnfreePackages = ["google-chrome"];
+
+      system.stateVersion = "26.11";
+    };
+  flake.nixosConfigurations.sif = inputs.nixpkgs.lib.nixosSystem {
+    specialArgs = {inherit inputs;};
+    modules = [config.flake.modules.nixos.sif];
+  };
+}
