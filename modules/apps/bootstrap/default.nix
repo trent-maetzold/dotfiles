@@ -9,7 +9,7 @@
   in {
     apps.bootstrap =
       ( # Install one of this flake's hosts onto this machine from a NixOS live USB.
-        #   nix run github:trent-maetzold/dotfiles#bootstrap -- muninn
+        #   nix run github:zoldt/config.nix#bootstrap -- muninn
         {
           pkgs,
           app,

@@ -57,13 +57,13 @@ working `tm` session on each host, switch that commit first (replace `<host>`
 with `heimdall` or `yggdrasil`):
 
 ```sh
-sudo nixos-rebuild switch --flake github:trent-maetzold/dotfiles/fb91a575e1d397f780947bf41e879c11dab90ac8#<host>
+sudo nixos-rebuild switch --flake github:zoldt/config.nix/fb91a575e1d397f780947bf41e879c11dab90ac8#<host>
 ```
 
 Keep the original session open and verify a **new** `trent` SSH session, its
 key authentication, and `sudo -n true` on each host before proceeding. On
 Yggdrasil, prepare `/home/trent/.config/dotfiles` for Home Manager's mutable
-links. Check external scripts and SSH aliases too; for example, the homelab
+links. Check external scripts and SSH aliases too; for example, the `.infra.nix`
 media staging guide and the in-progress secrets CLI have used `tm@10.10.20.10`.
 
 On 2026-11-23 the disposable rootless n8n, Windmill, and Activepieces
@@ -104,10 +104,10 @@ k3s’s default `/var/lib/rancher/k3s/storage` path. The
 tailnet. Verify the share mounts from a pod and permits the intended writes
 before using the claim. The local storage is single-node; back it up off-host.
 
-k3s installs Flux, CloudNativePG, and cert-manager. Flux reads `homelab/main`
-at `clusters/nidavellir`. App Ingresses and certificates are managed in Homelab;
-add each public DNS record manually, pointing at Yggdrasil's public address
-or the router forwarding to it. Heimdall routing is unchanged.
+k3s installs Flux, CloudNativePG, and cert-manager. Flux reads the `main` branch
+of `zoldt/.infra.nix` at `clusters/nidavellir`. App Ingresses and certificates
+are managed there. Add each public DNS record manually, pointing at Yggdrasil's
+public address or the router forwarding to it. Heimdall routing is unchanged.
 
 ### Laptop installation
 
@@ -125,7 +125,7 @@ there. `/` is wiped every boot; `/etc` is an overlay whose changes persist in
 `/.rw-etc/upper`, so `ls -R /.rw-etc/upper` shows how `/etc` has drifted.
 
 ```sh
-nix --extra-experimental-features 'nix-command flakes' run github:trent-maetzold/dotfiles#bootstrap -- muninn
+nix --extra-experimental-features 'nix-command flakes' run github:zoldt/config.nix#bootstrap -- muninn
 ```
 
 Rebuild after changes with `nh os switch` (see [Rebuild](#rebuild)).
@@ -139,7 +139,7 @@ her own changes stick. Flathub is added for each user at their first login.
 
 ## Rebuild
 
-`nh os switch` builds `github:trent-maetzold/dotfiles/main` for the current
+`nh os switch` builds `github:zoldt/config.nix/main` for the current
 hostname. Use `nh os switch .` to test a local checkout. `just switch` still
 updates the local checkout's inputs and commits `flake.lock` before switching.
 

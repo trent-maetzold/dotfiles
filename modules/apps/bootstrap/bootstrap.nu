@@ -1,7 +1,7 @@
 # Install nixosConfigurations.<host> from this flake onto this machine, booted
 # from a NixOS live USB. disko asks before wiping and for the disk passphrase.
 #
-#   nix run github:trent-maetzold/dotfiles#bootstrap -- muninn
+#   nix run github:zoldt/config.nix#bootstrap -- muninn
 def main [host: string] {
   if (^id -u | into int) != 0 { exec sudo $env.CURRENT_FILE $host }
   $env.PATH = ("@path@" | split row ":") ++ $env.PATH

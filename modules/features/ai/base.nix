@@ -20,7 +20,7 @@
         ++ (with llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
           codegraph
           qmd # local document search
-          beads # bd: issue tracker for agent workflows
+          beads # bd CLI for projects that use it
           plannotator # plan and code review for agents
           ralph-tui # agent loop orchestrator
         ]);

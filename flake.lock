@@ -422,22 +422,6 @@
         "type": "github"
       }
     },
-    "homelab": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1795065474,
-        "narHash": "sha256-1DyMQGIb5zcytl0hgr8osw5kGgKRyVBmRrWIlBbLflA=",
-        "owner": "trent-maetzold",
-        "repo": "homelab",
-        "rev": "feba98f0a7ff0906b55380727c0eedcc869d922d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "trent-maetzold",
-        "repo": "homelab",
-        "type": "github"
-      }
-    },
     "honcho": {
       "flake": false,
       "locked": {
@@ -466,6 +450,22 @@
       "original": {
         "owner": "denful",
         "repo": "import-tree",
+        "type": "github"
+      }
+    },
+    "infra": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795065474,
+        "narHash": "sha256-1DyMQGIb5zcytl0hgr8osw5kGgKRyVBmRrWIlBbLflA=",
+        "owner": "zoldt",
+        "repo": ".infra.nix",
+        "rev": "feba98f0a7ff0906b55380727c0eedcc869d922d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zoldt",
+        "repo": ".infra.nix",
         "type": "github"
       }
     },
@@ -890,9 +890,9 @@
         "hermes-webui": "hermes-webui",
         "hermex-push": "hermex-push",
         "home-manager": "home-manager_2",
-        "homelab": "homelab",
         "honcho": "honcho",
         "import-tree": "import-tree",
+        "infra": "infra",
         "llm-agents": "llm-agents",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",

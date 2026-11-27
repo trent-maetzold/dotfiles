@@ -12,7 +12,7 @@
         remotes = [
           {
             name = "origin";
-            url = "https://github.com/trent-maetzold/dotfiles.git";
+            url = "https://github.com/zoldt/config.nix.git";
             branches.main = {
               name = "main";
               operation = "boot";

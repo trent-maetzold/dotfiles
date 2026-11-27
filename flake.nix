@@ -1,10 +1,7 @@
 {
-  description = "Home Manager dotfiles";
+  description = "Zoldt's NixOS and Home Manager Flake";
 
-  outputs = inputs:
-    inputs.flake-parts.lib.mkFlake
-    {inherit inputs;}
-    (inputs.import-tree ./modules);
+  outputs = inputs: import ./outputs inputs;
 
   inputs = {
     # Core
@@ -28,9 +25,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Git-sourced k3s bootstrap manifests; update through the flake lock.
-    homelab = {
-      url = "github:trent-maetzold/homelab";
+    # Infrastructure source for the k3s bootstrap manifests.
+    infra = {
+      url = "github:zoldt/.infra.nix";
       flake = false;
     };
 
